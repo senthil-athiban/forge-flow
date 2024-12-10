@@ -8,20 +8,23 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
-  email    String  @unique
-  password String
-  name     String
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Zap {
-  id       String   @id @default(cuid())
-  trigger  Trigger?
-  actions  Action[]
+  id        String   @id @default(cuid())
+  trigger   Trigger?
+  actions   Action[]
+  zapRun    ZapRun[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([id])
 }
 
 model Trigger {
@@ -32,14 +35,16 @@ model Trigger {
   triggerType   TriggerTypes @relation(fields: [triggerTypeId], references: [id])
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+
+  @@index([zapId])
 }
 
 model TriggerTypes {
-  id       String     @id @default(cuid())
-  name     String
-  trigger  Trigger[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  name      String
+  trigger   Trigger[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Action {
@@ -50,12 +55,31 @@ model Action {
   actionType   ActionTypes @relation(fields: [actionTypeId], references: [id])
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+
+  @@index([zapId])
 }
 
 model ActionTypes {
-  id       String   @id @default(cuid())
-  name     String
-  action   Action[]
+  id        String   @id @default(cuid())
+  name      String
+  action    Action[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ZapRun {
+  id           String        @id @default(cuid())
+  zapId        String
+  zap          Zap           @relation(fields: [zapId], references: [id])
+  zapRunOutBox ZapRunOutBox?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ZapRunOutBox {
+  id       String @id @default(cuid())
+  zapRunId String @unique
+  zapRun   ZapRun @relation(fields: [zapRunId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
