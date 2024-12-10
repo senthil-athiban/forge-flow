@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  password String
+  name     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Zap {
+  id       String   @id @default(cuid())
+  trigger  Trigger?
+  actions  Action[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Trigger {
+  id            String       @id @default(cuid())
+  zapId         String       @unique
+  zap           Zap          @relation(fields: [zapId], references: [id])
+  triggerTypeId String
+  triggerType   TriggerTypes @relation(fields: [triggerTypeId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model TriggerTypes {
+  id       String     @id @default(cuid())
+  name     String
+  trigger  Trigger[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Action {
+  id           String      @id @default(cuid())
+  zapId        String
+  zap          Zap         @relation(fields: [zapId], references: [id])
+  actionTypeId String
+  actionType   ActionTypes @relation(fields: [actionTypeId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model ActionTypes {
+  id       String   @id @default(cuid())
+  name     String
+  action   Action[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
