@@ -1,9 +1,13 @@
 import express from "express";
 import dotenv from 'dotenv';
-import { PrismaClient } from '@repo/db';
+import { PrismaClient } from '@prisma/client';
+
+const client = new PrismaClient();
+
+export const db = client;
+
 
 dotenv.config();
-const client = new PrismaClient();
 const app = express();
 const PORT = process.env.DOMAIN;
 
@@ -29,7 +33,6 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
 
         return zapRunOutBox
     });
-
     return res.json({"message": response});
 })
 

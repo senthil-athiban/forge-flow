@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsc -b && node ./dist/index.js",
-    "start": "tsc -b && node ./dist/index.js"
+    "start": "npx tsc -b && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
