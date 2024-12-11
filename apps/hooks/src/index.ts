@@ -4,9 +4,6 @@ import { PrismaClient } from '@prisma/client';
 
 const client = new PrismaClient();
 
-export const db = client;
-
-
 dotenv.config();
 const app = express();
 const PORT = process.env.DOMAIN;
@@ -22,8 +19,6 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
                 zapId: zapId
             }
         });
-
-        console.log("zap run : ", zapRun)
 
         const zapRunOutBox = await tx.zapRunOutBox.create({
             data: {
