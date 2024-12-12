@@ -14,4 +14,4 @@ app.use("/api/v1/zap", zapRouter);
 app.use("/api/v2/zap", zapRouter); // dummy middleware
 
 // port
-app.listen(3000, () => console.log('listening on', 3000));
+app.listen(8080, () => console.log('listening on', 8080));
