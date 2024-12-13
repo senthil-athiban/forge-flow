@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { userRouter } from "./routes/user";
-import { zapRouter } from "./routes/zap";
+import { zapRouter } from "./routes/zap.router.";
 import { triggerRouter } from "./routes/trigger.router";
 import { actionRouter } from "./routes/action.router";
 

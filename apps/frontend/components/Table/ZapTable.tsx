@@ -24,39 +24,41 @@ const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr className="bg-white border-b">
-              {zaps.map((zap, index) => {
-                return (
-                  <>
-                    <td className="px-6 py-4">{index + 1}</td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
-                    >
-                      {zap.trigger.triggerType.name}
-                    </th>
-                    <td className="px-6 py-4">
-                      {zap.actions.map((action, index) => action.actionType.name + ", ")}
-                    </td>
 
-                    <td className="px-6 py-4">
-                      <Link
-                        className="hover:bg-gray-300 p-2"
-                        href={`/zap/${zap.id}`}
-                      >
-                        {" > "}
-                      </Link>
-                    </td>
-                  </>
-                );
-              })}
-            </tr>
+          <tbody className="bg-white border-b w-full">
+            {zaps.map((zap, index) => {
+              return (
+                <tr key={zap.id} className="border-b">
+                  <td className="px-6 py-4">{index + 1}</td>
+                  <td
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
+                  >
+                    {zap.trigger.triggerType.name}
+                  </td>
+                  <td className="px-6 py-4">
+                    {zap.actions.map(
+                      (action, index) => action.actionType.name + ", "
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <Link
+                      className="hover:bg-gray-300 p-2"
+                      href={`/zap/${zap.id}`}
+                    >
+                      {" > "}
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </div>
   );
 };
+
 
 export default ZapTable;

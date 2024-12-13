@@ -12,8 +12,6 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
     const body = req.body;
 
     const parsedData = zapSchema.safeParse(body);
-
-    console.log("parsed data : ", parsedData);
     
     if(!parsedData.success) return res.status(500).json({message: "Invalid inputs"});
 

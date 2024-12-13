@@ -57,9 +57,7 @@ const LoginCard = () => {
               email: email,
               password: password,
             });
-            console.log("clicked1");
             localStorage.setItem("token", res.data.token);
-            console.log("clicked2");
             router.push("/dashboard");
           }}
           size="lg"
