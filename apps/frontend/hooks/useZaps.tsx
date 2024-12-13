@@ -11,7 +11,7 @@ const useZaps = () => {
         async function fetchData() {
             const res = await axios.get(`${BACKEND_URL}/api/v1/zap`, {
                 headers: {
-                    Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbTRremowcDMwMDAweHZtZ2hwcDN1b3RxIiwiaWF0IjoxNzMzOTg4MDM0fQ.usTSZZTLYPt9WQnEEhefChSu3MicHBY6ewBTnv_LhxE"
+                    Authorization: localStorage.getItem("token")
                 }
             });
             setdata(res.data.zap);
