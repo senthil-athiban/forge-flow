@@ -4,10 +4,8 @@ import { JWT_PASSWORD } from "./config";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization as string;
-    console.log(" token : ", token);
     try {
         const payload = jwt.verify(token, JWT_PASSWORD!);
-        console.log(" payload : ", payload);
          // @ts-ignore
         req.userId = payload.userId;
         next();
