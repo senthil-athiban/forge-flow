@@ -23,6 +23,7 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
                 actions: {
                     create: actions.map((it:any) => ({
                         actionTypeId: it.actionTypeId,
+                        metadata: it.actionMetaData
                     }))
                 }
             }

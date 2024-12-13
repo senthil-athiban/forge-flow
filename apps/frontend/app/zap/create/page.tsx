@@ -14,6 +14,8 @@ import {
 import useTriggerAndActionTypes from "@/hooks/useTriggerAndActionTypes";
 import { BACKEND_URL } from "@/app/config";
 import axios from "axios";
+import { Input } from "@/components/ui/input";
+import { metadata } from "@/app/layout";
 
 const ZapCreatePage = () => {
   const [selectedTrigger, setSelectedTrigger] = useState<{
@@ -24,11 +26,11 @@ const ZapCreatePage = () => {
     null
   );
   const [selectedActions, setSelectedActions] = useState<
-    { actionId: string; actionName: string }[]
+    { actionId: string; actionName: string; metadata: {} }[]
   >([]);
   const [showModal, setShowModal] = useState(false);
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
-
+  console.log("selectedActions: ", selectedActions);
   const onSubmit = async () => {
     try {
       const payload = {
@@ -36,7 +38,7 @@ const ZapCreatePage = () => {
         actions: selectedActions?.flatMap((item: any) => {
           return {
             actionTypeId: item.actionId,
-            actionMetaData: {},
+            actionMetaData: item.metadata,
           };
         }),
       };
@@ -46,7 +48,6 @@ const ZapCreatePage = () => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      console.log("respnse : ", response);
     } catch (error) {
       console.log("[ERROR IN CREATING ZAP]:", error);
     }
@@ -86,7 +87,7 @@ const ZapCreatePage = () => {
             onClick={() =>
               setSelectedActions((prev) => [
                 ...prev,
-                { actionId: "", actionName: "" },
+                { actionId: "", actionName: "", metadata: {} },
               ])
             }
           >
@@ -113,12 +114,14 @@ const ZapCreatePage = () => {
                   updatedActions[updatedActions.length - 1] = {
                     actionId: props.id,
                     actionName: props.name,
+                    metadata: props.metadata,
                   };
                   return updatedActions;
                 });
               }
-              setShowModal(false);
+              // setShowModal(false);
             }}
+            selectedItemIndex={selectedItemIndex}
           />
         )}
       </div>
@@ -130,10 +133,11 @@ export default ZapCreatePage;
 
 interface ModalComponentProps {
   isOpen: boolean;
-  onClose: (value: React.SetStateAction<boolean>) => void;
+  onClose: () => void;
   type?: "trigger" | "action";
   availableItems: any;
   onSelect: any;
+  selectedItemIndex: number | null;
 }
 const ModalComponent = ({
   isOpen,
@@ -141,8 +145,18 @@ const ModalComponent = ({
   type,
   availableItems,
   onSelect,
+  selectedItemIndex,
 }: ModalComponentProps) => {
+  const [selectedAction, setSelectedAction] = useState<{id: string;name: string;}>({ id: "", name: "" });
+
   if (!isOpen) return;
+
+  const isTrigger = selectedItemIndex === 1;
+
+  const handleData = (metadata: any) => {
+    onSelect({...selectedAction, metadata});
+    onClose();
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -151,17 +165,97 @@ const ModalComponent = ({
             Select {type === "trigger" ? "trigger" : "action"}
           </DialogTitle>
           <DialogDescription>
-            {availableItems?.map((item: any) => (
-              <div
-                className="border p-2 w-full mt-2 rounded-lg hover:bg-slate-100 cursor-pointer"
-                onClick={() => onSelect({ id: item?.id, name: item?.name })}
-              >
-                {item.name}
-              </div>
-            ))}
+            {selectedAction?.name?.length ? (
+              selectedAction?.name === "email" ? (
+                <EmailSelector
+                  setMetadata={(metadata: any) => handleData(metadata)}
+                />
+              ) : (
+                selectedAction?.name === "sms" && (
+                  <SolSelector
+                    setMetadata={(metadata: any) => handleData(metadata)}
+                  />
+                )
+              )
+            ) : (
+              availableItems?.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className="border p-2 w-full mt-2 rounded-lg hover:bg-slate-100 cursor-pointer"
+                  onClick={() => {
+                    if (selectedItemIndex === 1) {
+                      onSelect({ id: item?.id, name: item?.name });
+                    } else {
+                      onSelect({ id: item?.id, name: item?.name });
+                      setSelectedAction({ id: item?.id, name: item?.name });
+                    }
+                  }}
+                >
+                  {item.name}
+                </div>
+              ))
+            )}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const EmailSelector = ({ setMetadata }: any) => {
+  const [email, setEmail] = useState("");
+  const [body, setBody] = useState("");
+
+  const handleSubmit = () => {
+    setMetadata({
+      email,
+      body,
+    });
+  };
+  return (
+    <div className="flex flex-col gap-y-4 my-2">
+      <Input
+        type="text"
+        placeholder="To"
+        onChange={(e) => setEmail(e.target.value)}
+        value={email}
+      />
+      <Input
+        type="text"
+        placeholder="Body content"
+        onChange={(e) => setBody(e.target.value)}
+        value={body}
+      />
+      <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+    </div>
+  );
+};
+
+const SolSelector = ({ setMetadata }: any) => {
+  const [email, setEmail] = useState("");
+  const [amount, setAmount] = useState("");
+  const handleSubmit = () => {
+    setMetadata({
+      email,
+      amount,
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-y-2">
+      <Input
+        type="text"
+        placeholder="To"
+        onChange={(e) => setEmail(e.target.value)}
+        value={email}
+      />
+      <Input
+        type="text"
+        placeholder="amount"
+        onChange={(e) => setAmount(e.target.value)}
+        value={amount}
+      />
+      <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+    </div>
   );
 };
