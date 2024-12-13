@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { Zap } from "@/types/zap";
+import { ArrowRightToLine } from "lucide-react";
 
 const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
   return (
@@ -34,20 +35,33 @@ const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
                   >
-                    {zap.trigger.triggerType.name}
+                    <img
+                      src={zap.trigger.triggerType.image}
+                      alt=""
+                      width={48}
+                      height={48}
+                    />
                   </td>
                   <td className="px-6 py-4">
-                    {zap.actions.map(
-                      (action, index) => action.actionType.name + ", "
-                    )}
+                    <div key={index} className="flex gap-x-2 items-center">
+                      {zap.actions.map((action, index) => (
+                        <img
+                          key={index}
+                          src={action.actionType.image}
+                          alt=""
+                          width={25}
+                          height={15}
+                        />
+                      ))}
+                    </div>
                   </td>
 
                   <td className="px-6 py-4">
-                    <Link
-                      className="hover:bg-gray-300 p-2"
-                      href={`/zap/${zap.id}`}
-                    >
-                      {" > "}
+                    <Link href={`/zap/${zap.id}`}>
+                      <ArrowRightToLine
+                        size={20}
+                        className="hover:bg-gray-300"
+                      />
                     </Link>
                   </td>
                 </tr>
@@ -59,6 +73,5 @@ const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
     </div>
   );
 };
-
 
 export default ZapTable;

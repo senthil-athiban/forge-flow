@@ -1,6 +1,7 @@
-interface TriggerType {
-export   id: string;
+export interface TriggerType {
+  id: string;
   name: string;
+  image: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -17,6 +18,7 @@ export interface Trigger {
 export interface ActionType {
   id: string;
   name: string;
+  image: string;
   createdAt: string;
   updatedAt: string;
 }
