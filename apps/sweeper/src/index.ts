@@ -1,10 +1,12 @@
 import { Kafka } from 'kafkajs';
 import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
 
+dotenv.config();
 const client = new PrismaClient();
 const kafka = new Kafka({
     clientId: 'zap-app',
-    brokers: ['localhost:9092']
+    brokers: [`${process.env.KAFKA_HOST}:${process.env.KAFKA_PORT}`]
 });
 
 const producer = kafka.producer();

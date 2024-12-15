@@ -1,14 +1,11 @@
 import { Kafka } from "kafkajs";
+import dotenv from "dotenv";
 
+dotenv.config();
 const kafka = new Kafka({
   clientId: "zap-app",
-  brokers: ["localhost:9092"],
+  brokers: [`${process.env.KAFKA_HOST}:${process.env.KAFKA_PORT}`]
 });
-
-// fetch events from queue
-// and then process it
-// make acknowledgment
-// check if the offset is start from broken evnt
 
 const consumer = kafka.consumer({ groupId: "zap-app-test" });
 const processEvents = async () => {
