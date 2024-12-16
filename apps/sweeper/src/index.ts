@@ -19,9 +19,10 @@ const main = async () => {
             take: 10,
         });
 
+        if(data?.length>0) console.log(' data : ', data);
         await producer.send({
-            topic: 'zap-events',
-            messages: data?.map((item) =>  ({value: item.id}))
+            topic: process.env.TOPIC_NAME!,
+            messages: data?.map((item) =>  ({value: JSON.stringify({zapRunId: item.zapRunId, stage: 0})}))
         });
 
         await client.zapRunOutBox.deleteMany({

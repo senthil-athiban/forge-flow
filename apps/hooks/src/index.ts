@@ -12,6 +12,9 @@ const PORT = process.env.DOMAIN;
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     const userId = req.params.userId;
     const zapId = req.params.zapId;
+
+    // check user exists
+    // verify the zapId is belongs to the user
     console.log("zap id: ", zapId);
     const response = await client.$transaction(async (tx) => {
         const zapRun = await tx.zapRun.create({
