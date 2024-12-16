@@ -57,6 +57,7 @@ model Action {
   zap          Zap         @relation(fields: [zapId], references: [id])
   actionTypeId String
   actionType   ActionTypes @relation(fields: [actionTypeId], references: [id])
+  sortingOrder  Int        @default(0)
   metadata     Json        @default("{}")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt

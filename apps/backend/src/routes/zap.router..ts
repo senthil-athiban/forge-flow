@@ -21,9 +21,10 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
             data: {
                 userId: userId,
                 actions: {
-                    create: actions.map((it:any) => ({
+                    create: actions.map((it:any, index: number) => ({
                         actionTypeId: it.actionTypeId,
-                        metadata: it.actionMetaData
+                        metadata: it.actionMetaData,
+                        sortingOrder: index
                     }))
                 }
             }
