@@ -1,10 +1,22 @@
-export const processContent = (content:any, jsonContent:any) => {
-    const body = content.body;
-    const email = content.email;
+export const processContent = (type: string, content:any, jsonContent:any) => {
+    
 
-    const formatedBody = extract(body, jsonContent);
-    const formatedEmail = extract(email, jsonContent);
-    return { to: formatedEmail, content: formatedBody};
+    if(type === "email") {
+        const body = content.body;
+        const email = content.email;
+        const formatedBody = extract(body, jsonContent);
+        const formatedEmail = extract(email, jsonContent);
+        return { to: formatedEmail, content: formatedBody};
+    }
+
+    if(type === "sol") {
+        const address = content.address;
+        const amount = content.amount;
+        const formatedAddress = extract(address, jsonContent);
+        const formatedAmount = extract(amount, jsonContent);
+        return { address: formatedAddress, amount: formatedAmount};
+    }
+    
 }
 
 const extract = (sentence:any, json:any) => {

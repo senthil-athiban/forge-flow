@@ -1,7 +1,7 @@
 import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction } from "@solana/web3.js"
 import bs58 from 'bs58'
 
-// TODO: create dApp and send sol over wallet
+// TODO: create cloud walet and send sol
 export const sendSol = async (to: string, amount: any) => {
     const connection = new Connection(clusterApiUrl("devnet"));
     const address = process.env.PRIVATE_KEY!;

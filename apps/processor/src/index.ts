@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { processContent } from "./config/algo";
 import { prepareEmail } from "./config/email";
+import { sendSol } from "./config/web3";
 
 const prismaClient = new PrismaClient();
 dotenv.config();
@@ -56,19 +57,18 @@ const processEvents = async () => {
       const actions = zapRun?.zap.actions;
       const currAction = actions?.find((item) => item.sortingOrder === stage);
       const lastStage = actions?.length! - 1;
+      const hooksData = zapRun?.metadata;
+      const body = currAction?.metadata;
 
-      if(currAction?.actionType?.name === "email") {
-        const hooksData = zapRun?.metadata;
-        const body = currAction.metadata;
-        const data = processContent(body, hooksData);
-        prepareEmail(data.to, data.content)
+      if(currAction?.actionType?.name === "email") { 
+        const data = processContent("email", body, hooksData);
+        prepareEmail(data?.to, data?.content)
       }
 
       if(currAction?.actionType?.name === "sol") {
-        console.log('sending sol');
+        const data = processContent("sol", body, hooksData);
+        sendSol(data?.address, data?.amount)
       }
-
-      console.log('executing action : ', currAction?.actionType.name, ' with stage : ', stage);
       
       if (lastStage !== stage) {
         await producer.send({
