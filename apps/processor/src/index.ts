@@ -1,6 +1,8 @@
 import { Kafka } from "kafkajs";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import { processContent } from "./config/algo";
+import { prepareEmail } from "./config/email";
 
 const prismaClient = new PrismaClient();
 dotenv.config();
@@ -51,14 +53,23 @@ const processEvents = async () => {
           },
         },
       });
-
       const actions = zapRun?.zap.actions;
       const currAction = actions?.find((item) => item.sortingOrder === stage);
       const lastStage = actions?.length! - 1;
 
+      if(currAction?.actionType?.name === "email") {
+        const hooksData = zapRun?.metadata;
+        const body = currAction.metadata;
+        const data = processContent(body, hooksData);
+        prepareEmail(data.to, data.content)
+      }
+
+      if(currAction?.actionType?.name === "sol") {
+        console.log('sending sol');
+      }
 
       console.log('executing action : ', currAction?.actionType.name, ' with stage : ', stage);
-      await new Promise((r) => setTimeout(r, 5000)); // simulating an expensive operation
+      
       if (lastStage !== stage) {
         await producer.send({
           topic: process.env.TOPIC_NAME!,
