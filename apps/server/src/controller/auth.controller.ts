@@ -10,6 +10,7 @@ import { JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
 import { TokenType } from "@prisma/client";
+import passport from "passport";
 
 const register = async (req: Request, res: Response) => {
   const body = req.body;
@@ -62,20 +63,20 @@ const register = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const body = req.body;
-  const user = await authService.loginUsingEmailPassword(body);
-  const { accesstoken, refreshToken } =
-    await tokenService.generateAuthTokens(user);
-  res.cookie("jwt", refreshToken, {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-  });
-  return res.status(200).json({
-    message: {
-      accesstoken: accesstoken,
-    },
-  });
+    const user = await authService.loginUsingEmailPassword(body);
+    const { accesstoken, refreshToken } =
+      await tokenService.generateAuthTokens(user);
+    res.cookie("jwt", refreshToken, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    return res.status(200).json({
+      message: {
+        accesstoken: accesstoken,
+      },
+    });
   } catch (error) {
     if (error instanceof ApiError) {
       //@ts-ignore
@@ -166,11 +167,41 @@ const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
-const resetPassword = async(req: Request, res: Response) => {
+const resetPassword = async (req: Request, res: Response) => {
   const token = req.query.token as string;
   const password = req.body.password;
   await authService.resetPassword(token, password);
   res.status(204).send();
-}
+};
 
-export default { register, verifyEmail, login, refreshToken, forgotPassword , resetPassword};
+const googleAuth = () => {
+  passport.authenticate("google", { scope: ["email", "profile"] });
+};
+
+const googleAuthCallback = () => {
+  passport.authenticate("google", {
+    successRedirect: "/auth/google/success",
+    failureRedirect: "/auth/",
+  });
+};
+
+const githubAuth = () => {
+  passport.authenticate("github", { scope: [ 'user:email' ] });
+};
+
+const githubAuthCallback = () => {
+  passport.authenticate('github', { failureRedirect: '/login', successRedirect: '/' });
+};
+
+export default {
+  register,
+  verifyEmail,
+  login,
+  refreshToken,
+  forgotPassword,
+  resetPassword,
+  googleAuth,
+  googleAuthCallback,
+  githubAuth,
+  githubAuthCallback
+};
