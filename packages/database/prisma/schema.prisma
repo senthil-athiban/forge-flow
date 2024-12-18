@@ -13,7 +13,7 @@ model User {
   password      String
   name          String
   zaps          Zap[]
-  token         Token?
+  token         Token[]
   emailVerified Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -21,7 +21,7 @@ model User {
 
 model Token {
   id        String    @id @default(cuid())
-  userId    String    @unique
+  userId    String
   token     String    @unique
   type      TokenType
   user      User      @relation(fields: [userId], references: [id])
