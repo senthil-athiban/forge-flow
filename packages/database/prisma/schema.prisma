@@ -29,6 +29,13 @@ model Token {
   updatedAt DateTime  @updatedAt
 }
 
+enum TokenType {
+  REFRESH
+  ACCESS
+  RESET
+  VERIFY_EMAIL
+}
+
 model Zap {
   id        String   @id @default(cuid())
   trigger   Trigger?
@@ -104,9 +111,4 @@ model ZapRunOutBox {
   updatedAt DateTime @updatedAt
 }
 
-enum TokenType {
-  REFRESH
-  ACCESS
-  RESET
-  VERIFY_EMAIL
-}
+

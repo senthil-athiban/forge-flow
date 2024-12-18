@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
 import bcyprtjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { sign } from "jsonwebtoken";
 import tokenService from "../services/token.service";
 import emailService from "../services/email.service";
 import { prismaClient } from "../db";
 import { SignInSchema, SignUpSchema } from "../schema";
 import { ApiError } from "../config/error";
 import { JWT_SECRET } from "../config";
+import userService from "../services/user.service";
+import authService from "../services/auth.service";
 
 const register = async (req: Request, res: Response) => {
   const body = req.body;
-  
+
   // data validation
   const parsedData = SignUpSchema.safeParse(body);
   if (!parsedData.success) return { message: "Invalid Inputs" };
@@ -26,19 +28,15 @@ const register = async (req: Request, res: Response) => {
   if (existingUser) {
     if (!existingUser.emailVerified) {
       await tokenService.generateEmailVerificationToken(existingUser);
-      return res
-        .status(400)
-        .json({
-          message:
-            "You have already registered, but your email is not verified. A new verification email has been sent.",
-        });
-    }
-    return res
-      .status(401)
-      .json({
+      return res.status(400).json({
         message:
-          "The email address you have entered is already associated with another verified account.",
+          "You have already registered, but your email is not verified. A new verification email has been sent.",
       });
+    }
+    return res.status(401).json({
+      message:
+        "The email address you have entered is already associated with another verified account.",
+    });
   }
 
   // create new user is not exists in db
@@ -61,38 +59,21 @@ const register = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   const body = req.body;
-  const parsedData = SignInSchema.safeParse(body);
-  if (!parsedData.success) return { message: "Invalid Inputs" };
-
-  const { email, password } = parsedData.data;
-
-  const user = await prismaClient.user.findFirst({
-    where: {
-      email,
-    },
-    select: {
-      id: true,
-      email: true,
-      password: true,
+  const user = await authService.loginUsingEmailPassword(body);
+  console.log(' user : ', user);
+  const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(user);
+  res.cookie("jwt", refreshToken, {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  return res.status(200).json({
+    message: {
+      accesstoken: accesstoken,
     },
   });
-  if (!user) return res.status(404).json({ message: "No Account Exists" });
-  const confirmPassword = await bcyprtjs.compare(password, user?.password);
-  if (!confirmPassword)
-    return res.status(401).json({ message: "Invalid credentials" });
-  // sign the jwt
-
-  const token = jwt.sign(
-    {
-      userId: user.id,
-    },
-    JWT_SECRET
-  );
-
-  res.json({
-    token,
-  });
-}
+};
 
 const verifyEmail = async (req: Request, res: Response) => {
   try {

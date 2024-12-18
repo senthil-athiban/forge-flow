@@ -4,7 +4,36 @@ import { Token, TokenType, User } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "../db";
 import { ApiError } from "../config/error";
+import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET } from "../config";
 
+
+const saveToken = async (userId: string, tokenType: TokenType, token: string) => {
+  // check whether do we need multiple tokens for the same user
+  
+  const tokenExists = await prismaClient.token.findFirst({
+    where: {
+      userId,
+      type: tokenType
+    }
+  });
+  if(tokenExists) {
+    return await prismaClient.token.update({
+      where: {
+        userId,
+        type: tokenType
+      }, data: {
+        token
+      }
+    })
+  }
+  return await prismaClient.token.create({
+    data: {
+      userId: userId,
+      token,
+      type: tokenType
+    }
+  })
+}
 const generateToken = (
   userId: string,
   expires: any,
@@ -18,6 +47,21 @@ const generateToken = (
     type,
   };
   return jwt.sign(payload, config!);
+};
+
+const generateAuthTokens = async (user: any) => {
+  const accessTokenExpires = moment().add(1, 'day');
+  const accesstoken = generateToken(user.id, accessTokenExpires, TokenType.ACCESS, JWT_ACCESS_SECRET);
+
+  // edge case to solve while creating new refresh token, make sure to delete the existing token from db
+  const refreshTokenExpires = moment().add(7, 'day');
+  const refreshToken = generateToken(user.id, refreshTokenExpires, TokenType.REFRESH, JWT_REFRESH_SECRET);
+
+  await saveToken(user.id, TokenType.REFRESH, refreshToken);
+
+  return {
+    accesstoken, refreshToken
+  }
 };
 
 const verifyToken = async (
@@ -74,4 +118,4 @@ const generateEmailVerificationToken = async (user: User) => {
   emailService.sendVerificationEmail(user.email, token);
 };
 
-export default { generateEmailVerificationToken, generateToken, verifyToken };
+export default { generateEmailVerificationToken, generateToken, verifyToken, generateAuthTokens, saveToken };

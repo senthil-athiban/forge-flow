@@ -18,3 +18,5 @@ export const zapSchema = z.object({
         actionMetaData: z.any()
     }))
 });
+
+export type SignIntype = z.infer<typeof SignInSchema>
