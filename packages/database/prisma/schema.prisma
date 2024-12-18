@@ -8,13 +8,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  zaps      Zap[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String
+  zaps          Zap[]
+  token         Token?
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Token {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  token     String    @unique
+  type      TokenType
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Zap {
@@ -22,7 +34,7 @@ model Zap {
   trigger   Trigger?
   actions   Action[]
   zapRun    ZapRun[]
-  userId    String    
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,7 +69,7 @@ model Action {
   zap          Zap         @relation(fields: [zapId], references: [id])
   actionTypeId String
   actionType   ActionTypes @relation(fields: [actionTypeId], references: [id])
-  sortingOrder  Int        @default(0)
+  sortingOrder Int         @default(0)
   metadata     Json        @default("{}")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -69,7 +81,7 @@ model ActionTypes {
   id        String   @id @default(cuid())
   name      String
   action    Action[]
-  image     String    @default("")
+  image     String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -80,14 +92,21 @@ model ZapRun {
   zap          Zap           @relation(fields: [zapId], references: [id])
   metadata     Json
   zapRunOutBox ZapRunOutBox?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model ZapRunOutBox {
+  id        String   @id @default(cuid())
+  zapRunId  String   @unique
+  zapRun    ZapRun   @relation(fields: [zapRunId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ZapRunOutBox {
-  id       String @id @default(cuid())
-  zapRunId String @unique
-  zapRun   ZapRun @relation(fields: [zapRunId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum TokenType {
+  REFRESH
+  ACCESS
+  RESET
+  VERIFY_EMAIL
 }
