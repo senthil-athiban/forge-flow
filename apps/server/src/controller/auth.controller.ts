@@ -6,9 +6,10 @@ import emailService from "../services/email.service";
 import { prismaClient } from "../db";
 import { SignInSchema, SignUpSchema } from "../schema";
 import { ApiError } from "../config/error";
-import { JWT_SECRET } from "../config";
+import { JWT_REFRESH_SECRET, JWT_SECRET } from "../config";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
+import { TokenType } from "@prisma/client";
 
 const register = async (req: Request, res: Response) => {
   const body = req.body;
@@ -60,8 +61,8 @@ const register = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   const body = req.body;
   const user = await authService.loginUsingEmailPassword(body);
-  console.log(' user : ', user);
-  const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(user);
+  const { accesstoken, refreshToken } =
+    await tokenService.generateAuthTokens(user);
   res.cookie("jwt", refreshToken, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
@@ -89,4 +90,46 @@ const verifyEmail = async (req: Request, res: Response) => {
   }
 };
 
-export default { register, verifyEmail, login };
+const refreshToken = async (req: Request, res: Response) => {
+  try {
+    //@ts-ignore
+    const token = req.cookies.jwt;
+    
+    const verifiedToken = await tokenService.verifyToken(
+      token,
+      TokenType.REFRESH,
+      JWT_REFRESH_SECRET
+    );
+    const user = await userService.getUser({
+      where: { id: verifiedToken.userId },
+      select: { id: true, email: true, name: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "No user found" });
+    }
+    const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(
+      user
+    );
+  
+    res.cookie("jwt", refreshToken, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    return res.status(201).json({
+      message: {
+        accesstoken: accesstoken,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      //@ts-ignore
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    return res.status(500).json({ error: "Internal error" });
+  }
+};
+
+export default { register, verifyEmail, login, refreshToken };

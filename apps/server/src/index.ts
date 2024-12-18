@@ -6,12 +6,14 @@ import { triggerRouter } from "./routes/trigger.router";
 import { actionRouter } from "./routes/action.router";
 import dotenv from "dotenv";
 import { authRouter } from "./routes/auth.router";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+//@ts-ignore
+app.use(cookieParser());
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);

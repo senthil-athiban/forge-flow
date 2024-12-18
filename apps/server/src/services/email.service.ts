@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import tokenService from "./token.service";
-import { Token, TokenType, User } from "@prisma/client";
+import { TokenType } from "@prisma/client";
 import { prismaClient } from "../db";
 import { ApiError } from "../config/error";
 
