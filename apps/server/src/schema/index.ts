@@ -19,4 +19,8 @@ export const zapSchema = z.object({
     }))
 });
 
+export const forgotPasswordSchema = z.object({
+    email: z.string()
+})
+
 export type SignIntype = z.infer<typeof SignInSchema>

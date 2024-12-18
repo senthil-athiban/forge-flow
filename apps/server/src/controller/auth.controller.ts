@@ -4,9 +4,9 @@ import jwt, { sign } from "jsonwebtoken";
 import tokenService from "../services/token.service";
 import emailService from "../services/email.service";
 import { prismaClient } from "../db";
-import { SignInSchema, SignUpSchema } from "../schema";
+import { forgotPasswordSchema, SignInSchema, SignUpSchema } from "../schema";
 import { ApiError } from "../config/error";
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../config";
+import { JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
 import { TokenType } from "@prisma/client";
@@ -16,7 +16,8 @@ const register = async (req: Request, res: Response) => {
 
   // data validation
   const parsedData = SignUpSchema.safeParse(body);
-  if (!parsedData.success) return { message: "Invalid Inputs" };
+  if (!parsedData.success)
+    return res.status(400).json({ error: "Invalid Inputs" });
   const { email, password, name } = parsedData.data;
 
   // check if user exists
@@ -59,7 +60,8 @@ const register = async (req: Request, res: Response) => {
 };
 
 const login = async (req: Request, res: Response) => {
-  const body = req.body;
+  try {
+    const body = req.body;
   const user = await authService.loginUsingEmailPassword(body);
   const { accesstoken, refreshToken } =
     await tokenService.generateAuthTokens(user);
@@ -74,6 +76,12 @@ const login = async (req: Request, res: Response) => {
       accesstoken: accesstoken,
     },
   });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      //@ts-ignore
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+  }
 };
 
 const verifyEmail = async (req: Request, res: Response) => {
@@ -94,7 +102,7 @@ const refreshToken = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
     const token = req.cookies.jwt;
-    
+
     const verifiedToken = await tokenService.verifyToken(
       token,
       TokenType.REFRESH,
@@ -108,10 +116,9 @@ const refreshToken = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({ message: "No user found" });
     }
-    const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(
-      user
-    );
-  
+    const { accesstoken, refreshToken } =
+      await tokenService.generateAuthTokens(user);
+
     res.cookie("jwt", refreshToken, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
@@ -132,4 +139,38 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
-export default { register, verifyEmail, login, refreshToken };
+const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const body = req.body;
+    const parsedData = forgotPasswordSchema.safeParse(body);
+    const user = await userService.getUser({
+      where: { email: parsedData.data?.email },
+      select: { id: true, email: true },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (!parsedData.success) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+    await tokenService.generateResetPasswordToken(user);
+    return res
+      .status(201)
+      .json({ message: "An email has been sent to reset your password" });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      //@ts-ignore
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    return res.status(500).json({ error: "Internal error" });
+  }
+};
+
+const resetPassword = async(req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const password = req.body.password;
+  await authService.resetPassword(token, password);
+  res.status(204).send();
+}
+
+export default { register, verifyEmail, login, refreshToken, forgotPassword , resetPassword};

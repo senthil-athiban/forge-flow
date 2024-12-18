@@ -11,6 +11,12 @@ interface UserQueryParams {
   };
 }
 
+interface UserQueryUpdate {
+  email?: string;
+  password?: string;
+  emailVerified?: boolean;
+}
+
 const getUser = async (params: UserQueryParams) => {
   try {
     return await prismaClient.user.findFirst({
@@ -18,8 +24,19 @@ const getUser = async (params: UserQueryParams) => {
       select: params.select,
     });
   } catch (error) {
-    throw new Error("Erro in finding user");
+    throw new Error("Error in fetching user");
   }
 };
 
-export default { getUser };
+const updateUserById = async (userId: string, contentToUpdate: UserQueryUpdate) => {
+  try {
+    return await prismaClient.user.update({
+      where: {
+        id: userId
+      }, data: contentToUpdate
+    })
+  } catch (error) {
+    throw new Error("Error in updating user");
+  }
+}
+export default { getUser, updateUserById};

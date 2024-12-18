@@ -1,11 +1,14 @@
 import { ApiError } from "../config/error";
 import { SignInSchema, SignIntype } from "../schema";
+import tokenService from "./token.service";
 import userService from "./user.service";
 import bcryptjs from "bcryptjs";
+import { TokenType } from "@prisma/client";
+import { prismaClient } from "../db";
 
 const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);
-  if (!parsedData.success) return { message: "Invalid Inputs" };
+  if (!parsedData.success) throw new ApiError(401, "Invalid credentials");
   const { email, password } = parsedData.data;
 
   // todo refactor this
@@ -27,4 +30,28 @@ const loginUsingEmailPassword = async (body: SignIntype) => {
   return user;
 };
 
-export default {loginUsingEmailPassword}
+const resetPassword = async (token: string, newPassword: string) => {
+  try {
+    const verifiedToken = await tokenService.verifyToken(
+      token,
+      TokenType.RESET
+    );
+    const user = await userService.getUser({
+      where: { id: verifiedToken.userId },
+      select: { id: true, email: true },
+    });
+    if (!user) throw new ApiError(404, "User not exists");
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    await userService.updateUserById(user.id, { password: hashedPassword });
+    await prismaClient.token.deleteMany({
+      where: {
+        userId: user.id,
+        type: TokenType.RESET,
+      },
+    });
+  } catch (error) {
+    throw new ApiError(401, "Un-authorized");
+  }
+};
+
+export default { loginUsingEmailPassword, resetPassword };

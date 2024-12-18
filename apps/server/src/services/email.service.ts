@@ -4,7 +4,7 @@ import tokenService from "./token.service";
 import { TokenType } from "@prisma/client";
 import { prismaClient } from "../db";
 import { ApiError } from "../config/error";
-
+import { DOMAIN } from "../config/config";
 dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -68,8 +68,17 @@ const sendVerificationEmail = async (to: string, token: string) => {
   await sendEmail(to, subject, text);
 };
 
+const sendResetPasswordEmail = async (to: string, token: string) => {
+  const subject = "Reset password";
+  const verificationEmailUrl = `http://${DOMAIN}/reset-password?token=${token}`;
+  const text = `Dear user,
+  To reset your password, click on this link: ${verificationEmailUrl}`;
+  await sendEmail(to, subject, text);
+}
+
 export default {
   sendEmail,
   sendVerificationEmail,
+  sendResetPasswordEmail,
   verifyEmail,
 };
