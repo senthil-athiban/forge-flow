@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlware";
 import dotenv from "dotenv";
 const router = Router();
 
-router.get("/", authMiddleware, async (req: Request, res: Response) => {
+router.get("/verify", authMiddleware, async (req: Request, res: Response) => {
   // @ts-ignore
   const userId = req.userId;
   const user = await prismaClient.user.findFirst({

@@ -9,9 +9,9 @@ import { authRouter } from "./routes/auth.router";
 import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
-
+console.log(process.env.CLIENT_URL);
 app.use(express.json());
-app.use(cors());
+app.use(cors({origin: [process.env.CLIENT_URL!, "*"], credentials: true}));
 //@ts-ignore
 app.use(cookieParser());
 

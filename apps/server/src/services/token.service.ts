@@ -44,7 +44,7 @@ const generateToken = (
 };
 
 const generateAuthTokens = async (user: any) => {
-  const accessTokenExpires = moment().add(1, "day");
+  const accessTokenExpires = moment().add(1, "minute");
   const accesstoken = generateToken(
     user.id,
     accessTokenExpires,
@@ -77,7 +77,6 @@ const verifyToken = async (
   try {
     const payload = jwt.verify(token, secret);
     const userId = payload.sub as string;
-
     const tokenDoc = await prismaClient.token.findFirst({
       where: {
         token,
@@ -85,7 +84,7 @@ const verifyToken = async (
         userId,
       },
     });
-
+    console.log(' tokenDoc : ', tokenDoc);
     if (!tokenDoc) {
       throw new ApiError(404, "Token not found");
     }

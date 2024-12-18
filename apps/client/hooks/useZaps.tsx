@@ -1,24 +1,21 @@
 import { BACKEND_URL } from '@/app/config';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import useAxios from './useAxios';
 
 const useZaps = () => {
     const [isLoading, setisLoading] = useState(false);
     const [data, setdata] = useState([]);
-    console.log("data: ", data);
+    const axiosInstance = useAxios();
     useEffect(() => {
         setisLoading(true);
         async function fetchData() {
-            const res = await axios.get(`${BACKEND_URL}/api/v1/zap`, {
-                headers: {
-                    Authorization: localStorage.getItem("token")
-                }
-            });
+            const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/zap`);
             setdata(res.data.zap);
             setisLoading(false);
         }
         fetchData();
-    }, []);
+    }, [axiosInstance]);
   return {
     isLoading, data
   }

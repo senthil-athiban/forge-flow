@@ -7,9 +7,9 @@ import Facebook from "../Provider/Facebook";
 import Microsoft from "../Provider/Microsoft";
 import PrimaryButton from "../Button/PrimaryButton";
 import Link from "next/link";
-import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
 import { useRouter } from "next/navigation";
+import axios from "@/lib/axios";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -53,11 +53,14 @@ const LoginCard = () => {
       <div className="flex justify-center">
         <PrimaryButton
           onClick={async () => {
-            const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
+            const res = await axios.post(`/api/v1/auth/signin`, {
               email: email,
               password: password,
             });
-            localStorage.setItem("token", res.data.token);
+            console.log(' res: ', res);
+            const accessToken = res.data.message.accesstoken;
+            console.log(' accessToken : ', accessToken);
+            localStorage.setItem('token', accessToken);
             router.push("/dashboard");
           }}
           size="lg"
