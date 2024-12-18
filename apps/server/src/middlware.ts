@@ -7,11 +7,9 @@ import { ApiError } from "./config/error";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization as string;
-    console.log(' token : ', token);
     try {
         const payload = jwt.verify(token, JWT_ACCESS_SECRET);
         // const payload = await tokenService.verifyToken(token, TokenType.ACCESS, JWT_ACCESS_SECRET);
-        console.log(' payload : ', payload);
          // @ts-ignore
         req.userId = payload.userId;
         next();

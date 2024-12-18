@@ -44,7 +44,7 @@ const generateToken = (
 };
 
 const generateAuthTokens = async (user: any) => {
-  const accessTokenExpires = moment().add(1, "minute");
+  const accessTokenExpires = moment().add(1, "day");
   const accesstoken = generateToken(
     user.id,
     accessTokenExpires,
@@ -53,7 +53,7 @@ const generateAuthTokens = async (user: any) => {
   );
 
   // edge case to solve while creating new refresh token, make sure to delete the existing token from db
-  const refreshTokenExpires = moment().add(7, "day");
+  const refreshTokenExpires = moment().add(7, "days");
   const refreshToken = generateToken(
     user.id,
     refreshTokenExpires,
@@ -84,14 +84,13 @@ const verifyToken = async (
         userId,
       },
     });
-    console.log(' tokenDoc : ', tokenDoc);
     if (!tokenDoc) {
       throw new ApiError(404, "Token not found");
     }
     return tokenDoc;
   } catch (error: any) {
     if (error.name === "TokenExpiredError") {
-      throw new ApiError(401, "Token expired");
+      throw new ApiError(403, "Token expired");
     }
     throw new ApiError(401, "Invalid token");
   }

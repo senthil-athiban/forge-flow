@@ -17,7 +17,6 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     const body = req.body;
     // check user exists
     // verify the zapId is belongs to the user
-    console.log("zap id: ", zapId);
     const response = await client.$transaction(async (tx) => {
         const zapRun = await tx.zapRun.create({
             data: {

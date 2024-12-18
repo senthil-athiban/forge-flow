@@ -10,7 +10,6 @@ router.get("/", authMiddleware,  async  (req: Request, res: Response) => {
         const response = await prismaClient.actionTypes.findMany({});
         return res.status(200).json({results: response});
     } catch (error) {
-        console.log('[ERROR IN QUERYING TRIGGER TYPES]', error);
         return res.status(500).json({error: error});
     }
 })

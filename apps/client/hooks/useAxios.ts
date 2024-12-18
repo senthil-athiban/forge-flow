@@ -1,10 +1,12 @@
+"use client";
 import { useEffect } from "react";
 import { useRefreshToken } from "./useRefreshToken"
 import { axiosInstance } from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 const useAxios = () => {
     const generateRefreshToken = useRefreshToken();
-
+    const router = useRouter();
     useEffect(() => {
         const requestInterceptor = axiosInstance.interceptors.request.use(
             (config) => {
@@ -22,13 +24,24 @@ const useAxios = () => {
                 const prevRequest = error?.config;
                 if(error.response?.status === 401 && !prevRequest.sent) {
                     prevRequest.sent = true;
-                    const response = await generateRefreshToken();
-                    //@ts-ignore
-                    const newAccessToken = response?.message?.accesstoken;
-                    localStorage.setItem('token', newAccessToken);
-                    prevRequest.headers["Authorization"] = `${newAccessToken}`;
-                    return axiosInstance(prevRequest);
+                    try {
+                        const response = await generateRefreshToken();
+                        //@ts-ignore
+                        const newAccessToken = response?.message?.accesstoken;
+                        localStorage.setItem("token", newAccessToken);
+                        prevRequest.headers["Authorization"] = `${newAccessToken}`;
+                        return axiosInstance(prevRequest);
+                    } catch (error) {
+                        // Refresh token expired or invalid
+                        //@ts-ignore
+                        if (error.response?.status === 403) {
+                            localStorage.removeItem("token");
+                            router.push("/login");
+                        }
+                        return Promise.reject(error);
+                    }
                 }
+                return Promise.reject(error);
             }
         )
 

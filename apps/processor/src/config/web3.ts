@@ -14,5 +14,4 @@ export const sendSol = async (to: string, amount: any) => {
         })
     )
     await sendAndConfirmTransaction(connection, transaction, [keypair]);
-    console.log('loggin transaction : ', transaction);
 }
