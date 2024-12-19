@@ -9,8 +9,9 @@ router.post("/verify-email", authController.verifyEmail);
 router.get("/refresh-token", authController.refreshToken);
 router.post("/forgot-password", authController.forgotPassword);
 router.get("/reset-password", authController.resetPassword);
-router.get("/google", authController.googleAuth);
-router.get("/google/callback", authController.googleAuthCallback);
+// router.get("/google", authController.googleAuth);
+// router.get("/google/callback", authController.googleAuthCallback);
+
 router.get("/github", authController.githubAuth);
 router.get("/github/callback", authController.githubAuthCallback);
 

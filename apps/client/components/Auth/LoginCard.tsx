@@ -10,14 +10,20 @@ import Link from "next/link";
 import { BACKEND_URL } from "@/app/config";
 import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
+import useAxios from "@/hooks/useAxios";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const axiosInstance = useAxios();
+  const handleGoogleAuth = async () => {
+    // const res = await axiosInstance.get("/api/v1/auth/google");
+    const res = window.open("http://localhost:8000/google-login", "_self");
+  }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
-      <ProviderButton className="bg-sky-600" icon={<Google />}>
+      <ProviderButton className="bg-sky-600" icon={<Google />} onClick={handleGoogleAuth}>
         Continue with google
       </ProviderButton>
       <ProviderButton className="bg-blue-600" icon={<Facebook />}>

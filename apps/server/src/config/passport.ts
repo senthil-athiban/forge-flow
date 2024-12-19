@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { DOMAIN, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from './config';
-var GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
-var GitHubStrategy = require( 'passport-github2' ).Strategy;
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const GitHubStrategy = require("passport-github2").Strategy;
 
 passport.use(new GoogleStrategy({
     clientID:     GOOGLE_CLIENT_ID,
