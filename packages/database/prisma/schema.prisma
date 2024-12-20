@@ -10,14 +10,17 @@ datasource db {
 model User {
   id            String         @id @default(cuid())
   email         String         @unique
-  password      String
+  password      String?
   name          String
+  image         String?
   zaps          Zap[]
   token         Token[]
   OAuth         OAuthAccount[]
   emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  @@index([id, email])
 }
 
 model OAuthAccount {
@@ -25,11 +28,13 @@ model OAuthAccount {
   userId         String
   provider       String
   providerUserId String
-  refreshToken   String
-  accessToken    String
+  refreshToken   String?
+  accessToken    String?
   user           User     @relation(fields: [userId], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@unique([provider, providerUserId])
 }
 
 model Token {
