@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ProviderButton from "../Button/ProviderButton";
 import Google from "../Provider/Google";
 import Facebook from "../Provider/Facebook";
-import Microsoft from "../Provider/Microsoft";
+import Github from "../Provider/Github";
 import PrimaryButton from "../Button/PrimaryButton";
 import Link from "next/link";
 import { BACKEND_URL } from "@/app/config";
@@ -18,8 +18,10 @@ const LoginCard = () => {
   const router = useRouter();
   const axiosInstance = useAxios();
   const handleGoogleAuth = async () => {
-    // const res = await axiosInstance.get("/api/v1/auth/google");
-    const res = window.open("http://localhost:8000/google-login", "_self");
+    const res = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
+  }
+  const handleGithubAuth = async () => {
+    const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
   }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
@@ -27,10 +29,10 @@ const LoginCard = () => {
         Continue with google
       </ProviderButton>
       <ProviderButton className="bg-blue-600" icon={<Facebook />}>
-        Continue with Facebook
+        Continue with facebook
       </ProviderButton>
-      <ProviderButton className="bg-slate-900" icon={<Microsoft />}>
-        Continue with Microsoft
+      <ProviderButton className="bg-slate-900" icon={<Github />} onClick={handleGithubAuth}>
+        Continue with github
       </ProviderButton>
       <div className="flex justify-center items-center my-4">
         <div className="border-t border-gray-300 flex-grow mr-3"></div>
@@ -63,9 +65,7 @@ const LoginCard = () => {
               email: email,
               password: password,
             });
-            console.log(' res: ', res);
             const accessToken = res.data.message.accesstoken;
-            console.log(' accessToken : ', accessToken);
             localStorage.setItem('token', accessToken);
             router.push("/dashboard");
           }}
