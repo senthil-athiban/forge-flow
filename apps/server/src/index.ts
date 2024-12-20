@@ -35,7 +35,11 @@ app.use(passport.session());
 app.use(passport.initialize());
 
 //@ts-ignore
-app.use(session({ secret: process.env.SESSION_SECRET!, resave: true, saveUninitialized: true }));
+app.use(session({ secret: process.env.SESSION_SECRET!, resave: true, saveUninitialized: true, cookie: {
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
+} }));
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);

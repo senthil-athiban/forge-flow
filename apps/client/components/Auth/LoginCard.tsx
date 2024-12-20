@@ -18,7 +18,9 @@ const LoginCard = () => {
   const router = useRouter();
   const axiosInstance = useAxios();
   const handleGoogleAuth = async () => {
-    const res = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
+    const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
+    //@ts-ignore
+    if(response?.message) router.push('/dashboard');
   }
   const handleGithubAuth = async () => {
     const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
