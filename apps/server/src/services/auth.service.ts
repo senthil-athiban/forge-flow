@@ -10,7 +10,7 @@ const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);
   if (!parsedData.success) throw new ApiError(401, "Invalid credentials");
   const { email, password } = parsedData.data;
-
+  console.log({ email, password });
   // todo refactor this
   const user = await userService.getUser({
     where: { email },
@@ -21,10 +21,11 @@ const loginUsingEmailPassword = async (body: SignIntype) => {
       emailVerified: true,
     },
   });
+
   if (!user) {
     throw new ApiError(404, "No Account Exists");
   }
-  const confirmPassword = await bcryptjs.compare(password, user?.password);
+  const confirmPassword = await bcryptjs.compare(password, user?.password!);
   if (!confirmPassword) throw new ApiError(401, "Invalid credentials");
   if (!user.emailVerified) throw new ApiError(401, "Email not verified");
   return user;

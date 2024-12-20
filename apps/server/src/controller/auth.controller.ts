@@ -11,6 +11,7 @@ import userService from "../services/user.service";
 import authService from "../services/auth.service";
 import { TokenType } from "@prisma/client";
 import passport from "passport";
+import "../config/passport";
 
 const register = async (req: Request, res: Response) => {
   const body = req.body;
@@ -64,6 +65,7 @@ const login = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const user = await authService.loginUsingEmailPassword(body);
+    console.log("user : ", user);
     const { accesstoken, refreshToken } =
       await tokenService.generateAuthTokens(user);
     res.cookie("jwt", refreshToken, {
@@ -174,23 +176,59 @@ const resetPassword = async (req: Request, res: Response) => {
   res.status(204).send();
 };
 
-const googleAuth = () => {
-  passport.authenticate("google", { scope: ["email", "profile"] });
-};
+const googleAuth = passport.authenticate("google", {
+  scope: ["email", "profile"],
+});
 
-const googleAuthCallback = () => {
-  passport.authenticate("google", {
-    successRedirect: "/auth/google/success",
-    failureRedirect: "/auth/",
+const googleAuthCallback = passport.authenticate("google", {
+  successRedirect: "/api/v1/auth/google/success",
+  failureRedirect: "/api/v1/auth/google/failure",
+});
+
+const googleAuthSuccess = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({
+      message: "Unauthorized access",
+    });
+  }
+
+  return res.status(200).json({
+    message: "Authentication successful",
+    user: req.user,
   });
 };
 
-const githubAuth = () => {
-  passport.authenticate("github", { scope: [ 'user:email' ] });
+const googleAuthFailure = async (req: Request, res: Response) => {
+  return res.status(401).json({
+    message: "Authentication failed",
+  });
 };
 
-const githubAuthCallback = () => {
-  passport.authenticate('github', { failureRedirect: '/login', successRedirect: '/' });
+const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
+
+const githubAuthCallback = passport.authenticate("github", {
+  failureRedirect: "/api/v1/auth/github/failure",
+  successRedirect: "/api/v1/auth/github/success",
+});
+
+const githubAuthSuccess = async (req: Request, res: Response) => {
+  console.log('req.user', req.user);
+  if (!req.user) {
+    return res.status(401).json({
+      message: "Unauthorized access",
+    });
+  }
+
+  return res.status(200).json({
+    message: "Authentication successful",
+    user: req.user,
+  });
+};
+
+const githubAuthFailure = async (req: Request, res: Response) => {
+  return res.status(401).json({
+    message: "Authentication failed",
+  });
 };
 
 export default {
@@ -203,5 +241,9 @@ export default {
   googleAuth,
   googleAuthCallback,
   githubAuth,
-  githubAuthCallback
+  githubAuthCallback,
+  googleAuthFailure,
+  googleAuthSuccess,
+  githubAuthSuccess,
+  githubAuthFailure
 };
