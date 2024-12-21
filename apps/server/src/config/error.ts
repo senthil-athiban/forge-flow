@@ -1,7 +1,19 @@
-//@ts-nocheck
-class ApiError extends Error {
+interface IApiError {
+  statusCode: number;
+  message: string;
+  data: any | null;
+  success: boolean;
+  errors: string[];
+  stack?: string;
+}
+
+class ApiError extends Error implements IApiError {
+  statusCode: number;
+  data: any | null;
+  success: boolean;
+  errors: string[];
   constructor(
-    statusCode,
+    statusCode = 500,
     message = "Something Went Wrong!",
     errors = [],
     stack = ""

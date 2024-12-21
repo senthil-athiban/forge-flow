@@ -1,6 +1,5 @@
-export const tokenTypes = {
-    REFRESH: 'refresh',
-    ACCESS: 'access',
-    RESET_PASSWORD: 'resetPassowrd',
-    EMAIL_VERIFY: 'verifyEmail'
+export enum AuthErrorType {
+  JWT_INVALID = 'JWT_INVALID',
+  OAUTH_INVALID = 'OAUTH_INVALID',
+  NO_TOKEN = 'NO_TOKEN'
 }

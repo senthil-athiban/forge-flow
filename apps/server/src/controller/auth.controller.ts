@@ -191,17 +191,11 @@ const googleAuthSuccess = async (req: Request, res: Response) => {
       message: "Unauthorized access",
     });
   }
-
-  return res.status(200).json({
-    message: "Authentication successful",
-    user: req.user,
-  });
+  return res.redirect(`${process.env.CLIENT_URL}/dashboard`);
 };
 
 const googleAuthFailure = async (req: Request, res: Response) => {
-  return res.status(401).json({
-    message: "Authentication failed",
-  });
+  return res.redirect(`${process.env.CLIENT_URL}/login`);
 };
 
 const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
@@ -212,23 +206,17 @@ const githubAuthCallback = passport.authenticate("github", {
 });
 
 const githubAuthSuccess = async (req: Request, res: Response) => {
-  console.log('req.user', req.user);
   if (!req.user) {
     return res.status(401).json({
       message: "Unauthorized access",
     });
   }
 
-  return res.status(200).json({
-    message: "Authentication successful",
-    user: req.user,
-  });
+  return res.redirect(`${process.env.CLIENT_URL}/dashboard`);
 };
 
 const githubAuthFailure = async (req: Request, res: Response) => {
-  return res.status(401).json({
-    message: "Authentication failed",
-  });
+  return res.redirect(`${process.env.CLIENT_URL}/login`);
 };
 
 export default {
