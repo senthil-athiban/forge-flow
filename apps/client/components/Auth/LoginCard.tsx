@@ -19,6 +19,7 @@ const LoginCard = () => {
   const axiosInstance = useAxios();
   const handleGoogleAuth = async () => {
     const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
+    // const response = await fetch(`${BACKEND_URL}/api/v1/auth/google`);
     //@ts-ignore
     if(response?.message) router.push('/dashboard');
   }
