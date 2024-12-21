@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_ACCESS_SECRET } from "@/config/config";
-import { ApiError } from "@/config/error";
-import { AuthErrorType } from "@/config/tokenTypes";
+import { JWT_ACCESS_SECRET } from "./config/config";
+import { ApiError } from "./config/error";
+import { AuthErrorType } from "./config/tokenTypes";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,6 +21,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         // Verify JWT
         const payload = jwt.verify(token, JWT_ACCESS_SECRET) as { userId: string };
         
+        //@ts-ignore
         req.userId = payload.userId;
         next();
     } catch (error) {

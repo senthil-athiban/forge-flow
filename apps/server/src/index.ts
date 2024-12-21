@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -5,12 +6,12 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import cookieSession from "cookie-session";
 import session from 'express-session';
-import { userRouter } from "@/routes/user";
-import { zapRouter } from "@/routes/zap.router.";
-import { triggerRouter } from "@/routes/trigger.router";
-import { actionRouter } from "@/routes/action.router";
-import { authRouter } from "@/routes/auth.router";
-import "@/config/passport";
+import { userRouter } from "./routes/user";
+import { zapRouter } from "./routes/zap.router.";
+import { triggerRouter } from "./routes/trigger.router";
+import { actionRouter } from "./routes/action.router";
+import { authRouter } from "./routes/auth.router";
+import "./config/passport";
 import { CLIENT_URL, SESSION_SECRET } from "./config/config";
 
 dotenv.config();

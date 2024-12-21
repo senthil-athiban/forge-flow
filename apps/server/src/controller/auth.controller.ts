@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import bcyprtjs from "bcryptjs";
-import jwt, { sign } from "jsonwebtoken";
 import tokenService from "../services/token.service";
 import emailService from "../services/email.service";
 import { prismaClient } from "../db";
-import { forgotPasswordSchema, SignInSchema, SignUpSchema } from "../schema";
+import { forgotPasswordSchema, SignUpSchema } from "../schema";
 import { ApiError } from "../config/error";
-import { JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
+import { JWT_REFRESH_SECRET } from "../config/config";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
 import { TokenType } from "@prisma/client";
@@ -65,7 +64,6 @@ const login = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const user = await authService.loginUsingEmailPassword(body);
-    console.log("user : ", user);
     const { accesstoken, refreshToken } =
       await tokenService.generateAuthTokens(user);
     res.cookie("jwt", refreshToken, {

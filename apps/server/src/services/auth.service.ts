@@ -10,7 +10,6 @@ const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);
   if (!parsedData.success) throw new ApiError(401, "Invalid credentials");
   const { email, password } = parsedData.data;
-  console.log({ email, password });
   // todo refactor this
   const user = await userService.getUser({
     where: { email },
