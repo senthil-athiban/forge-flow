@@ -1,15 +1,13 @@
 import { Admin, Consumer, EachMessagePayload, Kafka, Producer } from "kafkajs";
-import {
-  kafkaConfig,
-  topicCreateAdminConfig,
-} from "../config/kafka.config";
+import { kafkaConfig, topicCreateAdminConfig } from "../config/kafka.config";
 import {
   KafkaConsumerConfig,
   KafkaTopicConfig,
   ProducerMessage,
 } from "../types/kafka";
+import EventEmitter from "events";
 
-class KafkaService {
+class KafkaService extends EventEmitter {
   private static instance: KafkaService;
   private isConnected: boolean;
   private isInitialized: boolean;
@@ -24,7 +22,8 @@ class KafkaService {
   private readonly MAX_RECONNECT_ATTEMPTS = 3;
   private readonly RECONNECT_INTERVAL = 5000;
   private readonly MESSAGE_BATCH_SIZE = 100;
-  constructor() {
+  private constructor() {
+    super();
     this.kafka = new Kafka({
       clientId: kafkaConfig.clientId,
       brokers: kafkaConfig.brokers,
@@ -37,6 +36,9 @@ class KafkaService {
     this.producer = this.kafka.producer();
     this.consumers = new Map();
     this.reconnectAttempts = 0;
+
+    // Setup event handlers
+    this.setupEventHandlers();
   }
 
   public static getInstance(): KafkaService {
@@ -44,6 +46,43 @@ class KafkaService {
       this.instance = new KafkaService();
     }
     return this.instance;
+  }
+
+  private setupEventHandlers(): void {
+    this.producer.on("producer.connect", () => {
+      console.info("Producer connected to Kafka");
+      this.emit("producer.connected");
+    });
+
+    this.producer.on("producer.disconnect", () => {
+      console.warn("Producer disconnected from Kafka");
+      this.emit("producer.disconnected");
+    });
+
+    ["SIGTERM", "SIGINT", "SIGUSR2"].forEach((signal) => {
+      process.on(signal, async () => {
+        console.info(`Received ${signal}. Starting graceful shutdown...`);
+        try {
+          await this.shutdown();
+          process.exit(0);
+        } catch (error) {
+          console.error("Error during shutdown:", error);
+          process.exit(1);
+        }
+      });
+    });
+
+    process.on("uncaughtException", async (error) => {
+      console.error("Uncaught Exception:", error);
+      await this.shutdown();
+      process.exit(1);
+    });
+
+    process.on("unhandledRejection", async (reason, promise) => {
+      console.error("Unhandled Rejection:", reason);
+      await this.shutdown();
+      process.exit(1);
+    });
   }
 
   public async start() {
@@ -117,7 +156,6 @@ class KafkaService {
   }
 
   public async produceMessage(producerMessage: ProducerMessage) {
-
     if (!this.isInitialized) {
       throw new Error("Kafka is not initialized");
     }
@@ -128,7 +166,6 @@ class KafkaService {
     }
 
     try {
-        
       this.messageQueue.push(producerMessage);
 
       // process the messageQueue immediately if the queue is length exceeds the batch size
@@ -255,6 +292,5 @@ class KafkaService {
     }
   }
 }
-
 
 export default KafkaService;
