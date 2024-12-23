@@ -1,14 +1,36 @@
-# Turborepo starter
+# Zapier Workflow
 
-This is an official starter Turborepo.
+This project is designed to automate your tasks using a custom workflow similar to Zapier. It leverages modern web technologies to provide a seamless experience for creating and managing automated workflows.
 
-## Using this example
+## Getting Started
 
-Run the following command:
+First, run the development server:
 
-```sh
-npx create-turbo@latest
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
+
+# Tech Stack
+- Next.js: For the client-side application.
+- Node.js + Express.js: For the server-side application.
+- Kafka: For event streaming.
+- Webhooks: For real-time notifications and integrations.
+- Prisma ORM: For database management and queries.
+- PostgreSQL: As the relational database.
+
+PORT
+# Ports
+Client: http://localhost:3000
+Backend: http://localhost:8000
+Hooks: http://localhost:8080
+Kafka: http://localhost:9092
+DB: 5432
 
 ## What's inside?
 
@@ -17,20 +39,13 @@ This Turborepo includes the following packages/apps:
 ### Apps and Packages
 
 - `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
+- `client`: another [Next.js](http://localhost:3000.org/) app
+- `server`: a [Node.js](http://localhost:8000.org/) app
+- `hooks`: another [Node.js](http://localhost:8080.org/) app
+- `Sweeper`: another [Next.js](http://localhost:9092.org/) app
 - `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
 
 ### Build
 
@@ -38,7 +53,7 @@ To build all apps and packages, run the following command:
 
 ```
 cd my-turborepo
-pnpm build
+yarn build
 ```
 
 ### Develop
@@ -47,24 +62,5 @@ To develop all apps and packages, run the following command:
 
 ```
 cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+yarn dev
 ```
