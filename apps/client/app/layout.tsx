@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import ProtectedRoutes from "@/components/ProtectedRoutes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={` ${inter.className} bg-[#fffdf9]`}>
         <Navbar />
-        {children}
+        <ProtectedRoutes>
+          {children}
+        </ProtectedRoutes>
       </body>
     </html>
   );

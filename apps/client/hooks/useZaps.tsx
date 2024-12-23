@@ -10,9 +10,13 @@ const useZaps = () => {
     useEffect(() => {
         setisLoading(true);
         async function fetchData() {
-            const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/zap`);
-            setdata(res.data.zap);
-            setisLoading(false);
+            try {
+              const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/zap`);
+              setdata(res.data.zap);
+              setisLoading(false);
+            } catch (error) {
+                console.log('Error in fetching zap : ', error);
+            }
         }
         fetchData();
     }, [axiosInstance]);
