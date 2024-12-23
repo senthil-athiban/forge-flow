@@ -1,4 +1,5 @@
 "use client";
+import { publicRoutes } from "@/app/config";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -9,7 +10,7 @@ const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if(path === "/" || path === "/login" || path === "/signup") {
+    if(publicRoutes.includes(path)) {
         setIsAuthenticated(true);
         return;
     }
