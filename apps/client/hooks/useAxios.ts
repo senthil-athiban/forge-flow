@@ -11,7 +11,7 @@ const useAxios = () => {
         const requestInterceptor = axiosInstance.interceptors.request.use(
             (config) => {
                 if(!config.headers["Authorization"]) {
-                    config.headers["Authorization"] = localStorage.getItem('token');
+                    config.headers["Authorization"] = localStorage.getItem('accessToken');
                 }
                 return config;
             },
@@ -28,14 +28,14 @@ const useAxios = () => {
                         const response = await generateRefreshToken();
                         //@ts-ignore
                         const newAccessToken = response?.message?.accesstoken;
-                        localStorage.setItem("token", newAccessToken);
+                        localStorage.setItem("accessToken", newAccessToken);
                         prevRequest.headers["Authorization"] = `${newAccessToken}`;
                         return axiosInstance(prevRequest);
                     } catch (error) {
                         // Refresh token expired or invalid
                         //@ts-ignore
                         if (error.response?.status === 403) {
-                            localStorage.removeItem("token");
+                            localStorage.removeItem("accessToken");
                             router.push("/login");
                         }
                         return Promise.reject(error);

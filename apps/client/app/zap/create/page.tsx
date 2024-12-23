@@ -45,7 +45,7 @@ const ZapCreatePage = () => {
       console.log(" payload : ", payload);
       const response = await axios.post(`${BACKEND_URL}/api/v1/zap`, payload, {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: localStorage.getItem("accessToken"),
         },
       });
     } catch (error) {

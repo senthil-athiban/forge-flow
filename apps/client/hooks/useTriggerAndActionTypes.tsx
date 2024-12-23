@@ -9,12 +9,12 @@ const useTriggerAndActionTypes = () => {
   useEffect(() => {
     axios.get(`${BACKEND_URL}/api/v1/trigger`, {
       headers: {
-        Authorization:`${localStorage.getItem('token')}`
+        Authorization:`${localStorage.getItem('accessToken')}`
       }
     }).then((result) => setTriggerTypes(result.data.results));
     axios.get(`${BACKEND_URL}/api/v1/action`, {
       headers: {
-        Authorization:`${localStorage.getItem('token')}`
+        Authorization:`${localStorage.getItem('accessToken')}`
       }
     }).then((result) => setActionTypes(result.data.results))
   }, [])

@@ -26,13 +26,17 @@ const LoginCard = () => {
   const handleGithubAuth = async () => {
     const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
   }
+
+  const handleSlackAuth = async () => {
+    const res = window.open(`${BACKEND_URL}/api/v1/auth/slack`, "_self");
+  }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
       <ProviderButton className="bg-sky-600" icon={<Google />} onClick={handleGoogleAuth}>
         Continue with google
       </ProviderButton>
       <ProviderButton className="bg-blue-600" icon={<Facebook />}>
-        Continue with facebook
+        Continue with Slack
       </ProviderButton>
       <ProviderButton className="bg-slate-900" icon={<Github />} onClick={handleGithubAuth}>
         Continue with github
@@ -69,7 +73,7 @@ const LoginCard = () => {
               password: password,
             });
             const accessToken = res.data.message.accesstoken;
-            localStorage.setItem('token', accessToken);
+            localStorage.setItem('accessToken', accessToken);
             router.push("/dashboard");
           }}
           size="lg"
