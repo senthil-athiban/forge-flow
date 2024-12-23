@@ -3,17 +3,15 @@
 This project is designed to automate your tasks using a custom workflow similar to Zapier. It leverages modern web technologies to provide a seamless experience for creating and managing automated workflows.
 
 ## Getting Started
-
-First, run the development server:
+First, Install the dependencies
 
 ```bash
-npm run dev
-# or
+yarn
+```
+run the development server:
+
+```bash
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 # Tech Stack
@@ -24,13 +22,12 @@ bun dev
 - Prisma ORM: For database management and queries.
 - PostgreSQL: As the relational database.
 
-PORT
 # Ports
-Client: http://localhost:3000
-Backend: http://localhost:8000
-Hooks: http://localhost:8080
-Kafka: http://localhost:9092
-DB: 5432
+- Client: http://localhost:3000
+- Backend: http://localhost:8000
+- Hooks: http://localhost:8080
+- Kafka: http://localhost:9092
+- DB: 5432
 
 ## What's inside?
 
