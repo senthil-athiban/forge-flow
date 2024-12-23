@@ -17,6 +17,17 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     const body = req.body;
     // check user exists
     // verify the zapId is belongs to the user
+
+    const userZap = await client.zap.findFirst({
+        where: {
+            userId: userId,
+            id: zapId
+        }
+    });
+
+    if(!userZap) {
+        return res.status(404).json({message: `No zap has been found with given zapId : ${zapId}`});
+    }
     const response = await client.$transaction(async (tx) => {
         const zapRun = await tx.zapRun.create({
             data: {
