@@ -1,6 +1,5 @@
+import { useEffect, useState } from 'react'
 import { BACKEND_URL } from '@/app/config';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
 import useAxios from './useAxios';
 
 const useZaps = () => {

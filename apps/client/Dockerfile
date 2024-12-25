@@ -4,11 +4,14 @@ FROM node:20-alpine
 # Working directory
 WORKDIR /app
 
+# Cache the deps
+COPY package* .
+RUN npm install
+
 # Copying the source code
 COPY . .
 
 # Commands to run while creating image
-RUN npm install
 RUN npm run build
 
 # Expose ports
