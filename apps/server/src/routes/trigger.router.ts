@@ -1,17 +1,9 @@
-import { NextFunction, Request, Response, Router } from "express";
-import {prismaClient} from "../db/index";
+import { Router } from "express";
 import { authMiddleware } from "../middlware";
+import triggerController from "@/controller/trigger.controller";
 
 const router = Router();
 
-router.get("/", authMiddleware,  async  (req: Request, res: Response) => {
-    try {
-        const response = await prismaClient.triggerTypes.findMany({});
-        return res.status(200).json({results: response});
-    } catch (error) {
-        console.log('[ERROR IN QUERYING TRIGGER TYPES]', error);
-        return res.status(500).json({error: error});
-    }
-})
+router.get("/", authMiddleware,  triggerController.getAllTriggers)
 
 export const triggerRouter = router;

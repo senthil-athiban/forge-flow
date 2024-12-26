@@ -1,25 +1,9 @@
-import { Request, Response, Router } from "express";
-import { prismaClient } from "../db/index";
+import { Router } from "express";
 import { authMiddleware } from "../middlware";
-import dotenv from "dotenv";
+import userController from "@/controller/user.controller";
+
 const router = Router();
 
-router.get("/verify", authMiddleware, async (req: Request, res: Response) => {
-  // @ts-ignore
-  const userId = req.userId;
-  const user = await prismaClient.user.findFirst({
-    where: {
-      id: userId,
-    },
-    select: {
-      email: true,
-      name: true,
-    },
-  });
-
-  return res.status(200).json({
-    user,
-  });
-});
+router.get("/verify", authMiddleware, userController.verifyUser);
 
 export const userRouter = router;

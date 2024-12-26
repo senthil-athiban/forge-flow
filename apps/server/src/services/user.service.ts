@@ -1,3 +1,4 @@
+import { ApiError } from "@/config/error";
 import { PrismaClient } from "@prisma/client";
 
 const prismaClient = new PrismaClient();
@@ -39,4 +40,21 @@ const updateUserById = async (userId: string, contentToUpdate: UserQueryUpdate) 
     throw new Error("Error in updating user");
   }
 }
-export default { getUser, updateUserById};
+
+const verifyUser = async (userId: string) => {
+  try {
+    return await prismaClient.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        email: true,
+        name: true,
+      },
+    });
+  } catch (error) {
+    throw new ApiError(400, "No user exists");
+  }
+}
+
+export default { getUser, updateUserById, verifyUser };

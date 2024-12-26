@@ -1,17 +1,8 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
 import { authMiddleware } from "../middlware";
-import { prismaClient } from "../db";
-
+import actionController from "@/controller/action.controller";
 
 const router = Router();
-
-router.get("/", authMiddleware,  async  (req: Request, res: Response) => {
-    try {
-        const response = await prismaClient.actionTypes.findMany({});
-        return res.status(200).json({results: response});
-    } catch (error) {
-        return res.status(500).json({error: error});
-    }
-})
+router.get("/", authMiddleware,  actionController.getAllActions)
 
 export const actionRouter = router;
