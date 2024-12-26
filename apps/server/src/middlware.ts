@@ -21,34 +21,35 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         // Verify JWT
         const payload = jwt.verify(token, JWT_ACCESS_SECRET) as { userId: string };
         
-        //@ts-ignore
+        // @ts-ignore
         req.userId = payload.userId;
         next();
     } catch (error) {
-        if (error instanceof ApiError) {
+        next(error);
+        // if (error instanceof ApiError) {
             
-            return res.status(error.statusCode).json({ 
-                message: error.message,
-                type: AuthErrorType.JWT_INVALID
-            });
-        }
+        //     return res.status(error.statusCode).json({ 
+        //         message: error.message,
+        //         type: AuthErrorType.JWT_INVALID
+        //     });
+        // }
 
-        // OAuth session expired/invalid
-        if (!req.isAuthenticated()) {
-            return res.status(401).json({
-                message: "OAuth session expired",
-                type: AuthErrorType.OAUTH_INVALID
-            });
-        }
-        if (error instanceof jwt.JsonWebTokenError) {
-            return res.status(401).json({ 
-                message: "Invalid token",
-                type: AuthErrorType.JWT_INVALID
-            });
-        }
-        return res.status(401).json({ 
-            message: "Authentication failed",
-            type: AuthErrorType.JWT_INVALID
-        });
+        // // OAuth session expired/invalid
+        // if (!req.isAuthenticated()) {
+        //     return res.status(401).json({
+        //         message: "OAuth session expired",
+        //         type: AuthErrorType.OAUTH_INVALID
+        //     });
+        // }
+        // if (error instanceof jwt.JsonWebTokenError) {
+        //     return res.status(401).json({ 
+        //         message: "Invalid token",
+        //         type: AuthErrorType.JWT_INVALID
+        //     });
+        // }
+        // return res.status(401).json({ 
+        //     message: "Authentication failed",
+        //     type: AuthErrorType.JWT_INVALID
+        // });
     }
 };

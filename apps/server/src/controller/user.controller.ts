@@ -1,5 +1,5 @@
-import { asyncMiddleWare } from "@/config/asyncMiddleware";
-import userService from "@/services/user.service";
+import { asyncMiddleWare } from "../config/asyncMiddleware";
+import userService from "../services/user.service";
 import { Request, Response } from "express";
 
 const verifyUser = asyncMiddleWare(async (req: Request, res: Response) => {

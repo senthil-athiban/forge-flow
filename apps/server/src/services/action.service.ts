@@ -1,5 +1,5 @@
-import { ApiError } from "@/config/error";
-import { prismaClient } from "@/db";
+import { ApiError } from "../config/error";
+import { prismaClient } from "../db";
 
 const getAvailableActions = async() => {
     try {

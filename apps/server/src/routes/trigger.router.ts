@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlware";
-import triggerController from "@/controller/trigger.controller";
+import triggerController from "../controller/trigger.controller";
 
 const router = Router();
 

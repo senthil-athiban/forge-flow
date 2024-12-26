@@ -8,7 +8,7 @@ import authService from "../services/auth.service";
 import { forgotPasswordSchema, SignUpSchema } from "../schema";
 import { JWT_REFRESH_SECRET } from "../config/config";
 import { ApiError } from "../config/error";
-import { asyncMiddleWare } from "@/config/asyncMiddleware";
+import { asyncMiddleWare } from "../config/asyncMiddleware";
 import "../config/passport";
 
 

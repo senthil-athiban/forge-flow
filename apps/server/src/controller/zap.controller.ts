@@ -1,8 +1,8 @@
-import { asyncMiddleWare } from "@/config/asyncMiddleware";
-import { ApiError } from "@/config/error";
-import { zapSchema } from "@/schema";
-import zapService from "@/services/zap.service";
 import {Request, Response} from "express";
+import { asyncMiddleWare } from "../config/asyncMiddleware";
+import { ApiError } from "../config/error";
+import { zapSchema } from "../schema";
+import zapService from "../services/zap.service";
 
 const createZap = asyncMiddleWare(async (req: Request, res: Response) => {
     const userId = req.userId as string;

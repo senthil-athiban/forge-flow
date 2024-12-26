@@ -1,5 +1,5 @@
-import { ApiError } from "@/config/error";
-import { SignUpType } from "@/schema";
+import { ApiError } from "../config/error";
+import { SignUpType } from "../schema";
 import { PrismaClient, User } from "@prisma/client";
 import tokenService from "./token.service";
 import bcyprtjs from "bcryptjs";

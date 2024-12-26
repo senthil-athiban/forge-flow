@@ -1,6 +1,6 @@
-import { ApiError } from "@/config/error";
-import { prismaClient } from "@/db";
-import { ZapType } from "@/schema";
+import { ApiError } from "../config/error";
+import { prismaClient } from "../db";
+import { ZapType } from "../schema";
 
 const createZap = async (body: ZapType, userId: string) => {
   const { triggerTypeId, actions } = body;
