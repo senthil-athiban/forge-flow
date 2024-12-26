@@ -2,46 +2,11 @@ import { Request, Response, Router } from "express";
 import { authMiddleware } from "../middlware";
 import { prismaClient } from "../db";
 import { zapSchema } from "../schema";
-
+import zapController from "../controller/zap.controller";
 const router = Router();
 
 // submit zap endpoint
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
-    //@ts-ignore
-    const userId = req.userId;
-    const body = req.body;
-
-    const parsedData = zapSchema.safeParse(body);
-    
-    if(!parsedData.success) return res.status(500).json({message: "Invalid inputs"});
-
-    const { triggerTypeId , actions} = parsedData.data;
-    const zapRun = await prismaClient.$transaction(async (tx:any) => {
-        const zap = await tx.zap.create({
-            data: {
-                userId: userId,
-                actions: {
-                    create: actions.map((it:any, index: number) => ({
-                        actionTypeId: it.actionTypeId,
-                        metadata: it.actionMetaData,
-                        sortingOrder: index
-                    }))
-                }
-            }
-        });
-
-        const trigger = await tx.trigger.create({
-            data: {
-                triggerTypeId: triggerTypeId,
-                zapId: zap.id
-            }
-        });
-
-        return zap;
-    });
-
-    return res.json({zapRun});
-});
+router.post("/", authMiddleware, zapController.createZap);
 
 // get all zaps
 router.get("/", authMiddleware, async (req: Request, res: Response) => {
