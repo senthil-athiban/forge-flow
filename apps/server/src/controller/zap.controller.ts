@@ -26,5 +26,6 @@ const getUserZap = asyncMiddleWare(async (req: Request, res: Response) => {
     const userId = req.userId as string;
     const zap = zapService.getZapById(userId, zapId);
     res.status(200).send({zap});
-})
+});
+
 export default { createZap, getUserZaps, getUserZap};

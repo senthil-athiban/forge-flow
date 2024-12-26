@@ -24,3 +24,6 @@ export const forgotPasswordSchema = z.object({
 })
 
 export type SignIntype = z.infer<typeof SignInSchema>
+export type SignUpType = z.infer<typeof SignUpSchema>;
+export type ZapType = z.infer<typeof zapSchema>;
+export type ForgotPassworType = z.infer<typeof forgotPasswordSchema>;
