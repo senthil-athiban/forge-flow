@@ -1,3 +1,4 @@
+import { ApiError } from "@/config/error";
 import { prismaClient } from "@/db";
 import { ZapType } from "@/schema";
 
@@ -29,4 +30,54 @@ const createZap = async (body: ZapType, userId: string) => {
   return zapRun;
 };
 
-export default { createZap };
+const getZapByUserId = async (userId: string) => {
+  try {
+    const zap = await prismaClient.zap.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        trigger: {
+          include: {
+            triggerType: true,
+          },
+        },
+        actions: {
+          include: {
+            actionType: true,
+          },
+        },
+      },
+    });
+    return zap;
+  } catch (error) {
+    throw new ApiError(401, "Un authorized");
+  }
+};
+
+const getZapById = async (userId: string, zapId: string) => {
+    try {
+        return await prismaClient.zap.findFirst({
+            where: {
+                userId: userId,
+                id: zapId
+            },
+            include: {
+                trigger: {
+                    include: {
+                        triggerType: true
+                    }
+                },
+                actions: {
+                    include: {
+                        actionType: true
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        throw new ApiError(401, "Un authorized");
+    }
+}
+
+export default { createZap, getZapByUserId, getZapById };
