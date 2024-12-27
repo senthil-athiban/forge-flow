@@ -1,6 +1,6 @@
 import moment from "moment";
 import emailService from "./email.service";
-import { Token, TokenType, User } from "@repo/db";
+import { TokenType, User } from "@repo/db";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "../db/index";
 import { ApiError } from "../config/error";

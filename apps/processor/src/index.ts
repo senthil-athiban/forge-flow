@@ -1,11 +1,10 @@
 import { Kafka } from "kafkajs";
 import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@repo/db";
 import { processContent } from "./config/algo";
 import { prepareEmail } from "./config/email";
 import { sendSol } from "./config/web3";
 
-const prismaClient = new PrismaClient();
 dotenv.config();
 
 const kafka = new Kafka({
@@ -38,7 +37,7 @@ const processEvents = async () => {
       const stage = parsedValue.stage;
 
       if (!zapRunId) return;
-      const zapRun = await prismaClient.zapRun.findFirst({
+      const zapRun = await prisma.zapRun.findFirst({
         where: {
           id: zapRunId,
         },

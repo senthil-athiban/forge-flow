@@ -1,4 +1,4 @@
-export * from '@prisma/client';
+export * from './client';
 
 export type {
     User,

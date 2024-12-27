@@ -1,9 +1,8 @@
 import { Kafka } from 'kafkajs';
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@repo/db";
 import dotenv from "dotenv";
 
 dotenv.config();
-const client = new PrismaClient();
 const kafka = new Kafka({
     clientId: 'zap-app',
     brokers: [`${process.env.KAFKA_HOST}:${process.env.KAFKA_PORT}`]
@@ -14,7 +13,7 @@ const main = async () => {
     await producer.connect();
     while(true) {
 
-        const data = await client.zapRunOutBox.findMany({
+        const data = await prisma.zapRunOutBox.findMany({
             where: {},
             take: 10,
         });
@@ -25,7 +24,7 @@ const main = async () => {
             messages: data?.map((item) =>  ({value: JSON.stringify({zapRunId: item.zapRunId, stage: 0})}))
         });
 
-        await client.zapRunOutBox.deleteMany({
+        await prisma.zapRunOutBox.deleteMany({
             where: {
                 id: {
                     in: data?.map((item) => item.id)

@@ -1,14 +1,12 @@
 import express from "express";
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import {prisma} from '@repo/db';
 dotenv.config();
 
-const client = new PrismaClient();
 const PORT = process.env.DOMAIN;
 
 const app = express();
 app.use(express.json());
-
 
 //@ts-ignore
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
@@ -18,7 +16,7 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     // check user exists
     // verify the zapId is belongs to the user
 
-    const userZap = await client.zap.findFirst({
+    const userZap = await prisma.zap.findFirst({
         where: {
             userId: userId,
             id: zapId
@@ -28,7 +26,7 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     if(!userZap) {
         return res.status(404).json({message: `No zap has been found with given zapId : ${zapId}`});
     }
-    const response = await client.$transaction(async (tx) => {
+    const response = await prisma.$transaction(async (tx) => {
         const zapRun = await tx.zapRun.create({
             data: {
                 zapId: zapId,

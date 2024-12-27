@@ -1,10 +1,8 @@
 import { ApiError } from "../config/error";
 import { SignUpType } from "../schema/index";
-import { PrismaClient, type User } from "@repo/db";
+import { prisma, type User } from "@repo/db";
 import tokenService from "./token.service";
 import bcyprtjs from "bcryptjs";
-
-const prismaClient = new PrismaClient();
 
 interface UserQueryParams {
   where: {
@@ -23,7 +21,7 @@ interface UserQueryUpdate {
 
 const getUser = async (params: UserQueryParams) => {
   try {
-    return await prismaClient.user.findFirst({
+    return await prisma.user.findFirst({
       where: params.where,
       select: params.select,
     });
@@ -37,7 +35,7 @@ const updateUserById = async (
   contentToUpdate: UserQueryUpdate
 ) => {
   try {
-    return await prismaClient.user.update({
+    return await prisma.user.update({
       where: {
         id: userId,
       },
@@ -50,7 +48,7 @@ const updateUserById = async (
 
 const verifyUser = async (userId: string) => {
   try {
-    return await prismaClient.user.findFirst({
+    return await prisma.user.findFirst({
       where: {
         id: userId,
       },
@@ -67,7 +65,7 @@ const verifyUser = async (userId: string) => {
 const createUser = async (userData: SignUpType) => {
     const { email, name, password } = userData;
     // check if user exists
-    const existingUser = await prismaClient.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: {
         email: email,
       },
@@ -90,7 +88,7 @@ const createUser = async (userData: SignUpType) => {
 
     // create new user is not exists in db
     const hashedPassword = await bcyprtjs.hash(password, 10);
-    const user = await prismaClient.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
