@@ -1,10 +1,10 @@
-import { ApiError } from "../config/error";
-import { SignInSchema, SignIntype } from "../schema";
-import tokenService from "./token.service";
-import userService from "./user.service";
+import { ApiError } from "../config/error.js";
+import { SignInSchema, SignIntype } from "../schema/index.js";
+import tokenService from "./token.service.js";
+import userService from "./user.service.js";
 import bcryptjs from "bcryptjs";
-import { TokenType } from "@prisma/client";
-import { prismaClient } from "../db";
+import { prismaClient } from "../db/index.js";
+import { TokenTypes } from "@/config/tokenTypes.js";
 
 const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);
@@ -34,7 +34,7 @@ const resetPassword = async (token: string, newPassword: string) => {
   try {
     const verifiedToken = await tokenService.verifyToken(
       token,
-      TokenType.RESET
+      TokenTypes.RESET
     );
     const user = await userService.getUser({
       where: { id: verifiedToken.userId },
@@ -46,7 +46,7 @@ const resetPassword = async (token: string, newPassword: string) => {
     await prismaClient.token.deleteMany({
       where: {
         userId: user.id,
-        type: TokenType.RESET,
+        type: TokenTypes.RESET,
       },
     });
   } catch (error) {

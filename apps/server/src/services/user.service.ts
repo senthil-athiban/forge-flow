@@ -1,7 +1,7 @@
-import { ApiError } from "../config/error";
-import { SignUpType } from "../schema";
-import { PrismaClient, User } from "@prisma/client";
-import tokenService from "./token.service";
+import { ApiError } from "../config/error.js";
+import { SignUpType } from "../schema/index.js";
+import { PrismaClient, type User } from "@repo/db";
+import tokenService from "./token.service.js";
 import bcyprtjs from "bcryptjs";
 
 const prismaClient = new PrismaClient();

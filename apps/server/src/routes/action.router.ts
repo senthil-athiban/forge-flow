@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlware";
-import actionController from "../controller/action.controller";
+import { authMiddleware } from "../middlware.js";
+import actionController from "../controller/action.controller.js";
 
 const router = Router();
 //@ts-ignore

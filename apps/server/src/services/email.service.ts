@@ -1,10 +1,10 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import tokenService from "./token.service";
-import { TokenType } from "@prisma/client";
-import { prismaClient } from "../db";
-import { ApiError } from "../config/error";
-import { DOMAIN } from "../config/config";
+import tokenService from "./token.service.js";
+import { prismaClient } from "../db/index.js";
+import { ApiError } from "../config/error.js";
+import { DOMAIN } from "../config/config.js";
+import { TokenTypes } from "@/config/tokenTypes.js";
 dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -27,7 +27,7 @@ const sendEmail = async (to: string, subject: any, content: any) => {
 const verifyEmail = async (token: string) => {
   const verifiedToken = await tokenService.verifyToken(
     token,
-    TokenType.VERIFY_EMAIL
+    TokenTypes.VERIFY_EMAIL
   );
   try {
     const user = await prismaClient.user.findFirst({
@@ -43,7 +43,7 @@ const verifyEmail = async (token: string) => {
     await prismaClient.token.deleteMany({
       where: {
         userId: user.id,
-        type: TokenType.VERIFY_EMAIL,
+        type: TokenTypes.VERIFY_EMAIL,
       },
     });
 

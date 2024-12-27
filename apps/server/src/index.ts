@@ -6,14 +6,14 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import cookieSession from "cookie-session";
 import session from 'express-session';
-import { userRouter } from "./routes/user.router";
-import { zapRouter } from "./routes/zap.router";
-import { triggerRouter } from "./routes/trigger.router";
-import { actionRouter } from "./routes/action.router";
-import { authRouter } from "./routes/auth.router";
+import { userRouter } from "./routes/user.router.js";
+import { zapRouter } from "./routes/zap.router.js";
+import { triggerRouter } from "./routes/trigger.router.js";
+import { actionRouter } from "./routes/action.router.js";
+import { authRouter } from "./routes/auth.router.js";
 import "./config/passport";
-import { CLIENT_URL, SESSION_SECRET } from "./config/config";
-import { errorHandler } from './config/asyncMiddleware';
+import { CLIENT_URL, SESSION_SECRET } from "./config/config.js";
+import { errorHandler } from './config/asyncMiddleware.js';
 
 dotenv.config();
 

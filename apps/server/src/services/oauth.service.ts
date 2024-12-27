@@ -1,5 +1,5 @@
-import { prismaClient } from "../db";
-import { OAuthProfile } from "../types/auth";
+import { prismaClient } from "../db/index.js";
+import { OAuthProfile } from "../types/auth.js";
 
 const getEmailFromProfile = (profile: OAuthProfile) => {
   return profile.email || `${profile.username}@${profile.provider}.com`;
@@ -9,7 +9,7 @@ const handleOAuthLogin = async (
   tokens: { accessToken: string; refreshToken: string }
 ) => {
   try {
-    return prismaClient.$transaction(async (tx) => {
+    return prismaClient.$transaction(async (tx:any) => {
       const email = getEmailFromProfile(profile);
       const user = await tx.user.upsert({
         where: { email },

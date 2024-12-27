@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TokenType } from "@prisma/client";
+import { TokenTypes } from "@/config/tokenTypes";
 import passport from "passport";
 import tokenService from "../services/token.service";
 import emailService from "../services/email.service";
@@ -45,7 +45,7 @@ const refreshToken = asyncMiddleWare(async (req: Request, res: Response) => {
   const token = req.cookies.jwt;
   const verifiedToken = await tokenService.verifyToken(
     token,
-    TokenType.REFRESH,
+    TokenTypes.REFRESH,
     JWT_REFRESH_SECRET
   );
   const user = await userService.getUser({

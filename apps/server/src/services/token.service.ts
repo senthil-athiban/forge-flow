@@ -1,17 +1,18 @@
 import moment from "moment";
-import emailService from "./email.service";
-import { Token, TokenType, User } from "@prisma/client";
+import emailService from "./email.service.js";
+import { Token, TokenType, User } from "@repo/db";
 import jwt from "jsonwebtoken";
-import { prismaClient } from "../db";
-import { ApiError } from "../config/error";
-import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
+import { prismaClient } from "../db/index.js";
+import { ApiError } from "../config/error.js";
+import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config.js";
+import { TokenTypes } from "@/config/tokenTypes.js";
 
 const saveToken = async (
   userId: string,
   tokenType: TokenType,
   token: string
 ) => {
-  return await prismaClient.$transaction(async (tx) => {
+  return await prismaClient.$transaction(async (tx:any) => {
     await tx.token.deleteMany({
       where: {
         userId,
@@ -48,7 +49,7 @@ const generateAuthTokens = async (user: any) => {
   const accesstoken = generateToken(
     user.id,
     accessTokenExpires,
-    TokenType.ACCESS,
+    TokenTypes.ACCESS,
     JWT_ACCESS_SECRET
   );
 
@@ -57,11 +58,11 @@ const generateAuthTokens = async (user: any) => {
   const refreshToken = generateToken(
     user.id,
     refreshTokenExpires,
-    TokenType.REFRESH,
+    TokenTypes.REFRESH,
     JWT_REFRESH_SECRET
   );
 
-  await saveToken(user.id, TokenType.REFRESH, refreshToken);
+  await saveToken(user.id, TokenTypes.REFRESH , refreshToken);
 
   return {
     accesstoken,
@@ -98,13 +99,13 @@ const verifyToken = async (
 
 const generateEmailVerificationToken = async (user: User) => {
   const expires = moment().add(1, "minute");
-  const token = generateToken(user.id, expires, TokenType.VERIFY_EMAIL);
-  await prismaClient.$transaction(async (tx) => {
+  const token = generateToken(user.id, expires, TokenTypes.VERIFY_EMAIL);
+  await prismaClient.$transaction(async (tx:any) => {
     // delete the previous tokens
     await tx.token.deleteMany({
       where: {
         userId: user.id,
-        type: TokenType.VERIFY_EMAIL,
+        type: TokenTypes.VERIFY_EMAIL,
       },
     });
 
@@ -113,7 +114,7 @@ const generateEmailVerificationToken = async (user: User) => {
       data: {
         userId: user.id,
         token,
-        type: TokenType.VERIFY_EMAIL,
+        type: TokenTypes.VERIFY_EMAIL,
       },
     });
   });
@@ -123,14 +124,14 @@ const generateEmailVerificationToken = async (user: User) => {
 
 const generateResetPasswordToken = async (user: any) => {
   const expires = moment().add(2, "minutes");
-  const token = generateToken(user.id, expires, TokenType.RESET);
+  const token = generateToken(user.id, expires, TokenTypes.RESET);
   
-  await prismaClient.$transaction(async (tx) => {
+  await prismaClient.$transaction(async (tx:any) => {
     // delete the previous tokens
     await tx.token.deleteMany({
       where: {
         userId: user.id,
-        type: TokenType.RESET,
+        type: TokenTypes.RESET,
       },
     });
 
@@ -139,7 +140,7 @@ const generateResetPasswordToken = async (user: any) => {
       data: {
         userId: user.id,
         token,
-        type: TokenType.RESET,
+        type: TokenTypes.RESET,
       },
     });
   });

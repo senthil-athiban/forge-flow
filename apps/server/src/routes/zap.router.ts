@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlware";
-import zapController from "../controller/zap.controller";
+import { authMiddleware } from "../middlware.js";
+import zapController from "../controller/zap.controller.js";
 const router = Router();
 //@ts-ignore
 // submit zap endpoint
