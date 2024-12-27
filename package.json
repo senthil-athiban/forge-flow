@@ -7,6 +7,9 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
+  "prisma": {
+    "seed": "tsx packages/database/src/seed.ts"
+  },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/nodemailer": "^6.4.17",
