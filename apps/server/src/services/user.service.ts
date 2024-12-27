@@ -65,7 +65,6 @@ const verifyUser = async (userId: string) => {
 };
 
 const createUser = async (userData: SignUpType) => {
-  try {
     const { email, name, password } = userData;
     // check if user exists
     const existingUser = await prismaClient.user.findFirst({
@@ -99,8 +98,5 @@ const createUser = async (userData: SignUpType) => {
       },
     });
     return user as User;
-  } catch (error) {
-    throw new ApiError(400, "Failed to create user");
-  }
 };
 export default { getUser, updateUserById, verifyUser, createUser };

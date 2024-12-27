@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 const verifyUser = asyncMiddleWare(async (req: Request, res: Response) => {
   const userId = req.userId as string;
-  const user = userService.verifyUser(userId);
+  const user = await userService.verifyUser(userId);
   res.status(200).send({ user });
 });
 
