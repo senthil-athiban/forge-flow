@@ -4,7 +4,7 @@ import tokenService from "./token.service";
 import userService from "./user.service";
 import bcryptjs from "bcryptjs";
 import { prismaClient } from "../db/index";
-import { TokenTypes } from "@/config/tokenTypes";
+import { TokenTypes } from "../config/tokenTypes";
 
 const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);

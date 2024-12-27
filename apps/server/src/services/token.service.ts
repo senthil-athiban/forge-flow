@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { prismaClient } from "../db/index";
 import { ApiError } from "../config/error";
 import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
-import { TokenTypes } from "@/config/tokenTypes";
+import { TokenTypes } from "../config/tokenTypes";
 
 const saveToken = async (
   userId: string,

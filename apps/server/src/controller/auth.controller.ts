@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TokenTypes } from "@/config/tokenTypes";
+import { TokenTypes } from "../config/tokenTypes";
 import passport from "passport";
 import tokenService from "../services/token.service";
 import emailService from "../services/email.service";
