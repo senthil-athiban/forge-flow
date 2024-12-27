@@ -3,6 +3,14 @@ import jwt, {type JwtPayload} from "jsonwebtoken";
 import { JWT_ACCESS_SECRET } from "./config/config";
 import { ApiError } from "./config/error";
 
+// declare global {
+//     namespace Express {
+//       interface Request {
+//         userId: string;
+//       }
+//     }
+//   }
+
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Check OAuth Session
@@ -19,7 +27,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         // Verify JWT
         const payload = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;;
         
-        req.userId = payload.sub;
+        req.userId = payload.sub!;
         next();
     } catch (error) {
         let err = new ApiError(401, "Un authorized");
