@@ -1,11 +1,11 @@
 import moment from "moment";
-import emailService from "./email.service.js";
+import emailService from "./email.service";
 import { Token, TokenType, User } from "@repo/db";
 import jwt from "jsonwebtoken";
-import { prismaClient } from "../db/index.js";
-import { ApiError } from "../config/error.js";
-import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config.js";
-import { TokenTypes } from "@/config/tokenTypes.js";
+import { prismaClient } from "../db/index";
+import { ApiError } from "../config/error";
+import { JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, JWT_SECRET } from "../config/config";
+import { TokenTypes } from "@/config/tokenTypes";
 
 const saveToken = async (
   userId: string,

@@ -1,10 +1,10 @@
-import { ApiError } from "../config/error.js";
-import { SignInSchema, SignIntype } from "../schema/index.js";
-import tokenService from "./token.service.js";
-import userService from "./user.service.js";
+import { ApiError } from "../config/error";
+import { SignInSchema, SignIntype } from "../schema";
+import tokenService from "./token.service";
+import userService from "./user.service";
 import bcryptjs from "bcryptjs";
-import { prismaClient } from "../db/index.js";
-import { TokenTypes } from "@/config/tokenTypes.js";
+import { prismaClient } from "../db/index";
+import { TokenTypes } from "@/config/tokenTypes";
 
 const loginUsingEmailPassword = async (body: SignIntype) => {
   const parsedData = SignInSchema.safeParse(body);

@@ -1,5 +1,5 @@
-import { prismaClient } from "../db/index.js";
-import { OAuthProfile } from "../types/auth.js";
+import { prismaClient } from "../db";
+import { OAuthProfile } from "../types/auth";
 
 const getEmailFromProfile = (profile: OAuthProfile) => {
   return profile.email || `${profile.username}@${profile.provider}.com`;

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlware.js";
-import triggerController from "../controller/trigger.controller.js";
+import { authMiddleware } from "../middlware";
+import triggerController from "../controller/trigger.controller";
 
 const router = Router();
 //@ts-ignore

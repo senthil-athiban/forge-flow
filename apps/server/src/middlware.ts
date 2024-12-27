@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, {type JwtPayload} from "jsonwebtoken";
-import { JWT_ACCESS_SECRET } from "./config/config.js";
-import { ApiError } from "./config/error.js";
+import { JWT_ACCESS_SECRET } from "./config/config";
+import { ApiError } from "./config/error";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {

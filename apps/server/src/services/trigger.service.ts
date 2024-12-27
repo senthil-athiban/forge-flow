@@ -1,5 +1,5 @@
-import { ApiError } from "../config/error.js";
-import { prismaClient } from "../db/index.js";
+import { ApiError } from "../config/error";
+import { prismaClient } from "../db/index";
 
 const getAvailableTriggers = async () => {
     try {

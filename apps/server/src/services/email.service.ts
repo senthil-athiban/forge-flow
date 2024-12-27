@@ -1,10 +1,10 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import tokenService from "./token.service.js";
-import { prismaClient } from "../db/index.js";
-import { ApiError } from "../config/error.js";
-import { DOMAIN } from "../config/config.js";
-import { TokenTypes } from "@/config/tokenTypes.js";
+import tokenService from "./token.service";
+import { prismaClient } from "../db";
+import { ApiError } from "../config/error";
+import { DOMAIN } from "../config/config";
+import { TokenTypes } from "@/config/tokenTypes";
 dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
