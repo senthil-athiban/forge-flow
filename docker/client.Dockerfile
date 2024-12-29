@@ -28,9 +28,9 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 
 # Copy built files
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./apps/client/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./apps/client/public
 
 USER nextjs
 
@@ -39,4 +39,4 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["npm", "server.js"]
+CMD ["node", "./apps/client/server.js"]
