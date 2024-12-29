@@ -1,0 +1,120 @@
+version: '3.8'
+services:
+  kafka:
+    container_name: kafka
+    image: apache/kafka:3.9.0
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - message-net
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U",  "myuser"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=workflow
+
+  client: 
+    container_name: client
+    build: 
+      context: ..
+      dockerfile: docker/client.Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ../apps/client/.env
+        required: true
+    networks:
+      - frontend-net
+    depends_on:
+      - server
+
+  server: 
+    container_name: server
+    build: 
+      context: ..
+      dockerfile: docker/server.Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - path: ../apps/server/.env
+        required: true
+    networks:
+      - db-net
+      - backend-net
+      - frontend-net
+
+  webhooks:
+    container_name: webhooks
+    build: 
+      context: ..
+      dockerfile: docker/hooks.Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: ../apps/hooks/.env
+        required: true
+    networks:
+      - db-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+  processor:
+    container_name: processor
+    build: 
+      context: ..
+      dockerfile: docker/processor.Dockerfile
+    depends_on:
+      - kafka
+      - postgres
+    env_file:
+      - path: ../apps/processor/.env
+        required: true
+    networks:
+      - message-net
+      - db-net
+
+  sweeper:
+    container_name: sweeper
+    build: 
+      context: ..
+      dockerfile: docker/sweeper.Dockerfile
+    depends_on:
+      - kafka
+      - postgres
+    env_file:
+      - path: ../apps/sweeper/.env
+        required: true
+    networks:
+      - message-net
+      - db-net
+
+networks:
+  message-net:
+  db-net:
+  frontend-net:
+  backend-net:
+
+volumes:
+  postgres_data:
+  kafka_data:
