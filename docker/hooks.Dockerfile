@@ -1,9 +1,6 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.20 AS builder
 WORKDIR /app
-
-# Install OpenSSL
-RUN apk add --no-cache openssl
 
 # Root workspace files
 COPY package.json .
@@ -21,11 +18,8 @@ RUN yarn install
 RUN yarn turbo build --filter=hooks...
 
 # Stage 2: Production
-FROM node:20-alpine
+FROM node:20-alpine3.20
 WORKDIR /app
-
-# Install OpenSSL
-RUN apk add --no-cache openssl
 
 # Copy built files from builder stage to final image
 COPY --from=builder /app/apps/hooks/dist ./dist

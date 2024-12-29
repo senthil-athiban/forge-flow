@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:20-alpine3.20 AS deps
 WORKDIR /app
 COPY package.json yarn.lock ./
 COPY apps/client/package.json ./apps/client/
@@ -7,7 +7,7 @@ COPY packages/ ./packages/
 RUN yarn install --frozen-lockfile
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.20 AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -17,7 +17,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn turbo build --filter=client...
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM node:20-alpine3.20 AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
