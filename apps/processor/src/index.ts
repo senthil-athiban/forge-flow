@@ -9,7 +9,7 @@ dotenv.config();
 
 const kafka = new Kafka({
   clientId: "zap-app",
-  brokers: [`${process.env.KAFKA_HOST}:${process.env.KAFKA_PORT}`],
+  brokers: [`${process.env.KAFKA_HOST || 'kafka'}:${process.env.KAFKA_PORT || '9092'}`]
 });
 
 const consumer = kafka.consumer({ groupId: process.env.GROUP_ID! });
