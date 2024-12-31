@@ -27,7 +27,7 @@ const useAxios = () => {
                     try {
                         const response = await generateRefreshToken();
                         //@ts-ignore
-                        const newAccessToken = response?.message?.accesstoken;
+                        const newAccessToken = response?.data?.accesstoken;
                         localStorage.setItem("accessToken", newAccessToken);
                         prevRequest.headers["Authorization"] = `${newAccessToken}`;
                         return axiosInstance(prevRequest);

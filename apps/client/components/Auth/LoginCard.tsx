@@ -21,7 +21,7 @@ const LoginCard = () => {
     const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
     // const response = await fetch(`${BACKEND_URL}/api/v1/auth/google`);
     //@ts-ignore
-    if(response?.message) router.push('/dashboard');
+    if(response) router.push('/dashboard');
   }
   const handleGithubAuth = async () => {
     const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
@@ -72,7 +72,8 @@ const LoginCard = () => {
               email: email,
               password: password,
             });
-            const accessToken = res.data.message.accesstoken;
+            console.log("res : ", res);
+            const accessToken = res.data.accesstoken;
             localStorage.setItem('accessToken', accessToken);
             router.push("/dashboard");
           }}

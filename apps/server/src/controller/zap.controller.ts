@@ -17,14 +17,14 @@ const createZap = asyncMiddleWare(async (req: Request, res: Response) => {
 
 const getUserZaps = asyncMiddleWare(async (req: Request, res: Response) => {
     const userId = req.userId as string;
-    const zap  = zapService.getZapByUserId(userId);
+    const zap  = await zapService.getZapByUserId(userId);
     res.status(200).send({zap});
 })
 
 const getUserZap = asyncMiddleWare(async (req: Request, res: Response) => {
     const zapId = req.params.zapId as string;
     const userId = req.userId as string;
-    const zap = zapService.getZapById(userId, zapId);
+    const zap = await zapService.getZapById(userId, zapId);
     res.status(200).send({zap});
 });
 

@@ -27,7 +27,7 @@ const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
           </thead>
 
           <tbody className="bg-white border-b w-full">
-            {zaps.map((zap, index) => {
+            {zaps?.length ? (zaps?.map((zap, index) => {
               return (
                 <tr key={zap.id} className="border-b">
                   <td className="px-6 py-4">{index + 1}</td>
@@ -66,7 +66,9 @@ const ZapTable = ({ zaps }: { zaps: Array<Zap> }) => {
                   </td>
                 </tr>
               );
-            })}
+            })):(
+              <p>No zaps</p>
+            )}
           </tbody>
         </table>
       </div>
