@@ -16,6 +16,7 @@ model User {
   zaps          Zap[]
   token         Token[]
   OAuth         OAuthAccount[]
+  slack         Slack[]
   emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -45,6 +46,35 @@ model Token {
   user      User      @relation(fields: [userId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model Slack {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id])
+  workspaceId    String         @unique
+  workspaceToken String
+  channels       SlackChannel[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+}
+
+model SlackChannel {
+  id        String  @id @default(cuid())
+  slackId   String
+  slack     Slack   @relation(fields: [slackId], references: [id])
+  name      String
+  channelId String  @unique
+  isPrivate Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([slackId, channelId])
+  @@index([channelId])
 }
 
 enum TokenType {
