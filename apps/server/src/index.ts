@@ -14,6 +14,7 @@ import { authRouter } from "./routes/auth.router";
 import "./config/passport";
 import { CLIENT_URL, SESSION_SECRET } from "./config/config";
 import { errorHandler } from './config/asyncMiddleware';
+import { slackRouter } from './routes/slack.router';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/zap", zapRouter);
 app.use("/api/v1/trigger", triggerRouter);
 app.use("/api/v1/action", actionRouter);
+app.use("/api/v1/slack", slackRouter);
 app.use(errorHandler);
 
 

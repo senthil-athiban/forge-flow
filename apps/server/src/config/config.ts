@@ -10,3 +10,6 @@ export const GITHUB_CLIENT_SECRET=process.env.GITHUB_CLIENT_SECRET!;
 export const GITHUB_CLIENT_ID=process.env.GITHUB_CLIENT_ID!
 export const CLIENT_URL = process.env.CLIENT_URL!;
 export const SESSION_SECRET = process.env.SESSION_SECRET!;
+export const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID!;
+export const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET!;
+export const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI!;
