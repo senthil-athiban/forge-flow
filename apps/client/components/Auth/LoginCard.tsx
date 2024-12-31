@@ -7,7 +7,7 @@ import Facebook from "../Provider/Facebook";
 import Github from "../Provider/Github";
 import PrimaryButton from "../Button/PrimaryButton";
 import Link from "next/link";
-import { BACKEND_URL } from "@/app/config";
+import { BACKEND_URL, SLACK_CLIENT_ID } from "@/app/config";
 import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
 import useAxios from "@/hooks/useAxios";
@@ -28,14 +28,14 @@ const LoginCard = () => {
   }
 
   const handleSlackAuth = async () => {
-    const res = window.open(`${BACKEND_URL}/api/v1/auth/slack`, "_self");
+    window.open(`https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=channels:join,channels:read,chat:write,groups:read,incoming-webhook,team:read,users:read,im:read,mpim:read&user_scope=`, "_self");
   }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
       <ProviderButton className="bg-sky-600" icon={<Google />} onClick={handleGoogleAuth}>
         Continue with google
       </ProviderButton>
-      <ProviderButton className="bg-blue-600" icon={<Facebook />}>
+      <ProviderButton className="bg-blue-600" icon={<Facebook />} onClick={handleSlackAuth}>
         Continue with Slack
       </ProviderButton>
       <ProviderButton className="bg-slate-900" icon={<Github />} onClick={handleGithubAuth}>

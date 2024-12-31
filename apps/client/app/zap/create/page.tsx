@@ -16,6 +16,7 @@ import { BACKEND_URL } from "@/app/config";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { metadata } from "@/app/layout";
+import { axiosInstance } from "@/lib/axios";
 
 const ZapCreatePage = () => {
   const [selectedTrigger, setSelectedTrigger] = useState<{
@@ -30,7 +31,7 @@ const ZapCreatePage = () => {
   >([]);
   const [showModal, setShowModal] = useState(false);
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
-  console.log("selectedActions: ", selectedActions);
+
   const onSubmit = async () => {
     try {
       const payload = {
@@ -42,7 +43,6 @@ const ZapCreatePage = () => {
           };
         }),
       };
-      console.log(" payload : ", payload);
       const response = await axios.post(`${BACKEND_URL}/api/v1/zap`, payload, {
         headers: {
           Authorization: localStorage.getItem("accessToken"),
@@ -147,15 +147,24 @@ const ModalComponent = ({
   onSelect,
   selectedItemIndex,
 }: ModalComponentProps) => {
-  const [selectedAction, setSelectedAction] = useState<{id: string;name: string;}>({ id: "", name: "" });
+  const [selectedAction, setSelectedAction] = useState<{
+    id: string;
+    name: string;
+  }>({ id: "", name: "" });
 
   if (!isOpen) return;
 
   const isTrigger = selectedItemIndex === 1;
 
   const handleData = (metadata: any) => {
-    onSelect({...selectedAction, metadata});
+    onSelect({ ...selectedAction, metadata });
     onClose();
+  };
+
+  const handleSlackIntegration = async () => {
+    const response = await axiosInstance.get(
+      `https://slack.com/oauth/v2/authorize?client_id=8209065264739.8221208121687&scope=channels:join,channels:read,chat:write,groups:read,incoming-webhook,team:read,users:read,im:read,mpim:read&user_scope=`
+    );
   };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -165,36 +174,45 @@ const ModalComponent = ({
             Select {type === "trigger" ? "trigger" : "action"}
           </DialogTitle>
           <DialogDescription>
-            {selectedAction?.name?.length ? (
-              selectedAction?.name === "email" ? (
-                <EmailSelector
-                  setMetadata={(metadata: any) => handleData(metadata)}
-                />
-              ) : (
-                selectedAction?.name === "sms" && (
-                  <SolSelector
-                    setMetadata={(metadata: any) => handleData(metadata)}
-                  />
-                )
-              )
-            ) : (
-              availableItems?.map((item: any, index: number) => (
-                <div
-                  key={index}
-                  className="border p-2 w-full mt-2 rounded-lg hover:bg-slate-100 cursor-pointer"
-                  onClick={() => {
-                    if (selectedItemIndex === 1) {
-                      onSelect({ id: item?.id, name: item?.name });
-                    } else {
-                      onSelect({ id: item?.id, name: item?.name });
-                      setSelectedAction({ id: item?.id, name: item?.name });
+            {selectedAction?.name?.length
+              ? (() => {
+                  switch (selectedAction?.name) {
+                    case "email":
+                      <EmailSelector
+                        setMetadata={(metadata: any) => handleData(metadata)}
+                      />;
+                    case "sms":
+                      <SolSelector
+                        setMetadata={(metadata: any) => handleData(metadata)}
+                      />;
+                    case "slack": {
+                      () => {
+                        handleSlackIntegration();
+                        <SlackSelector
+                          setMetadata={(metadata: any) => handleData(metadata)}
+                        />;
+                      };
                     }
-                  }}
-                >
-                  {item.name}
-                </div>
-              ))
-            )}
+                    default:
+                      return <div>Select an action type</div>;
+                  }
+                })()
+              : availableItems?.map((item: any, index: number) => (
+                  <div
+                    key={index}
+                    className="border p-2 w-full mt-2 rounded-lg hover:bg-slate-100 cursor-pointer"
+                    onClick={() => {
+                      if (selectedItemIndex === 1) {
+                        onSelect({ id: item?.id, name: item?.name });
+                      } else {
+                        onSelect({ id: item?.id, name: item?.name });
+                        setSelectedAction({ id: item?.id, name: item?.name });
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </div>
+                ))}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
@@ -256,6 +274,54 @@ const SolSelector = ({ setMetadata }: any) => {
         value={amount}
       />
       <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+    </div>
+  );
+};
+
+const SlackSelector = (setMetadata: any) => {
+  const [selectedChannel, setSelectedChannel] = useState<{
+    id: string;
+    name: string;
+  }>({ id: "", name: "" });
+  const [message, setMessage] = useState("");
+  const [channels, setChannels] = useState([]);
+  const [showChannels, setShowChannels] = useState(false);
+  const handleSubmit = () => {
+    setMetadata({ channelId: selectedChannel.id, message });
+  };
+
+  const fetchChannels = async () => {
+    const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/slack/channels`);
+    console.log("res : ", res);
+    // setChannels(res.data.channels);
+    setShowChannels(true);
+  };
+
+  return (
+    <div className="flex flex-col">
+      {!showChannels ? (
+        <p onClick={fetchChannels}>Select channel</p>
+      ) : (
+        <div className="flex flex-col gap-y-2">
+          <div className="flex flex-col gap-y-2">
+            {channels?.map((c: any) => (
+              <div
+                key={c.id}
+                onClick={() => setSelectedChannel({ id: c.id, name: c.name })}
+              >
+                <li>{c.name}</li>
+              </div>
+            ))}
+          </div>
+          <Input
+            type="text"
+            name="slack-message"
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+          />
+          <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+        </div>
+      )}
     </div>
   );
 };
