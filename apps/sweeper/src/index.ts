@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log('host : ', process.env.KAFKA_HOST);
-console.log('port : ', process.env.KAFKA_PORT); 
 const kafka = new Kafka({
     clientId: 'zap-app',
     brokers: [`${process.env.KAFKA_HOST || 'kafka'}:${process.env.KAFKA_PORT || '9092'}`]

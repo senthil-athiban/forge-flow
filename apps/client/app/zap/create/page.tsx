@@ -299,14 +299,14 @@ const SolSelector = ({ setMetadata }: any) => {
 //TODO: when user selects the workspace make sure to return back to original page with the channels
 const SlackSelector = ({setMetadata}: any) => {
   const [selectedChannel, setSelectedChannel] = useState<{
-    id: string;
+    channelId: string;
     name: string;
-  }>({ id: "", name: "" });
+  }>({ channelId: "", name: "" });
   const [message, setMessage] = useState("");
   const [channels, setChannels] = useState([]);
   const [showChannels, setShowChannels] = useState(false);
   const handleSubmit = () => {
-    setMetadata({ channelId: selectedChannel.id, message });
+    setMetadata({ channelId: selectedChannel.channelId, message });
   };
 
   const fetchChannels = async () => {
@@ -328,10 +328,10 @@ const SlackSelector = ({setMetadata}: any) => {
           <div className="flex flex-col gap-y-2">
             {channels?.map((c: any) => (
               <div
-                key={c.id}
-                onClick={() => setSelectedChannel({ id: c.id, name: c.name })}
+                key={c.channelId}
+                onClick={() => setSelectedChannel({ channelId: c.channelId, name: c.name })}
               >
-                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.id === c.id ? "bg-slate-200" : ""}`}>{c.name}</ul>
+                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-slate-200" : ""}`}>{c.name}</ul>
               </div>
             ))}
           </div>
