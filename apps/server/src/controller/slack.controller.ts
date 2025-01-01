@@ -3,6 +3,7 @@ import { asyncMiddleWare } from "../config/asyncMiddleware";
 import { ApiError } from "../config/error";
 import slackService from "../services/slack.service";
 import userService from "../services/user.service";
+import { CLIENT_URL } from "@/config/config";
 
 const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) => {
     const code = req.query.code as string;
@@ -12,7 +13,7 @@ const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) =>
     if(!code) throw new ApiError(404, 'code was not found');
     if(!userId) throw new ApiError(404, "User id was not found");
     const result = await slackService.getWorkspaceDetails(code, userId);
-    res.status(201).send({channels: result?.channels, workspaceToken:result?.workspaceToken});
+    res.redirect(`${CLIENT_URL}/zap/slack/success`);
 });
 
 const getUserSlackChannel = asyncMiddleWare(async(req: Request, res: Response) => {
