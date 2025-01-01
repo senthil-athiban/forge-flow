@@ -50,7 +50,7 @@ model Token {
 
 model Slack {
   id             String         @id @default(cuid())
-  userId         String         @unique
+  userId         String
   user           User           @relation(fields: [userId], references: [id])
   workspaceId    String         @unique
   workspaceToken String
@@ -58,7 +58,6 @@ model Slack {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  @@unique([userId, workspaceId])
   @@index([workspaceId])
 }
 
