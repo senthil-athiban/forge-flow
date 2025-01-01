@@ -1,8 +1,9 @@
-import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT_URI } from "@/config/config";
-import { ApiError } from "@/config/error";
 import { WebClient } from "@slack/web-api";
+import { ApiError } from "../config/error";
+import { prismaClient } from "../db";
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET, SLACK_REDIRECT_URI } from "../config/config";
 
-const getWorkspaceDetails = async (code: string) => {
+const getWorkspaceDetails = async (code: string, userId : string) => {
     const web = new WebClient();
     const response = await web.oauth.v2.access({
         client_id: SLACK_CLIENT_ID,
@@ -15,16 +16,38 @@ const getWorkspaceDetails = async (code: string) => {
     const workspaceId = response.team?.id;
     if(!workspaceId) throw new ApiError(404, "Workspace id was not found");
 
+    const slackClient = new WebClient(workspaceToken);
+    const conversations = await slackClient.conversations.list();
+    const result = await prismaClient.slack.create({
+        data: {
+            userId: userId,
+            workspaceId: workspaceId,
+            workspaceToken: workspaceToken,
+            channels: {
+                create: conversations.channels?.map((channel:any) => ({
+                    channelId: channel.id,
+                    name: channel.name,
+                    isPrivate: channel.is_private
+                }))
+            }
+        },
+        include: {
+            channels: true
+        }
+    });
+    console.log("results : ", result);
     return {workspaceToken, workspaceId};
 }
 
-const getSlackChannels = async (workspaceToken: string) => {
-    const slackClient = new WebClient(workspaceToken);
-    const conversations = await slackClient.conversations.list();
-    const channels = conversations?.channels?.map((c: any) => ({
-        id: c.id,
-        name: c.name,
-    }))
+const getSlackChannels = async (userId: string) => {
+    const channels = await prismaClient.slack.findFirst({
+        where: {
+            userId: userId
+        },
+        select: {
+            channels: true
+        }
+    });
     return channels;
 }
 
