@@ -3,14 +3,6 @@ import jwt, {type JwtPayload} from "jsonwebtoken";
 import { JWT_ACCESS_SECRET } from "./config/config";
 import { ApiError } from "./config/error";
 
-// declare global {
-//     namespace Express {
-//       interface Request {
-//         userId: string;
-//       }
-//     }
-//   }
-
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Check OAuth Session
@@ -34,7 +26,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     
         // OAuth session expired/invalid
         if (!req.isAuthenticated()) {
-            err = new ApiError(401, "OAuth session expired");
+            err = new ApiError(403, "OAuth session expired");
         }
         if (error instanceof jwt.JsonWebTokenError) {
             err = new ApiError(401, "Invalid token");

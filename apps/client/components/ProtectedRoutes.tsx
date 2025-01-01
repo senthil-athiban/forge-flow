@@ -15,7 +15,8 @@ const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
         return;
     }
     const token = localStorage.getItem("accessToken");
-    setIsAuthenticated(Boolean(token && token !== "undefined" && token !== "null"));
+    const isAuthenticated = Boolean(token && token !== "undefined" && token !== "null")
+    setIsAuthenticated(isAuthenticated);
     
     if (!isAuthenticated) {
       router.push("/login");

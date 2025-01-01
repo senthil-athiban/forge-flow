@@ -11,12 +11,12 @@ const useTriggerAndActionTypes = () => {
       headers: {
         Authorization:`${localStorage.getItem('accessToken')}`
       }
-    }).then((result) => setTriggerTypes(result.data.results));
+    }).then((result) => setTriggerTypes(result.data.triggers));
     axios.get(`${BACKEND_URL}/api/v1/action`, {
       headers: {
         Authorization:`${localStorage.getItem('accessToken')}`
       }
-    }).then((result) => setActionTypes(result.data.results))
+    }).then((result) => setActionTypes(result.data.actions))
   }, [])
   
   return {

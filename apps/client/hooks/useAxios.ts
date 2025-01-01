@@ -32,6 +32,7 @@ const useAxios = () => {
                         prevRequest.headers["Authorization"] = `${newAccessToken}`;
                         return axiosInstance(prevRequest);
                     } catch (error) {
+                        console.log("error: ", error);
                         // Refresh token expired or invalid
                         //@ts-ignore
                         if (error.response?.status === 403) {

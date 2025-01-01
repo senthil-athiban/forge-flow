@@ -53,6 +53,7 @@ const verifyUser = async (userId: string) => {
         id: userId,
       },
       select: {
+        id: true,
         email: true,
         name: true,
       },

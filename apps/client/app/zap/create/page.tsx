@@ -17,8 +17,10 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { metadata } from "@/app/layout";
 import { axiosInstance } from "@/lib/axios";
+import useAuth from "@/hooks/useAuth";
 
 const ZapCreatePage = () => {
+  const { user } = useAuth();
   const [selectedTrigger, setSelectedTrigger] = useState<{
     name: string;
     id: string;
@@ -31,7 +33,7 @@ const ZapCreatePage = () => {
   >([]);
   const [showModal, setShowModal] = useState(false);
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
-
+  console.log("selectedActions: ", selectedActions);
   const onSubmit = async () => {
     try {
       const payload = {
@@ -122,6 +124,7 @@ const ZapCreatePage = () => {
               // setShowModal(false);
             }}
             selectedItemIndex={selectedItemIndex}
+            user={user}
           />
         )}
       </div>
@@ -138,6 +141,7 @@ interface ModalComponentProps {
   availableItems: any;
   onSelect: any;
   selectedItemIndex: number | null;
+  user: any;
 }
 const ModalComponent = ({
   isOpen,
@@ -146,26 +150,27 @@ const ModalComponent = ({
   availableItems,
   onSelect,
   selectedItemIndex,
+  user,
 }: ModalComponentProps) => {
   const [selectedAction, setSelectedAction] = useState<{
     id: string;
     name: string;
   }>({ id: "", name: "" });
-
+  const [showChannelSelector, setShowChannelSelector] = useState(false);
   if (!isOpen) return;
-
+  console.log("user:", user);
   const isTrigger = selectedItemIndex === 1;
 
   const handleData = (metadata: any) => {
     onSelect({ ...selectedAction, metadata });
     onClose();
   };
-
   const handleSlackIntegration = async () => {
-    const response = await axiosInstance.get(
-      `https://slack.com/oauth/v2/authorize?client_id=8209065264739.8221208121687&scope=channels:join,channels:read,chat:write,groups:read,incoming-webhook,team:read,users:read,im:read,mpim:read&user_scope=`
-    );
+    const state = btoa(JSON.stringify({ userId: user.id }));
+    const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=channels:join,channels:read,chat:write&state=${state}`;
+    window.open(slackUrl, "_blank", "noopener,noreferrer,width=600,height=700");
   };
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -178,21 +183,34 @@ const ModalComponent = ({
               ? (() => {
                   switch (selectedAction?.name) {
                     case "email":
-                      <EmailSelector
-                        setMetadata={(metadata: any) => handleData(metadata)}
-                      />;
+                      return (
+                        <EmailSelector
+                          setMetadata={(metadata: any) => handleData(metadata)}
+                        />
+                      );
                     case "sms":
-                      <SolSelector
-                        setMetadata={(metadata: any) => handleData(metadata)}
-                      />;
-                    case "slack": {
-                      () => {
-                        handleSlackIntegration();
+                      return (
+                        <SolSelector
+                          setMetadata={(metadata: any) => handleData(metadata)}
+                        />
+                      );
+                    case "slack":
+                      return showChannelSelector ? (
                         <SlackSelector
                           setMetadata={(metadata: any) => handleData(metadata)}
-                        />;
-                      };
-                    }
+                        />
+                      ) : (
+                        <>
+                          <PrimaryButton onClick={handleSlackIntegration}>
+                            Add slack
+                          </PrimaryButton>
+                          <PrimaryButton
+                            onClick={() => setShowChannelSelector(true)}
+                          >
+                            Select channel
+                          </PrimaryButton>
+                        </>
+                      );
                     default:
                       return <div>Select an action type</div>;
                   }
@@ -278,7 +296,8 @@ const SolSelector = ({ setMetadata }: any) => {
   );
 };
 
-const SlackSelector = (setMetadata: any) => {
+//TODO: when user selects the workspace make sure to return back to original page with the channels
+const SlackSelector = ({setMetadata}: any) => {
   const [selectedChannel, setSelectedChannel] = useState<{
     id: string;
     name: string;
@@ -291,9 +310,12 @@ const SlackSelector = (setMetadata: any) => {
   };
 
   const fetchChannels = async () => {
-    const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/slack/channels`);
-    console.log("res : ", res);
-    // setChannels(res.data.channels);
+    const res = await axios.get(`${BACKEND_URL}/api/v1/slack/channels`, {
+      headers: {
+        Authorization: localStorage.getItem("accessToken"),
+      }
+    });
+    setChannels(res.data.channels.channels);
     setShowChannels(true);
   };
 
@@ -309,7 +331,7 @@ const SlackSelector = (setMetadata: any) => {
                 key={c.id}
                 onClick={() => setSelectedChannel({ id: c.id, name: c.name })}
               >
-                <li>{c.name}</li>
+                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.id === c.id ? "bg-slate-200" : ""}`}>{c.name}</ul>
               </div>
             ))}
           </div>
@@ -318,6 +340,7 @@ const SlackSelector = (setMetadata: any) => {
             name="slack-message"
             onChange={(e) => setMessage(e.target.value)}
             value={message}
+            placeholder="message to send"
           />
           <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
         </div>
