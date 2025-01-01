@@ -24,22 +24,36 @@ const getWorkspaceDetails = async (code: string, userId: string) => {
 
     const slackClient = new WebClient(workspaceToken);
     const conversations = await slackClient.conversations.list();
-    const result = await prismaClient.slack.create({
-      data: {
+    const result = await prismaClient.slack.upsert({
+      where: {
+        workspaceId
+      },
+      create: {
         userId: userId,
-        workspaceId: workspaceId,
-        workspaceToken: workspaceToken,
+        workspaceId,
+        workspaceToken,
         channels: {
           create: conversations.channels?.map((channel: any) => ({
             channelId: channel.id,
             name: channel.name,
             isPrivate: channel.is_private,
           })),
-        },
+        },    
+      },
+      update: {
+        workspaceToken,
+        channels: {
+          deleteMany: {},
+          create: conversations.channels?.map((channel: any) => ({
+            channelId: channel.id,
+            name: channel.name,
+            isPrivate: channel.is_private,
+          })),
+        },    
       },
       include: {
-        channels: true,
-      },
+        channels: true
+      }
     });
     return { workspaceToken, workspaceId, channels: result.channels };
   } catch (error) {
