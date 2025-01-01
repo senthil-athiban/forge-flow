@@ -4,6 +4,7 @@ import { prisma } from "@repo/db";
 import { processContent } from "./config/algo";
 import { prepareEmail } from "./config/email";
 import { sendSol } from "./config/web3";
+import { sendSlackMessage } from "./config/slack";
 
 dotenv.config();
 
@@ -35,7 +36,6 @@ const processEvents = async () => {
       const parsedValue = JSON.parse(message?.value?.toString());
       const zapRunId = parsedValue.zapRunId;
       const stage = parsedValue.stage;
-
       if (!zapRunId) return;
       const zapRun = await prisma.zapRun.findFirst({
         where: {
@@ -67,6 +67,25 @@ const processEvents = async () => {
       if(currAction?.actionType?.name === "sol") {
         const data = processContent("sol", body, hooksData);
         sendSol(data?.address, data?.amount)
+      }
+
+      if(currAction?.actionType?.name === "slack") {
+        const {channelId} = body as any;
+        const {message} = hooksData as any;
+        const slackWorkspaceToken = await prisma.slackChannel.findFirst({
+          where: {
+            channelId: channelId
+          },
+          select: {
+            slack: {
+              select: {
+                workspaceToken: true
+              }
+            }
+          }
+        })
+        const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
+        sendSlackMessage({workspaceToken, channelId, message })
       }
       
       if (lastStage !== stage) {
