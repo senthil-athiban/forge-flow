@@ -3,7 +3,6 @@ import { asyncMiddleWare } from "../config/asyncMiddleware";
 import { ApiError } from "../config/error";
 import slackService from "../services/slack.service";
 import userService from "../services/user.service";
-import { CLIENT_URL } from "@/config/config";
 
 const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) => {
     const code = req.query.code as string;
@@ -18,11 +17,9 @@ const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) =>
 
 const getUserSlackChannel = asyncMiddleWare(async(req: Request, res: Response) => {
     const userId = req.userId as string;
-    console.log("userid : ", userId);
     const user = await userService.getUser({where: {id: userId}, select: {id: true}});
     if(!user) throw new ApiError(404, "No slack channels were found with the corresponding user");
     const channels = await slackService.getSlackChannels(user.id)
-    console.log("channels : ", channels);
     res.status(201).send({channels});
 })
 

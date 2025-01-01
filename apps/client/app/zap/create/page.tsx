@@ -1,7 +1,9 @@
 "use client";
-import React, { useState } from "react";
-import ZapCell from "@/components/Zap/ZapCell";
-import { Action } from "@/types/zap";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@/app/config";
+import useTriggerAndActionTypes from "@/hooks/useTriggerAndActionTypes";
+import useAuth from "@/hooks/useAuth";
 import PrimaryButton from "@/components/Button/PrimaryButton";
 import {
   Dialog,
@@ -9,15 +11,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import useTriggerAndActionTypes from "@/hooks/useTriggerAndActionTypes";
-import { BACKEND_URL } from "@/app/config";
-import axios from "axios";
 import { Input } from "@/components/ui/input";
-import { metadata } from "@/app/layout";
-import { axiosInstance } from "@/lib/axios";
-import useAuth from "@/hooks/useAuth";
+import ZapCell from "@/components/Zap/ZapCell";
 
 const ZapCreatePage = () => {
   const { user } = useAuth();
@@ -33,7 +29,7 @@ const ZapCreatePage = () => {
   >([]);
   const [showModal, setShowModal] = useState(false);
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
-  console.log("selectedActions: ", selectedActions);
+
   const onSubmit = async () => {
     try {
       const payload = {
@@ -158,7 +154,6 @@ const ModalComponent = ({
   }>({ id: "", name: "" });
   const [showChannelSelector, setShowChannelSelector] = useState(false);
   if (!isOpen) return;
-  console.log("user:", user);
   const isTrigger = selectedItemIndex === 1;
 
   const handleData = (metadata: any) => {
@@ -200,7 +195,7 @@ const ModalComponent = ({
                           setMetadata={(metadata: any) => handleData(metadata)}
                         />
                       ) : (
-                        <>
+                        <div className="flex flex-col gap-y-2">
                           <PrimaryButton onClick={handleSlackIntegration}>
                             Add slack
                           </PrimaryButton>
@@ -209,7 +204,7 @@ const ModalComponent = ({
                           >
                             Select channel
                           </PrimaryButton>
-                        </>
+                        </div>
                       );
                     default:
                       return <div>Select an action type</div>;
@@ -296,33 +291,33 @@ const SolSelector = ({ setMetadata }: any) => {
   );
 };
 
-//TODO: when user selects the workspace make sure to return back to original page with the channels
 const SlackSelector = ({setMetadata}: any) => {
   const [selectedChannel, setSelectedChannel] = useState<{
     channelId: string;
     name: string;
   }>({ channelId: "", name: "" });
-  const [message, setMessage] = useState("");
   const [channels, setChannels] = useState([]);
-  const [showChannels, setShowChannels] = useState(false);
   const handleSubmit = () => {
-    setMetadata({ channelId: selectedChannel.channelId, message });
+    setMetadata({ channelId: selectedChannel.channelId });
   };
 
-  const fetchChannels = async () => {
-    const res = await axios.get(`${BACKEND_URL}/api/v1/slack/channels`, {
-      headers: {
-        Authorization: localStorage.getItem("accessToken"),
-      }
-    });
-    setChannels(res.data.channels.channels);
-    setShowChannels(true);
-  };
+  useEffect( () => {
+    const fetchChannels = async () => {
+      const res = await axios.get(`${BACKEND_URL}/api/v1/slack/channels`, {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        }
+      });
+      const channels  = res.data.channels.flatMap((c:any) => c.channels);
+      setChannels(channels);
+    };
+    fetchChannels();
+  }, []);
 
   return (
     <div className="flex flex-col">
-      {!showChannels ? (
-        <p onClick={fetchChannels}>Select channel</p>
+      {!channels?.length ? (
+        <p>No channels available</p>
       ) : (
         <div className="flex flex-col gap-y-2">
           <div className="flex flex-col gap-y-2">
@@ -335,13 +330,6 @@ const SlackSelector = ({setMetadata}: any) => {
               </div>
             ))}
           </div>
-          <Input
-            type="text"
-            name="slack-message"
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-            placeholder="message to send"
-          />
           <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
         </div>
       )}
