@@ -11,7 +11,6 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 const main = async () => {
-    console.log('sweepre started');
     await producer.connect();
     while(true) {
 
