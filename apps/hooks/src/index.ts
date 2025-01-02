@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from 'dotenv';
 import {prisma} from '@repo/db';
 dotenv.config();
@@ -8,13 +8,10 @@ const PORT = process.env.DOMAIN;
 const app = express();
 app.use(express.json());
 
-//@ts-ignore
-app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
+app.post("/hooks/catch/:userId/:zapId", async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const zapId = req.params.zapId;
     const body = req.body;
-    // check user exists
-    // verify the zapId is belongs to the user
 
     const userZap = await prisma.zap.findFirst({
         where: {
@@ -24,7 +21,7 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
     });
 
     if(!userZap) {
-        return res.status(404).json({message: `No zap has been found with given zapId : ${zapId}`});
+        res.status(404).send({message: `No zap has been found with given zapId : ${zapId}`});
     }
     const response = await prisma.$transaction(async (tx) => {
         const zapRun = await tx.zapRun.create({
@@ -42,7 +39,7 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
 
         return zapRunOutBox
     });
-    return res.json({"message": response});
+    res.status(201).send({"message": response});
 })
 
 app.listen(PORT, () => console.log(`server listening on ${PORT}`));
