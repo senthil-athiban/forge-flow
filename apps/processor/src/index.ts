@@ -9,7 +9,7 @@ import { sendSlackMessage } from "./config/slack";
 dotenv.config();
 
 const kafka = new Kafka({
-  clientId: "zap-app",
+  clientId: process.env.CLIENT_ID || 'zap-app',
   brokers: [`${process.env.KAFKA_HOST || 'kafka'}:${process.env.KAFKA_PORT || '9092'}`]
 });
 
