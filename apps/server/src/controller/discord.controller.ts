@@ -16,7 +16,11 @@ const oAuthCallback = asyncMiddleWare(async (req: Request, res: Response) => {
     if (!guildId) throw new ApiError(404, "Server id not found");
 
     await discordClient.login(discordConfig.botToken);
+
+    // todo save the guild and channels in the db
+    const guild = await discordService.getGuildById(guildId)
     const channels = await discordService.getGuildChannels(guildId);
+    
     res.status(200).send(channels);
   } catch (error) {
     res.status(500).send(`Error: ${error}`);
@@ -25,7 +29,7 @@ const oAuthCallback = asyncMiddleWare(async (req: Request, res: Response) => {
 
 const sendDiscordNotification = asyncMiddleWare(async (req: Request, res: Response) => {
     const channelId = req.query.channelId as string;
-    const guild = await discordService.getGuild(channelId);
+    const guild = await discordService.getGuildByChannelId(channelId);
     if(!guild) throw new ApiError(404, "No server found for the given channelId");
 
 })

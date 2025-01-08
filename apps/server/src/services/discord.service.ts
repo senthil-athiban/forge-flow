@@ -29,7 +29,7 @@ const getGuildChannels = async (guildId: string) => {
   }
 };
 
-const getGuild = async (channelId: string) => {
+const getGuildByChannelId = async (channelId: string) => {
     try {
         const channel = await discordClient.channels.fetch(channelId);
         //@ts-ignore
@@ -37,6 +37,16 @@ const getGuild = async (channelId: string) => {
     } catch (error) {
         throw new ApiError(400, `Error in fetching guild : ${error}`);
     }
+}
+
+const getGuildById = async (guildId: string) => {
+  try {
+    const guild = await discordClient.guilds.fetch(guildId);
+    if(!guild) throw new ApiError(404, `No server found based on given serverID ${guildId}`)
+      return guild;
+  } catch (error) {
+    throw new ApiError(500, `Error in fetching guild : ${error}`)
+  }
 }
 const sendMessage = async (guildId: string, channelId: string, message: string) => {
     const guild = await discordClient.guilds.fetch(guildId);
@@ -47,4 +57,4 @@ const sendMessage = async (guildId: string, channelId: string, message: string) 
     await channel.send(message);
 }
 
-export default { getRedirectUrl, getGuildChannels, getGuild, sendMessage };
+export default { getRedirectUrl, getGuildChannels, getGuildByChannelId, sendMessage, getGuildById };
