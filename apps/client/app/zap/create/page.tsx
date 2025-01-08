@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import ZapCell from "@/components/Zap/ZapCell";
+import { axiosInstance } from "@/lib/axios";
 
 const ZapCreatePage = () => {
   const { user } = useAuth();
@@ -148,11 +149,15 @@ const ModalComponent = ({
   selectedItemIndex,
   user,
 }: ModalComponentProps) => {
+
   const [selectedAction, setSelectedAction] = useState<{
     id: string;
     name: string;
   }>({ id: "", name: "" });
+
   const [showChannelSelector, setShowChannelSelector] = useState(false);
+  const [showDiscordChannels, setShowDiscordChannels] = useState(false);
+
   if (!isOpen) return;
   const isTrigger = selectedItemIndex === 1;
 
@@ -166,6 +171,10 @@ const ModalComponent = ({
     window.open(slackUrl, "_blank", "noopener,noreferrer,width=600,height=700");
   };
   
+  const handleDiscordIntegration = async () => {
+    const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/discord/add`);
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -206,6 +215,19 @@ const ModalComponent = ({
                           </PrimaryButton>
                         </div>
                       );
+                    case "discord":
+                        return showDiscordChannels ? <DiscordSelector /> : (
+                          <div className="flex flex-col gap-y-2">
+                          <PrimaryButton onClick={handleDiscordIntegration}>
+                            Add discord
+                          </PrimaryButton>
+                          <PrimaryButton
+                            onClick={() => setShowDiscordChannels(true)}
+                          >
+                            Select channel
+                          </PrimaryButton>
+                        </div>
+                        )
                     default:
                       return <div>Select an action type</div>;
                   }
@@ -304,6 +326,53 @@ const SlackSelector = ({setMetadata}: any) => {
   useEffect( () => {
     const fetchChannels = async () => {
       const res = await axios.get(`${BACKEND_URL}/api/v1/slack/channels`, {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        }
+      });
+      const channels  = res.data.channels.flatMap((c:any) => c.channels);
+      setChannels(channels);
+    };
+    fetchChannels();
+  }, []);
+
+  return (
+    <div className="flex flex-col">
+      {!channels?.length ? (
+        <p>No channels available</p>
+      ) : (
+        <div className="flex flex-col gap-y-2">
+          <div className="flex flex-col gap-y-2">
+            {channels?.map((c: any) => (
+              <div
+                key={c.channelId}
+                onClick={() => setSelectedChannel({ channelId: c.channelId, name: c.name })}
+              >
+                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-slate-200" : ""}`}>{c.name}</ul>
+              </div>
+            ))}
+          </div>
+          <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+const DiscordSelector = ({setMetadata}: any) => {
+  const [selectedChannel, setSelectedChannel] = useState<{
+    channelId: string;
+    name: string;
+  }>({ channelId: "", name: "" });
+  const [channels, setChannels] = useState([]);
+  const handleSubmit = () => {
+    setMetadata({ channelId: selectedChannel.channelId });
+  };
+
+  useEffect( () => {
+    const fetchChannels = async () => {
+      const res = await axios.get(`${BACKEND_URL}/api/v1/discord/channels`, {
         headers: {
           Authorization: localStorage.getItem("accessToken"),
         }

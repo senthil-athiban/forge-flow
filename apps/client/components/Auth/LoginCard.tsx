@@ -17,9 +17,9 @@ const LoginCard = () => {
   const [password, setPassword] = useState("");
   const router = useRouter();
   const axiosInstance = useAxios();
+
   const handleGoogleAuth = async () => {
     const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
-    // const response = await fetch(`${BACKEND_URL}/api/v1/auth/google`);
     //@ts-ignore
     if(response) router.push('/dashboard');
   }
@@ -27,16 +27,13 @@ const LoginCard = () => {
     const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
   }
 
-  const handleSlackAuth = async () => {
-    window.open(`https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=channels:join,channels:read,chat:write,groups:read,incoming-webhook,team:read,users:read,im:read,mpim:read&user_scope=`, "_self");
-  }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
       <ProviderButton className="bg-sky-600" icon={<Google />} onClick={handleGoogleAuth}>
         Continue with google
       </ProviderButton>
-      <ProviderButton className="bg-blue-600" icon={<Facebook />} onClick={handleSlackAuth}>
-        Continue with Slack
+      <ProviderButton className="bg-blue-600" icon={<Facebook />} onClick={() => {}}>
+        Continue with facebook
       </ProviderButton>
       <ProviderButton className="bg-slate-900" icon={<Github />} onClick={handleGithubAuth}>
         Continue with github
