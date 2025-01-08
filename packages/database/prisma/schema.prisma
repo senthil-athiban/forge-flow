@@ -17,6 +17,7 @@ model User {
   token         Token[]
   OAuth         OAuthAccount[]
   slack         Slack[]
+  discord       Discord[]
   emailVerified Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -73,6 +74,36 @@ model SlackChannel {
   updatedAt DateTime @updatedAt
 
   @@unique([slackId, channelId])
+  @@index([channelId])
+}
+
+model Discord {
+  id        String           @id @default(cuid())
+  guildName String
+  guildId   String           @unique
+  botToken  String?
+  channels  DiscordChannel[]
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([guildId])
+}
+
+model DiscordChannel {
+  id          String  @id @default(cuid())
+  channelId   String
+  channelName String
+  type        String
+  discordId   String
+  discord     Discord @relation(fields: [discordId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([discordId, channelId])
   @@index([channelId])
 }
 
