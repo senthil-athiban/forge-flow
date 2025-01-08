@@ -13,3 +13,6 @@ export const SESSION_SECRET = process.env.SESSION_SECRET!;
 export const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID!;
 export const SLACK_CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET!;
 export const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI!;
+
+export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI!;
