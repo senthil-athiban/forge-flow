@@ -4,7 +4,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/add", discordController.addDiscord);
-// router.get("/callback", );
+router.get("/callback", discordController.oAuthCallback);
 // router.post("/select-channel", );
 // router.post("/send-message", );
 export const discordRouter = router;
