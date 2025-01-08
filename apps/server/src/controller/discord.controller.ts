@@ -23,4 +23,10 @@ const oAuthCallback = asyncMiddleWare(async (req: Request, res: Response) => {
   }
 });
 
-export default { addDiscord, oAuthCallback };
+const sendDiscordNotification = asyncMiddleWare(async (req: Request, res: Response) => {
+    const channelId = req.query.channelId as string;
+    const guild = await discordService.getGuild(channelId);
+    if(!guild) throw new ApiError(404, "No server found for the given channelId");
+
+})
+export default { addDiscord, oAuthCallback, sendDiscordNotification };

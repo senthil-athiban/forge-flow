@@ -5,6 +5,6 @@ const router = Router();
 
 router.get("/add", discordController.addDiscord);
 router.get("/callback", discordController.oAuthCallback);
-// router.post("/select-channel", );
-// router.post("/send-message", );
+router.post("/send-message", discordController.sendDiscordNotification);
+
 export const discordRouter = router;
