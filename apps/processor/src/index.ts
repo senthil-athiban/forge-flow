@@ -5,6 +5,7 @@ import { processContent } from "./config/algo";
 import { prepareEmail } from "./config/email";
 import { sendSol } from "./config/web3";
 import { sendSlackMessage } from "./config/slack";
+import { sendDiscordNotification } from "./config/discord";
 
 dotenv.config();
 
@@ -87,6 +88,27 @@ const processEvents = async () => {
         const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
         sendSlackMessage({workspaceToken, channelId, message })
       }
+
+      if(currAction?.actionType?.name === "discord") {
+        const {channelId} = body as any;
+        const {message} = hooksData as any;
+        const channel = await prisma.discordChannel.findFirst({
+          where: {
+            channelId: channelId
+          },
+          select: {
+            channelId: true,
+            discord: {
+              select: {
+                guildId: true
+              }
+            }
+          }
+        });
+
+        await sendDiscordNotification(channel?.discord.guildId!, channel?.channelId!, message);
+      }
+      
       
       if (lastStage !== stage) {
         await producer.send({
