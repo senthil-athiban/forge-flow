@@ -96,7 +96,7 @@ model DiscordChannel {
   id          String  @id @default(cuid())
   channelId   String
   channelName String
-  type        String
+  type        Int
   discordId   String
   discord     Discord @relation(fields: [discordId], references: [id])
 
