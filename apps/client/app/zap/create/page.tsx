@@ -165,15 +165,23 @@ const ModalComponent = ({
     onSelect({ ...selectedAction, metadata });
     onClose();
   };
-  const handleSlackIntegration = async () => {
-    const state = btoa(JSON.stringify({ userId: user.id }));
+  const state = btoa(JSON.stringify({ userId: user.id }));
+
+  const handleSlackIntegration = async () => {  
     const slackUrl = `https://slack.com/oauth/v2/authorize?client_id=${process.env.NEXT_PUBLIC_SLACK_CLIENT_ID}&scope=channels:join,channels:read,chat:write&state=${state}`;
     window.open(slackUrl, "_blank", "noopener,noreferrer,width=600,height=700");
   };
   
   const handleDiscordIntegration = async () => {
-    const res = await axiosInstance.get(`${BACKEND_URL}/api/v1/discord/add`);
-  }
+    try {
+      const response = await axiosInstance.get(`${BACKEND_URL}/api/v1/discord/add`);
+      const { redirectUrl } = response.data;
+      const url = `${redirectUrl}&state=${state}`;
+      window.open(url, "_blank", "noopener,noreferrer,width=600,height=700");
+    } catch (error) {
+      console.error("Discord integration error:", error);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -216,7 +224,7 @@ const ModalComponent = ({
                         </div>
                       );
                     case "discord":
-                        return showDiscordChannels ? <DiscordSelector /> : (
+                        return showDiscordChannels ? <DiscordSelector  setMetadata={(metadata: any) => handleData(metadata)} /> : (
                           <div className="flex flex-col gap-y-2">
                           <PrimaryButton onClick={handleDiscordIntegration}>
                             Add discord
@@ -393,9 +401,9 @@ const DiscordSelector = ({setMetadata}: any) => {
             {channels?.map((c: any) => (
               <div
                 key={c.channelId}
-                onClick={() => setSelectedChannel({ channelId: c.channelId, name: c.name })}
+                onClick={() => setSelectedChannel({ channelId: c.channelId, name: c.channelName })}
               >
-                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-slate-200" : ""}`}>{c.name}</ul>
+                <ul className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-slate-200" : ""}`}>{c.channelName}</ul>
               </div>
             ))}
           </div>
