@@ -18,7 +18,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
         // Verify JWT
         const payload = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;;
-        
         req.userId = payload.sub!;
         next();
     } catch (error) {
