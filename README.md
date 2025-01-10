@@ -2,6 +2,10 @@
 
 This project is designed to automate your tasks using a custom workflow similar to Zapier. It leverages modern web technologies to provide a seamless experience for creating and managing automated workflows.
 
+## Architecture
+
+![Architecture Diagram](https://github.com/senthil-athiban/zapier/raw/master/apps/client/public/architecture.png)
+
 ## Getting Started
 First, Install the dependencies
 
