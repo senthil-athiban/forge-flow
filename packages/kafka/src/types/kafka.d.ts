@@ -24,7 +24,7 @@ export interface ProducerMessage {
     value: T;
     headers?: Record<string, string>;
     timestamp?: string;
-  };
+  }[];
 }
 
 export interface KafkaConsumerConfig {

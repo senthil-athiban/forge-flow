@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@repo/kafka": "*",
     "kafkajs": "^2.2.4"
   }
 }

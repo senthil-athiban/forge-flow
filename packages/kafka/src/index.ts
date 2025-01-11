@@ -3,7 +3,6 @@ import KafkaService from "./services/kafka.service";
 const main = async () => {
   // Initialize Kafka service
   const kafkaService = KafkaService.getInstance();
-  // await kafkaService.start();
   await kafkaService.start();
 
   await kafkaService.createTopics([
@@ -17,9 +16,10 @@ const main = async () => {
   // Produce messages
   await kafkaService.produceMessage({
     topic: "my-topic9",
-    message: {
-      value: { id: 3, name: "Test9" },
-    },
+    message: [
+      {value: { id: 4, name: "Test4" }},
+      {value: { id: 5, name: "Test5" }},
+    ],
   });
 
   // Create and start consumer
@@ -42,5 +42,8 @@ const main = async () => {
   );
 };
 
+export {default as KafkaService } from "./services/kafka.service";
+
+export const kafkaService = KafkaService.getInstance();
 
 main();

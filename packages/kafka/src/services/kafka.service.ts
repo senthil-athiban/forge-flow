@@ -22,6 +22,7 @@ class KafkaService extends EventEmitter {
   private readonly MAX_RECONNECT_ATTEMPTS = 3;
   private readonly RECONNECT_INTERVAL = 5000;
   private readonly MESSAGE_BATCH_SIZE = 100;
+   
   private constructor() {
     super();
     this.kafka = new Kafka({
@@ -168,7 +169,7 @@ class KafkaService extends EventEmitter {
     try {
       this.messageQueue.push(producerMessage);
 
-      // process the messageQueue immediately if the queue is length exceeds the batch size
+      // process the messageQueue immediately if the queue length exceeds the batch size
       if (this.messageQueue.length >= this.MESSAGE_BATCH_SIZE) {
         await this.processMessageQueue();
       }
