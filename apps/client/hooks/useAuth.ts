@@ -1,26 +1,19 @@
 "use client";
-import { BACKEND_URL } from '@/app/config';
-import { axiosInstance } from '@/lib/axios';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+
+import { STORAGE_KEYS } from "@/constants/storage-keys.constant";
+import { getFromLocalStorage } from "@/utils/storage";
 
 const useAuth = () => {
-  const [user, setuser] = useState({});
+  const isAuthenticated = () => {
+    if (typeof window !== "undefined") {
+      return Boolean(getFromLocalStorage(STORAGE_KEYS.ACCESS_TOKEN));
+    }
+    return false;
+  };
 
-  useEffect(() => {
-    (async () => {
-        const result = await axios.get(`${BACKEND_URL}/api/v1/user/verify`, 
-            {
-                headers: {
-                    Authorization: localStorage.getItem("accessToken"),
-                  }
-            }
-        );
-        setuser(result.data.user);
-    })()
-  },[]);
+  return {
+    isAuthenticated: isAuthenticated(),
+  };
+};
 
-  return {user};
-}
-
-export default useAuth
+export default useAuth;
