@@ -1,11 +1,19 @@
-import React from "react";
-import { redirect } from "next/navigation";
-import { isAuthenticated } from "@/lib/utils";
+"use client";
+
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  if (!isAuthenticated()) {
-    redirect("/");
-  }
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (!isAuthenticated && typeof window === "undefined") {
+        router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
   return <>{children}</>;
 };
 
