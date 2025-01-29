@@ -6,7 +6,9 @@ import { getFromLocalStorage } from "@/utils/storage";
 const useAuth = () => {
   const isAuthenticated = () => {
     if (typeof window !== "undefined") {
-      return Boolean(getFromLocalStorage(STORAGE_KEYS.ACCESS_TOKEN));
+      if(getFromLocalStorage(STORAGE_KEYS.ACCESS_TOKEN) !== "undefined") {
+        return Boolean(getFromLocalStorage(STORAGE_KEYS.ACCESS_TOKEN));
+      }
     }
     return false;
   };

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import ProtectedRoutes from "@/components/ProtectedRoutes";
+import PublicRoute from "@/routes/PublicRoute";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${inter.className} bg-[#fffdf9]`}>
-        <Navbar />
-        <ProtectedRoutes>
-          {children}
-        </ProtectedRoutes>
+        <PublicRoute>
+            {children}
+          </PublicRoute>
       </body>
     </html>
   );

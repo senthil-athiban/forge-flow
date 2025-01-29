@@ -71,7 +71,7 @@ class HttpClient {
           prevRequest.sent = true;
           try {
             const response = await AuthService.getRefreshToken();
-            saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN,response?.accesstoken ?? "")
+            saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN,response?.message?.accesstoken ?? "")
             if (prevRequest.headers) {
               prevRequest.headers.Authorization = response?.accesstoken;
             }
@@ -79,6 +79,10 @@ class HttpClient {
           } catch (error) {
             logout();
           }
+        }
+
+        if(error.response?.status === 403) {
+          logout();
         }
 
         if (

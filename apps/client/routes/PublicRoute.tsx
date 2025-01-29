@@ -1,20 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
-  console.log('isAuthenticated: ', isAuthenticated);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const router = useRouter();
   useEffect(() => {
     if (typeof window !== "undefined" && isAuthenticated) {
       router.push("/dashboard");
     }
+    setIsLoading(false);
   }, [isAuthenticated, router]);
 
-  return <>{children}</>;
+  if(isLoading) return null;
+  return  <>{children}</>;
 };
 
 export default PublicRoute;

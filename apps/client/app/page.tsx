@@ -1,7 +1,5 @@
 import Hero from "@/components/Hero";
 import HeroVideo from "@/components/HeroVideo";
-import Navbar from "@/components/Navbar";
-import Image from "next/image";
 
 export default function Home() {
   return (
