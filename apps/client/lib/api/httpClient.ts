@@ -67,6 +67,7 @@ class HttpClient {
         const prevRequest = error?.config as AxiosRequestConfig & {
           sent?: boolean;
         };
+        
         if (error.response?.status === 401 && !prevRequest.sent) {
           prevRequest.sent = true;
           try {

@@ -6,15 +6,18 @@ import useAxios from "@/hooks/useAxios";
 import useZaps from "@/hooks/useZaps";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
+import UserService from "@/services/user.service";
 
 const DashboardContent = () => {
   const { isLoading, data } = useZaps();
-  const axiosInstance = useAxios();
   const router = useRouter();
   const handleVerify = async () => {
-    const res = await axiosInstance.get(
-      "http://localhost:8000/api/v1/user/verify"
-    );
+    try {
+      const res = await UserService.verifyUser();
+      console.log('res:', res);
+    } catch (error) {
+      console.log('error in verifying user:', error);
+    }
   };
   return (
     <>
