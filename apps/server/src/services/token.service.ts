@@ -45,7 +45,7 @@ const generateToken = (
 };
 
 const generateAuthTokens = async (user: any) => {
-  const accessTokenExpires = moment().add(1, "day");
+  const accessTokenExpires = moment().add(1, "minute");
   const accesstoken = generateToken(
     user.id,
     accessTokenExpires,
@@ -54,7 +54,7 @@ const generateAuthTokens = async (user: any) => {
   );
 
   // edge case to solve while creating new refresh token, make sure to delete the existing token from db
-  const refreshTokenExpires = moment().add(7, "days");
+  const refreshTokenExpires = moment().add(2, "minutes");
   const refreshToken = generateToken(
     user.id,
     refreshTokenExpires,
