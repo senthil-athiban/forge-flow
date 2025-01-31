@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import { Toaster } from "sonner";
 import "../globals.css";
+import Appbar from "@/components/Dashboard/Appbar";
+import Sidebar from "@/components/Dashboard/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +20,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${inter.className} bg-[#fffdf9]`}>
+      <body className={`${inter.className}`}>
         <ProtectedRoute>
           <Toaster />
-          {children}
+          <div className="flex bg-neutral-100">
+            <Sidebar />
+            <div className="min-h-screen w-full ml-2 mt-2 bg-orange-100 rounded-lg">
+              {children}
+            </div>
+          </div>
         </ProtectedRoute>
       </body>
     </html>
