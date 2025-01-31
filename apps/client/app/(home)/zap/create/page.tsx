@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import ZapCell from "@/components/Zap/ZapCell";
-import DiscordService from "@/services/discord.service";
+import DiscordService from "@/services/integrations/discord.service";
 import ZapService from "@/services/zap.service";
 import { getUser } from "@/utils/auth";
+import SlackService from "@/services/integrations/slack.service";
 
 const ZapCreatePage = () => {
   
@@ -179,7 +180,7 @@ const ModalComponent = ({
   
   const handleDiscordIntegration = async () => {
     try {
-      const response = await DiscordService.addDiscord();
+      const response = await DiscordService.add();
       const { redirectUrl } = response;
       const url = `${redirectUrl}&state=${state}`;
       window.open(url, "_blank", "noopener,noreferrer,width=600,height=700");
@@ -338,12 +339,8 @@ const SlackSelector = ({setMetadata}: any) => {
 
   useEffect( () => {
     const fetchChannels = async () => {
-      const res = await axios.get(`${BACKEND_URL}/api/v1/slack/channels`, {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        }
-      });
-      const channels  = res.data.channels.flatMap((c:any) => c.channels);
+      const res = await SlackService.getChannels();
+      const channels  = res.channels.flatMap((c:any) => c.channels);
       setChannels(channels);
     };
     fetchChannels();
@@ -385,12 +382,8 @@ const DiscordSelector = ({setMetadata}: any) => {
 
   useEffect( () => {
     const fetchChannels = async () => {
-      const res = await axios.get(`${BACKEND_URL}/api/v1/discord/channels`, {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        }
-      });
-      const channels  = res.data.channels.flatMap((c:any) => c.channels);
+      const res = await DiscordService.getChannels();
+      const channels  = res.channels.flatMap((c:any) => c.channels);
       setChannels(channels);
     };
     fetchChannels();

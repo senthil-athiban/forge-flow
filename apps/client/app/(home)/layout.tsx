@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={` ${inter.className} bg-[#fffdf9]`}>
         <ProtectedRoute>
-        <Toaster />
+          <Toaster />
           {children}
         </ProtectedRoute>
       </body>

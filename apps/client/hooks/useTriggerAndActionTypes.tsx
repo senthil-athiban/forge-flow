@@ -1,22 +1,15 @@
 import React , { useState, useEffect } from 'react'
 import axios from "axios";
 import { BACKEND_URL } from '@/app/config';
+import ZapService from '@/services/zap.service';
 
 const useTriggerAndActionTypes = () => {
   const [triggerTypes, setTriggerTypes] = useState([]);
   const [actionTypes, setActionTypes] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BACKEND_URL}/api/v1/trigger`, {
-      headers: {
-        Authorization:`${localStorage.getItem('accessToken')}`
-      }
-    }).then((result) => setTriggerTypes(result.data.triggers));
-    axios.get(`${BACKEND_URL}/api/v1/action`, {
-      headers: {
-        Authorization:`${localStorage.getItem('accessToken')}`
-      }
-    }).then((result) => setActionTypes(result.data.actions))
+    ZapService.getZapTriggers().then((result) => setTriggerTypes(result.triggers));
+    ZapService.getZapActions().then((result) => setActionTypes(result.actions))
   }, [])
   
   return {

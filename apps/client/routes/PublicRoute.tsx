@@ -7,7 +7,7 @@ import useAuth from "@/hooks/useAuth";
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  
+  console.log('from public route');
   const router = useRouter();
   useEffect(() => {
     if (typeof window !== "undefined" && isAuthenticated) {
