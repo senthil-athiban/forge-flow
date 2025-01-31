@@ -1,4 +1,7 @@
 "use client";
+
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BadgePlus,
   ChevronDown,
@@ -9,9 +12,7 @@ import {
   LucideIcon,
   Workflow,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-
-import React, { useState } from "react";
+import { getUser, logout } from "@/utils/auth";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,6 +34,20 @@ interface SideBarMenuProps {
     isCollapsed: boolean;
 }
 const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await getUser();
+        setUser(res);
+      } catch (error) {
+        console.log('Error in fetching user : ', error);
+      }
+    }
+    fetchUser();
+  },[]);
+  
   const routes = [
     {
       href: "/dashboard",
@@ -98,8 +113,8 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
           {!isCollapsed && (
             <>
               <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-slate-700">John Doe</p>
-                <p className="text-xs text-slate-500">john@example.com</p>
+                <p className="text-sm font-medium text-slate-700">{user?.name}</p>
+                <p className="text-xs text-slate-500">{user?.email}</p>
               </div>
               <ChevronDown size={16} className="text-slate-400" />
             </>
@@ -126,9 +141,16 @@ const SidebarItems = ({
   const router = useRouter();
   const pathName = usePathname();
   const isActive = pathName.includes(href);
+  const handleNavigation = () => {
+    if(href === "/login") {
+        logout();
+        return;
+    }
+    router.push(href);
+  }
   return (
     <button
-      onClick={() => router.push(href)}
+      onClick={handleNavigation}
       className={`flex items-center  gap-x-3 p-2.5 rounded-lg transition-all duration-200 ${isActive ? "bg-indigo-100 text-indigo-600" : "text-slate-600 hover:bg-indigo-100 hover:text-indigo-600"} ${!isCollapsed ? "w-full" : ""}`}
     >
       <div className={`flex items-center  p-1.5 rounded-lg ${isActive ? "bg-indigo-100" : ""}`}>
