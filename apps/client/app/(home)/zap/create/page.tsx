@@ -14,10 +14,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import ZapCell from "@/components/Zap/ZapCell";
-import { axiosInstance } from "@/lib/axios";
+import DiscordService from "@/services/discord.service";
 
 const ZapCreatePage = () => {
   const { user } = useAuth();
+  console.log('user: ', user);
   const [selectedTrigger, setSelectedTrigger] = useState<{
     name: string;
     id: string;
@@ -174,8 +175,8 @@ const ModalComponent = ({
   
   const handleDiscordIntegration = async () => {
     try {
-      const response = await axiosInstance.get(`${BACKEND_URL}/api/v1/discord/add`);
-      const { redirectUrl } = response.data;
+      const response = await DiscordService.addDiscord();
+      const { redirectUrl } = response;
       const url = `${redirectUrl}&state=${state}`;
       window.open(url, "_blank", "noopener,noreferrer,width=600,height=700");
     } catch (error) {

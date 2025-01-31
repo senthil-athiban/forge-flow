@@ -1,8 +1,8 @@
 "use client";
+
 import React from "react";
 import ZapButton from "@/components/Button/ZapButton";
 import ZapTable from "@/components/Table/ZapTable";
-import useAxios from "@/hooks/useAxios";
 import useZaps from "@/hooks/useZaps";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,6 @@ const DashboardContent = () => {
   const handleVerify = async () => {
     try {
       const res = await UserService.verifyUser();
-      console.log('res:', res);
     } catch (error) {
       console.log('error in verifying user:', error);
     }
