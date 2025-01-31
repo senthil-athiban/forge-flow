@@ -40,3 +40,11 @@ export interface Zap {
     trigger: Trigger;
     actions: Action[];
   }
+
+  export interface ZapPayload {
+    triggerTypeId: string;
+    actions: {
+        actionTypeId: any;
+        actionMetaData: any;
+    }[];
+  }

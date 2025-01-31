@@ -1,6 +1,8 @@
 "use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import ProviderButton from "../Button/ProviderButton";
 import Google from "../Provider/Google";
 import Facebook from "../Provider/Facebook";
@@ -12,6 +14,7 @@ import { useRouter } from "next/navigation";
 import AuthService from "@/services/auth.service";
 import { saveToLocalStorage } from "@/utils/storage";
 import { STORAGE_KEYS } from "@/constants/storage-keys.constant";
+import ApiError, { ErrorResponse } from "@/lib/api/error";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -28,14 +31,17 @@ const LoginCard = () => {
   };
 
   const onSubmit = async () => {
-    const res = await AuthService.login({
-      email: email,
-      password: password,
-    });
-    console.log("res : ", res);
-    const accessToken = res.accesstoken;
-    saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-    router.push("/dashboard");
+    try {
+      const res = await AuthService.login({
+        email: email,
+        password: password,
+      });
+      const accessToken = res.accesstoken;
+      saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast.warning(error.message);
+    }
   };
 
   return (

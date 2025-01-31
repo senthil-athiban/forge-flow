@@ -15,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import ZapCell from "@/components/Zap/ZapCell";
 import DiscordService from "@/services/discord.service";
+import ZapService from "@/services/zap.service";
+import { getUser } from "@/utils/auth";
 
 const ZapCreatePage = () => {
-  const { user } = useAuth();
-  console.log('user: ', user);
+  
   const [selectedTrigger, setSelectedTrigger] = useState<{
     name: string;
     id: string;
@@ -30,6 +31,7 @@ const ZapCreatePage = () => {
     { actionId: string; actionName: string; metadata: {} }[]
   >([]);
   const [showModal, setShowModal] = useState(false);
+
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
 
   const onSubmit = async () => {
@@ -43,11 +45,7 @@ const ZapCreatePage = () => {
           };
         }),
       };
-      const response = await axios.post(`${BACKEND_URL}/api/v1/zap`, payload, {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      });
+      const response = await ZapService.createZap(payload);
     } catch (error) {
       console.log("[ERROR IN CREATING ZAP]:", error);
     }
@@ -122,7 +120,6 @@ const ZapCreatePage = () => {
               // setShowModal(false);
             }}
             selectedItemIndex={selectedItemIndex}
-            user={user}
           />
         )}
       </div>
@@ -139,7 +136,6 @@ interface ModalComponentProps {
   availableItems: any;
   onSelect: any;
   selectedItemIndex: number | null;
-  user: any;
 }
 const ModalComponent = ({
   isOpen,
@@ -148,7 +144,6 @@ const ModalComponent = ({
   availableItems,
   onSelect,
   selectedItemIndex,
-  user,
 }: ModalComponentProps) => {
 
   const [selectedAction, setSelectedAction] = useState<{
@@ -158,7 +153,16 @@ const ModalComponent = ({
 
   const [showChannelSelector, setShowChannelSelector] = useState(false);
   const [showDiscordChannels, setShowDiscordChannels] = useState(false);
+  const [user, setUser] = useState<any>({});
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUser();
+      setUser(user);
+    }
+    fetchUser();
+  },[]);
+  
   if (!isOpen) return;
   const isTrigger = selectedItemIndex === 1;
 

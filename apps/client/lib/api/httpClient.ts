@@ -9,6 +9,7 @@ import AuthService from "@/services/auth.service";
 import { logout } from "@/utils/auth";
 import { getFromLocalStorage, saveToLocalStorage } from "@/utils/storage";
 import { STORAGE_KEYS } from "@/constants/storage-keys.constant";
+import { ErrorResponse } from "./error";
 
 let retryCount = 0;
 const MAX_RETRIES = 3;
@@ -35,6 +36,62 @@ class HttpClient {
     }
     return this.client;
   }
+
+  private formatErrorMessage = (error: any): ErrorResponse => {
+    // Network Errors
+    console.log('error : ', error);
+    if (!error.response || error.message === 'Network Error') {
+      return {
+        message: 'Unable to connect to the server. Please check your internet connection.',
+        status: 0,
+        code: 'NETWORK_ERROR'
+      };
+    }
+  
+    const { status, data } = error.response;
+  
+    // Auth Errors (401, 403)
+    if (status === 401) {
+      return {
+        message: data?.message ?? 'Your session has expired. Please login again.',
+        status,
+        code: 'UNAUTHORIZED'
+      };
+    }
+  
+    if (status === 403) {
+      return {
+        message: 'You do not have permission to perform this action.',
+        status,
+        code: 'FORBIDDEN'
+      };
+    }
+  
+    // Validation Errors (400, 422)
+    if (status === 400 || status === 422) {
+      return {
+        message: error.response.data?.message || 'Invalid input. Please check your data.',
+        status,
+        code: 'VALIDATION_ERROR'
+      };
+    }
+  
+    // Server Errors (500+)
+    if (status >= 500) {
+      return {
+        message: 'An unexpected error occurred. Please try again later.',
+        status,
+        code: 'SERVER_ERROR'
+      };
+    }
+  
+    // Default Error
+    return {
+      message: error.response.data?.message || 'Something went wrong.',
+      status: status || 500,
+      code: 'UNKNOWN_ERROR'
+    };
+  };
 
   private initClient(): AxiosInstance {
     const http = axios.create({
@@ -64,11 +121,14 @@ class HttpClient {
     http.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
+        const formattedError = this.formatErrorMessage(error);
+        
         const prevRequest = error?.config as AxiosRequestConfig & {
           sent?: boolean;
         };
         
-        if (error.response?.status === 401 && !prevRequest.sent) {
+        //@ts-ignore
+        if (error.response?.status === 401 && !prevRequest.sent && !error.response.data.message.includes("Invalid credentials")) {
           prevRequest.sent = true;
           try {
             const response = await AuthService.getRefreshToken();
@@ -82,10 +142,11 @@ class HttpClient {
           }
         }
 
-        if(error.response?.status === 403) {
-          logout();
+        // Handle auth errors
+        if (formattedError.status === 401 || formattedError.status === 403) {
+          // logout();
+          return Promise.reject(formattedError);
         }
-
         if (
           (error.response && error.response.status >= 500) ||
           error.message.includes("Network error")
