@@ -18,7 +18,7 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   return (
     <div
-      className={`${isCollapsed ? "w-16" : "w-64"} bg-neutral-100 top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out`}
+      className={`${isCollapsed ? "w-16" : "w-64"} bg-slate-100 top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out`}
     >
       <div className="h-full">
         <SidebarMenu isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />

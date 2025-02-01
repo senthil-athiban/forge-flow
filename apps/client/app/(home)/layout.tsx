@@ -23,9 +23,9 @@ export default function RootLayout({
       <body className={`${inter.className}`}>
         <ProtectedRoute>
           <Toaster />
-          <div className="flex bg-neutral-100">
+          <div className="flex bg-slate-100">
             <Sidebar />
-            <div className="min-h-screen w-full ml-2 mt-2 bg-orange-100 rounded-lg">
+            <div className="min-h-screen w-full ml-2 mt-2 border bg-indigo-50 rounded-lg">
               {children}
             </div>
           </div>
