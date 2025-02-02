@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import ZapButton from "@/components/Button/ZapButton";
 import useZaps from "@/hooks/useZaps";
 import { Loader2, Plus, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -52,8 +51,8 @@ const DashboardContent = () => {
           </div>
         </div>
         <div className="w-full">
-            <Widget zapData={data} />
-          </div>
+          <Widget zapData={data} />
+        </div>
       </div>
 
       <div className="mt-4 bg-white rounded-lg">

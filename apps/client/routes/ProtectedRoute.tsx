@@ -7,7 +7,7 @@ import useAuth from "@/hooks/useAuth";
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  console.log('from protected route');
+  
   const router = useRouter();
   useEffect(() => {
     if (!isAuthenticated) {

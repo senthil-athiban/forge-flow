@@ -1,17 +1,27 @@
 "use client";
+
 import { Activity, AlertTriangle, History, Workflow } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import React from "react";
 import Card from "./Card";
 
+
 const Widget = ({ zapData }: { zapData: any }) => {
-  console.log("zapData: ", zapData);
+  const latestZap = zapData.latestZap?.updatedAt;
+  const latestZapRun = zapData.latestZapRun?.updatedAt;
+  
+  const getTimeDistance = (date: Date | null) => {
+    if (!date) return 'No activity';
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+  
   const statictics = [
     {
       title: "Total Workflows",
       metric: zapData?.zaps?.length,
       subMetric: "12 active",
       icon: <Workflow className="text-indigo-600" />,
-      change: "Last created 2h ago",
+      change: `Last created ${getTimeDistance(latestZap)}`,
       trend: "up",
     },
     {
@@ -19,7 +29,7 @@ const Widget = ({ zapData }: { zapData: any }) => {
       metric: zapData?.zapRunMetrics,
       subMetric: "Last 24 hours",
       icon: <History className="text-yellow-400" />,
-      change: "Last run 5m ago",
+      change: `Last created ${getTimeDistance(latestZapRun)}`,
       trend: "up",
     },
     {

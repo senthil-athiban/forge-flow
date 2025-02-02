@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import TooltipWrapper from "@/components/ui/tooltip-wrapper";
+import { useState } from "react";
+import ZapTest from "./ZapTest";
 
 export type Workflow = {
   id: string;
@@ -20,6 +22,37 @@ export type Workflow = {
   actions: Array<Action>;
   lastModified: any;
   owner: string;
+};
+
+const MenuCell = ({ row }: { row: any }) => {
+  const [isTestOpen, setIsTestOpen] = useState(false);
+  const { id } = row.original;
+  
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setIsTestOpen(true)}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Test
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {isTestOpen && (
+        <ZapTest
+          isOpen={isTestOpen} 
+          onClose={() => setIsTestOpen(false)}
+          zapId={id}
+        />
+      )}
+    </>
+  );
 };
 
 export const columns: ColumnDef<Workflow>[] = [
@@ -172,24 +205,6 @@ export const columns: ColumnDef<Workflow>[] = [
   {
     accessorKey: "menu",
     header: "Menu",
-    cell: ({ row }) => {
-      const { id } = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => {}}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Test
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: MenuCell
   },
 ];
