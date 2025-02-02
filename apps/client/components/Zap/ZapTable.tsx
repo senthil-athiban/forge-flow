@@ -7,11 +7,11 @@ import { Zap } from "@/types/zap";
 import { Loader2 } from "lucide-react";
 
 export default function ZapTable() {
-  const { data, isLoading } = useZaps();
-
-  const transformedData: Workflow[] = isLoading || !data 
+  const { data, isLoading } = useZaps() as any;
+  console.log('data: ', data);
+  const transformedData: Workflow[] = isLoading || !data?.zaps
     ? []
-    : data.map((item: Zap) => ({
+    : data.zaps.map((item: Zap) => ({
         id: item.id,
         name: 'My zap',
         actions: item.actions,

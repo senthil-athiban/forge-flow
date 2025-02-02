@@ -9,8 +9,8 @@ const useZaps = () => {
         setisLoading(true);
         async function fetchData() {
             try {
-              const res = await ZapService.getZapByUserId();
-              setdata(res.zap);
+              const res = await ZapService.getZapByUserId() as any;
+              setdata(res);
               setisLoading(false);
             } catch (error) {
                 console.log('Error in fetching zap : ', error);

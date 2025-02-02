@@ -6,8 +6,9 @@ import useZaps from "@/hooks/useZaps";
 import { Loader2, Plus, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import UserService from "@/services/user.service";
-import ZapTable from "./Zap/ZapTable";
-import { Button } from "./ui/button";
+import ZapTable from "../Zap/ZapTable";
+import { Button } from "../ui/button";
+import Widget from "./Widget";
 
 const DashboardContent = () => {
   const { isLoading, data } = useZaps();
@@ -31,14 +32,7 @@ const DashboardContent = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">
-              <p className="mt-1 text-sm text-slate-500">
-                {data?.length | 0} active workflows
-              </p>
-            </h1>
-          </div>
+        <div className="flex justify-end mb-2">
           <div className="flex items-center gap-x-3">
             <Button
               onClick={handleVerify}
@@ -57,6 +51,9 @@ const DashboardContent = () => {
             </Button>
           </div>
         </div>
+        <div className="w-full">
+            <Widget zapData={data} />
+          </div>
       </div>
 
       <div className="mt-4 bg-white rounded-lg">

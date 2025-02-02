@@ -113,7 +113,8 @@ export const columns: ColumnDef<Workflow>[] = [
       return (
         <div className="flex gap-x-2 items-center">
           {actions.map((action, index) => (
-            <TooltipWrapper content={action.actionType.name}>
+            <div key={index}>
+              <TooltipWrapper content={action.actionType.name}>
               <img
                 key={index}
                 src={action.actionType.image}
@@ -121,6 +122,8 @@ export const columns: ColumnDef<Workflow>[] = [
                 className="h-8 w-8 rounded-full border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 shadow-md"
               />
             </TooltipWrapper>
+            </div>
+            
           ))}
         </div>
       );
