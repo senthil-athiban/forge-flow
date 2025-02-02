@@ -18,7 +18,7 @@ const createZap = asyncMiddleWare(async (req: Request, res: Response) => {
 const getUserZaps = asyncMiddleWare(async (req: Request, res: Response) => {
     const userId = req.userId as string;
     const zap  = await zapService.getZapByUserId(userId);
-    res.status(200).send({zap});
+    res.status(200).send(zap);
 })
 
 const getUserZap = asyncMiddleWare(async (req: Request, res: Response) => {
