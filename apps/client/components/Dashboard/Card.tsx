@@ -13,8 +13,8 @@ interface CardProps {
 const Card = ({ title, metric, icon, change, subMetric, trend }: CardProps) => {
   return (
     <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-md border border-gray-200 transition-all duration-200 hover:shadow-lg">
-      <div className="flex items-start justify-between space-y-2">
-        <div className="space-y-2">
+      <div className="flex items-start justify-between">
+        <div className="space-y-4">
           <h3 className="text-sm font-medium uppercase tracking-wide text-slate-500">
             {title}
           </h3>
@@ -26,7 +26,7 @@ const Card = ({ title, metric, icon, change, subMetric, trend }: CardProps) => {
           </div>
           {change && (
             <p className={`
-              flex items-center text-sm
+              flex items-center text-xs
               ${trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}
             `}>
               {change}

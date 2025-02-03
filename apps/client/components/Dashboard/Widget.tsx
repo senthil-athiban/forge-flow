@@ -5,7 +5,6 @@ import { formatDistanceToNow } from "date-fns";
 import React from "react";
 import Card from "./Card";
 
-
 const Widget = ({ zapData }: { zapData: any }) => {
   const latestZap = zapData.latestZap?.updatedAt;
   const latestZapRun = zapData.latestZapRun?.updatedAt;

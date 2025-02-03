@@ -39,7 +39,6 @@ class HttpClient {
 
   private formatErrorMessage = (error: any): ErrorResponse => {
     // Network Errors
-    console.log('error : ', error);
     if (!error.response || error.message === 'Network Error') {
       return {
         message: 'Unable to connect to the server. Please check your internet connection.',

@@ -1,5 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   Dialog,
   DialogContent,
@@ -7,11 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import axios from "axios";
-import { toast } from "sonner";
-import { getUser } from "@/utils/auth";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { Button } from "@/components/ui/button";
 
 interface ZapTestProps {
   isOpen: boolean;
@@ -30,15 +29,24 @@ const ZapTest = ({ isOpen, onClose, zapId }: ZapTestProps) => {
     try {
       const res = await axios.post(
         `http://localhost:8080/hooks/catch/${user?.id}/${zapId}`,
-        payload
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
       if(res) {
         toast.success('Zap has been triggered');
       }
     } catch (error) {
       toast.warning("Failed to test zap");
+    } finally {
+      setPayload("");
+      onClose();
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
