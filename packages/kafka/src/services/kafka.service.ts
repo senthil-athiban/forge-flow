@@ -184,11 +184,7 @@ class KafkaService extends EventEmitter {
     try {
       const messages = this.messageQueue.flatMap((it) => ({
         topic: it.topic,
-        messages: [
-          {
-            value: JSON.stringify(it.message),
-          },
-        ],
+        messages: it.message.map((i) => ({value: JSON.stringify(i.value)}))
       }));
       await this.producer.sendBatch({ topicMessages: messages });
       this.messageQueue = [];
@@ -225,7 +221,7 @@ class KafkaService extends EventEmitter {
 
   public async startConsumer(
     groupId: string,
-    messageHandler: (payload: EachMessagePayload) => Promise<void>
+    messageHandler: any
   ) {
     try {
       const consumer = this.consumers.get(groupId);
@@ -236,7 +232,7 @@ class KafkaService extends EventEmitter {
 
       await consumer.run({
         eachMessage: async (payload) => {
-          messageHandler(payload);
+          await messageHandler(payload, consumer);
         },
       });
     } catch (error) {

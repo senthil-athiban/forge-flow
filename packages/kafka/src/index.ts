@@ -31,7 +31,7 @@ const main = async () => {
 
   await kafkaService.startConsumer(
     "my-group9",
-    async ({ topic, partition, message }) => {
+    async ({ topic, partition, message }:any) => {
       if (!message?.value) return;
       console.log("Received message:", {
         topic,
@@ -46,4 +46,4 @@ export {default as KafkaService } from "./services/kafka.service";
 
 export const kafkaService = KafkaService.getInstance();
 
-main();
+// main();
