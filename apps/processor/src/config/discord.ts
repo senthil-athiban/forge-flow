@@ -14,6 +14,7 @@ export const discordConfig = {
 };
 
 export const sendDiscordNotification = async (guildId: string, channelId: string, message: string) => {
+  console.log('message : ', message);
     try {
       await discordClient.login(discordConfig.botToken);
       const guild = await discordClient?.guilds.fetch(guildId);
@@ -21,7 +22,7 @@ export const sendDiscordNotification = async (guildId: string, channelId: string
       if (!channel || !channel.isTextBased()) {
         throw new Error('Channel not found or not text-based');
       }
-      await channel.send(message);
+      const resdiscord = await channel.send(message);
       return true;
     } catch (error) {
       console.error('Error sending Discord notification:', error);

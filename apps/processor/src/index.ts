@@ -1,4 +1,3 @@
-import { Kafka } from "kafkajs";
 import dotenv from "dotenv";
 import { prisma } from "@repo/db";
 import { processContent } from "./config/algo";
@@ -6,129 +5,137 @@ import { prepareEmail } from "./config/email";
 import { sendSol } from "./config/web3";
 import { sendSlackMessage } from "./config/slack";
 import { sendDiscordNotification } from "./config/discord";
+import { KafkaService } from "@repo/kafka";
 
 dotenv.config();
 
-const kafka = new Kafka({
-  clientId: process.env.CLIENT_ID || 'zap-app',
-  brokers: [`${process.env.KAFKA_HOST || 'kafka'}:${process.env.KAFKA_PORT || '9092'}`]
-});
+const kafka = KafkaService.getInstance();
 
-const consumer = kafka.consumer({ groupId: process.env.GROUP_ID! });
-const producer = kafka.producer();
-const processEvents = async () => {
-  await producer.connect();
-  await consumer.connect();
-  await consumer.subscribe({
-    topic: process.env.TOPIC_NAME!,
-    fromBeginning: true,
+const kafkaConsumer = KafkaService.getInstance();
+
+const handleActions = async ({ topic, partition, message }:any, consumer: any) => {
+  console.log({
+    partition,
+    offset: message.offset,
+    value: message?.value?.toString(),
   });
 
-  await consumer.run({
-    autoCommit: false,
-    eachMessage: async ({ topic, partition, message }) => {
-      console.log({
-        partition,
-        offset: message.offset,
-        value: message?.value?.toString(),
-      });
+  if (!message?.value?.toString()) return;
+  const parsedValue = JSON.parse(message?.value?.toString());
 
-      if (!message?.value?.toString()) return;
-      const parsedValue = JSON.parse(message?.value?.toString());
-      const zapRunId = parsedValue.zapRunId;
-      const stage = parsedValue.stage;
-      if (!zapRunId) return;
-      const zapRun = await prisma.zapRun.findFirst({
-        where: {
-          id: zapRunId,
-        },
+  const zapRunId = parsedValue.zapRunId;
+  const stage = parsedValue.stage;
+
+  if (!zapRunId) return;
+  const zapRun = await prisma.zapRun.findFirst({
+    where: {
+      id: zapRunId,
+    },
+    include: {
+      zap: {
         include: {
-          zap: {
+          actions: {
             include: {
-              actions: {
-                include: {
-                  actionType: true,
-                },
-              },
+              actionType: true,
             },
           },
         },
-      });
-      const actions = zapRun?.zap.actions;
-      const currAction = actions?.find((item) => item.sortingOrder === stage);
-      const lastStage = actions?.length! - 1;
-      const hooksData = zapRun?.metadata;
-      const body = currAction?.metadata;
-
-      if(currAction?.actionType?.name === "email") { 
-        const data = processContent("email", body, hooksData);
-        prepareEmail(data?.to, data?.content)
-      }
-
-      if(currAction?.actionType?.name === "sol") {
-        const data = processContent("sol", body, hooksData);
-        sendSol(data?.address, data?.amount)
-      }
-
-      if(currAction?.actionType?.name === "slack") {
-        const {channelId} = body as any;
-        const {message} = hooksData as any;
-        const slackWorkspaceToken = await prisma.slackChannel.findFirst({
-          where: {
-            channelId: channelId
-          },
-          select: {
-            slack: {
-              select: {
-                workspaceToken: true
-              }
-            }
-          }
-        })
-        const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
-        sendSlackMessage({workspaceToken, channelId, message })
-      }
-
-      if(currAction?.actionType?.name === "discord") {
-        const {channelId} = body as any;
-        const {message} = hooksData as any;
-        const channel = await prisma.discordChannel.findFirst({
-          where: {
-            channelId: channelId
-          },
-          select: {
-            channelId: true,
-            discord: {
-              select: {
-                guildId: true
-              }
-            }
-          }
-        });
-
-        await sendDiscordNotification(channel?.discord.guildId!, channel?.channelId!, message);
-      }
-      
-      
-      if (lastStage !== stage) {
-        await producer.send({
-          topic: process.env.TOPIC_NAME!,
-            messages: [{value: JSON.stringify({zapRunId: zapRunId, stage: stage+1})}]
-        })
-      } else {
-        console.log('processing done');
-      }
-
-
-      const res = await consumer.commitOffsets([
-        {
-          topic: topic,
-          offset: (parseInt(message.offset) + 1).toString(),
-          partition: partition,
-        },
-      ]);
+      },
     },
   });
+
+  const actions = zapRun?.zap.actions;
+  const currAction = actions?.find((item) => item.sortingOrder === stage);
+  const lastStage = actions?.length! - 1;
+  const hooksData = zapRun?.metadata;
+  const body = currAction?.metadata;
+
+  if (currAction?.actionType?.name === "email") {
+    const data = processContent("email", body, hooksData);
+    prepareEmail(data?.to, data?.content);
+  }
+
+  if (currAction?.actionType?.name === "sol") {
+    const data = processContent("sol", body, hooksData);
+    sendSol(data?.address, data?.amount);
+  }
+
+  if (currAction?.actionType?.name === "slack") {
+    const { channelId } = body as any;
+    const { message } = hooksData as any;
+    const slackWorkspaceToken = await prisma.slackChannel.findFirst({
+      where: {
+        channelId: channelId,
+      },
+      select: {
+        slack: {
+          select: {
+            workspaceToken: true,
+          },
+        },
+      },
+    });
+    const workspaceToken = slackWorkspaceToken?.slack
+      .workspaceToken as string;
+    sendSlackMessage({ workspaceToken, channelId, message });
+  }
+
+  if (currAction?.actionType?.name === "discord") {
+    const { channelId } = body as any;
+    const { message } = hooksData as any;
+  
+    const channel = await prisma.discordChannel.findFirst({
+      where: {
+        channelId: channelId,
+      },
+      select: {
+        channelId: true,
+        discord: {
+          select: {
+            guildId: true,
+          },
+        },
+      },
+    });
+    
+    await sendDiscordNotification(
+      channel?.discord.guildId!,
+      channel?.channelId!,
+      message
+    );
+  }
+
+  if (lastStage !== stage) {
+    await kafka.produceMessage({
+      topic: process.env.TOPIC_NAME!,
+      message: [
+        { value: { zapRunId: zapRunId, stage: stage + 1 } },
+      ],
+    })
+  } else {
+    console.log("processing done");
+  }
+
+  const res = await consumer.commitOffsets([
+    {
+      topic: topic,
+      offset: (parseInt(message.offset) + 1).toString(),
+      partition: partition,
+    },
+  ]);
+
+};
+
+const processEvents = async () => {
+
+  const groupId = process.env.GROUP_ID!;
+  await kafkaConsumer.createConsumer({
+    groupId: groupId,
+    topics: [process.env.TOPIC_NAME!],
+    fromBeginning: true,
+  });
+
+  await kafkaConsumer.startConsumer(groupId, handleActions)
 };
 
 processEvents().catch((err) => console.log(err));
