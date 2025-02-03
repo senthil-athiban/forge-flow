@@ -1,18 +1,20 @@
 import express, { Request, Response } from "express";
+import cors from 'cors';
 import dotenv from 'dotenv';
 import {prisma} from '@repo/db';
+import { allowedOrigins } from "./config";
 dotenv.config();
 
 const PORT = process.env.DOMAIN;
 
 const app = express();
 app.use(express.json());
+app.use(cors({origin: allowedOrigins}));
 
 app.post("/hooks/catch/:userId/:zapId", async (req: Request, res: Response) => {
     const userId = req.params.userId;
     const zapId = req.params.zapId;
     const body = req.body;
-
     const userZap = await prisma.zap.findFirst({
         where: {
             userId: userId,
