@@ -12,7 +12,7 @@ const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) =>
     const { userId } = JSON.parse(atob(state));
     if(!code) throw new ApiError(404, 'code was not found');
     if(!userId) throw new ApiError(404, "User id was not found");
-    const result = await slackService.getWorkspaceDetails(code, userId);
+    const result = await slackService.storeWorkSpaceDetails(code, userId);
     res.redirect(`${CLIENT_URL}/zap/slack/success`);
 });
 

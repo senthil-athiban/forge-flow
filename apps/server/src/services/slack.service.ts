@@ -7,7 +7,28 @@ import {
   SLACK_REDIRECT_URI,
 } from "../config/config";
 
-const getWorkspaceDetails = async (code: string, userId: string) => {
+const sendSlackMessage = async ({workspaceToken, channelId, message}:{workspaceToken: string, channelId: string, message: string}) => {
+  try {
+    const web = new WebClient(workspaceToken);
+    try {
+      await web.conversations.join({ channel: channelId });
+      console.log('Joined channel successfully');
+    } catch (joinError) {
+      console.log('Join error:', joinError);
+    }
+  
+    const result = await web.chat.postMessage({
+      text: message,
+      channel: channelId,
+    });
+
+    console.log(`Successfully sent message ${result.ts} in conversation ${channelId}`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+const storeWorkSpaceDetails = async (code: string, userId: string) => {
   try {
     const web = new WebClient();
     const response = await web.oauth.v2.access({
@@ -73,4 +94,4 @@ const getSlackChannels = async (userId: string) => {
   return channels;
 };
 
-export default { getWorkspaceDetails, getSlackChannels };
+export default { storeWorkSpaceDetails, getSlackChannels };

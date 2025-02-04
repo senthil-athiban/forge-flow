@@ -2,9 +2,9 @@ import { asyncMiddleWare } from "@/config/asyncMiddleware";
 import { CLIENT_URL } from "@/config/config";
 import { discordClient, discordConfig } from "@/config/discord";
 import { ApiError } from "@/config/error";
-import { prismaClient } from "@/db";
-import discordService from "@/services/discord.service";
+
 import userService from "@/services/user.service";
+import { discordService } from "@repo/common";
 import { Request, Response } from "express";
 
 const addDiscord = asyncMiddleWare(async (req: Request, res: Response) => {
@@ -19,7 +19,7 @@ const oAuthCallback = asyncMiddleWare(async (req: Request, res: Response) => {
     const state = req.query.state as string;
     if (!guildId) throw new ApiError(404, "Server id not found");
 
-    await discordClient.login(discordConfig.botToken);
+    await discordService.getClient().login(discordConfig.botToken);
 
     const guild = await discordService.getGuildById(guildId);
     const channels = await discordService.getGuildChannels(guildId);

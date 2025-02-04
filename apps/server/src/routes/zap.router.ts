@@ -4,7 +4,7 @@ import zapController from "../controller/zap.controller";
 const router = Router();
 
 // submit zap endpoint
-router.post("/", authMiddleware, zapController.createZap);
+router.post("/create", authMiddleware, zapController.createZap);
 
 // get all zaps
 router.get("/", authMiddleware, zapController.getUserZaps)

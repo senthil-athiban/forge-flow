@@ -15,6 +15,7 @@
   "description": "",
   "dependencies": {
     "@repo/db": "*",
+    "@repo/common": "*",
     "@slack/web-api": "^7.8.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
