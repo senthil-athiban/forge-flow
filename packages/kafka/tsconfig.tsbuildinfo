@@ -1,1 +1,0 @@
-{"root":["./src/index.ts","./src/config/kafka.config.ts","./src/services/kafka.service.ts","./src/types/kafka.d.ts"],"version":"5.7.2"}

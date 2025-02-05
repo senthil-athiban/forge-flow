@@ -143,6 +143,7 @@ export const columns: ColumnDef<Workflow>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const actions = row.original.actions;
+      console.log('actions : ', actions.map((item) => item.actionType.name));
       return (
         <div className="flex gap-x-2 items-center">
           {actions.map((action, index) => (
@@ -156,7 +157,6 @@ export const columns: ColumnDef<Workflow>[] = [
               />
             </TooltipWrapper>
             </div>
-            
           ))}
         </div>
       );

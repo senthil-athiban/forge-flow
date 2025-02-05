@@ -1,3 +1,5 @@
+import { discordConfig } from "./config/discord.config";
+import { slackConfig } from "./config/slack.config";
 import DiscordService from "./services/discord.service";
 import KafkaService from "./services/kafka.service";
 import SlackService from "./services/slack.service";
@@ -49,5 +51,5 @@ export {default as KafkaService } from "./services/kafka.service";
 export const kafkaService = KafkaService.getInstance();
 export const discordService = DiscordService.getInstance();
 export const slackService = SlackService.getInstance();
-
+export default discordConfig;
 // main();

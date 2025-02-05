@@ -66,7 +66,6 @@ const handleActions = async (
     const { channelId } = body as any; // while creating zap, we'll be adding channelId in actions
     const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
     const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
-    console.log('token:', slackWorkspaceToken);
     const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
     await slackService.sendMessage({workspaceToken, channelId, message});
   }
