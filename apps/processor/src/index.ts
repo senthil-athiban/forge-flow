@@ -4,8 +4,7 @@ import { processContent } from "./config/algo";
 import { prepareEmail } from "./config/email";
 import { sendSol } from "./config/web3";
 import { sendSlackMessage } from "./config/slack";
-import { sendDiscordNotification } from "./config/discord";
-import { KafkaService } from "@repo/kafka";
+import { discordService, KafkaService, slackService } from "@repo/common";
 
 dotenv.config();
 
@@ -13,7 +12,10 @@ const kafka = KafkaService.getInstance();
 
 const kafkaConsumer = KafkaService.getInstance();
 
-const handleActions = async ({ topic, partition, message }:any, consumer: any) => {
+const handleActions = async (
+  { topic, partition, message }: any,
+  consumer: any
+) => {
   console.log({
     partition,
     offset: message.offset,
@@ -61,44 +63,20 @@ const handleActions = async ({ topic, partition, message }:any, consumer: any) =
   }
 
   if (currAction?.actionType?.name === "slack") {
-    const { channelId } = body as any;
-    const { message } = hooksData as any;
-    const slackWorkspaceToken = await prisma.slackChannel.findFirst({
-      where: {
-        channelId: channelId,
-      },
-      select: {
-        slack: {
-          select: {
-            workspaceToken: true,
-          },
-        },
-      },
-    });
-    const workspaceToken = slackWorkspaceToken?.slack
-      .workspaceToken as string;
-    sendSlackMessage({ workspaceToken, channelId, message });
+    const { channelId } = body as any; // while creating zap, we'll be adding channelId in actions
+    const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
+    const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
+    console.log('token:', slackWorkspaceToken);
+    const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
+    await slackService.sendMessage({workspaceToken, channelId, message});
   }
 
   if (currAction?.actionType?.name === "discord") {
     const { channelId } = body as any;
     const { message } = hooksData as any;
-  
-    const channel = await prisma.discordChannel.findFirst({
-      where: {
-        channelId: channelId,
-      },
-      select: {
-        channelId: true,
-        discord: {
-          select: {
-            guildId: true,
-          },
-        },
-      },
-    });
-    
-    await sendDiscordNotification(
+
+    const channel = await discordService.findChannelById(channelId);
+    await discordService.sendMessage(
       channel?.discord.guildId!,
       channel?.channelId!,
       message
@@ -108,10 +86,8 @@ const handleActions = async ({ topic, partition, message }:any, consumer: any) =
   if (lastStage !== stage) {
     await kafka.produceMessage({
       topic: process.env.TOPIC_NAME!,
-      message: [
-        { value: { zapRunId: zapRunId, stage: stage + 1 } },
-      ],
-    })
+      message: [{ value: { zapRunId: zapRunId, stage: stage + 1 } }],
+    });
   } else {
     console.log("processing done");
   }
@@ -123,11 +99,9 @@ const handleActions = async ({ topic, partition, message }:any, consumer: any) =
       partition: partition,
     },
   ]);
-
 };
 
 const processEvents = async () => {
-
   const groupId = process.env.GROUP_ID!;
   await kafkaConsumer.createConsumer({
     groupId: groupId,
@@ -135,7 +109,7 @@ const processEvents = async () => {
     fromBeginning: true,
   });
 
-  await kafkaConsumer.startConsumer(groupId, handleActions)
+  await kafkaConsumer.startConsumer(groupId, handleActions);
 };
 
 processEvents().catch((err) => console.log(err));
