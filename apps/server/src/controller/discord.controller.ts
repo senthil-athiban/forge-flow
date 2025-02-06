@@ -1,11 +1,11 @@
-import { asyncMiddleWare } from "@/config/asyncMiddleware";
-import { CLIENT_URL } from "@/config/config";
-import { discordClient, discordConfig } from "@/config/discord";
-import { ApiError } from "@/config/error";
+import { Request, Response } from "express";
+import { discordConfig, discordService } from "@repo/common";
 
 import userService from "@/services/user.service";
-import { discordService } from "@repo/common";
-import { Request, Response } from "express";
+
+import { asyncMiddleWare } from "@/config/asyncMiddleware";
+import { CLIENT_URL } from "@/config/config";
+import { ApiError } from "@/config/error";
 
 const addDiscord = asyncMiddleWare(async (req: Request, res: Response) => {
   const redirectUrl = await discordService.getRedirectUrl();

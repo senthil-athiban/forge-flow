@@ -16,3 +16,5 @@ export const SLACK_REDIRECT_URI = process.env.SLACK_REDIRECT_URI!;
 
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI!;
+
+export const FROM_EMAIL = process.env.EMAIL_FROM!;

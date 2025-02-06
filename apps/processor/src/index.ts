@@ -1,10 +1,12 @@
 import dotenv from "dotenv";
 import { prisma } from "@repo/db";
 import { processContent } from "./config/algo";
-import { prepareEmail } from "./config/email";
+
 import { sendSol } from "./config/web3";
 import { sendSlackMessage } from "./config/slack";
 import { discordService, KafkaService, slackService } from "@repo/common";
+import { sendEmail } from "./config/email";
+import ActionService, { ActionType } from "./services/action.service";
 
 dotenv.config();
 
@@ -12,6 +14,7 @@ const kafka = KafkaService.getInstance();
 
 const kafkaConsumer = KafkaService.getInstance();
 
+const actionService = ActionService.getInstance();
 const handleActions = async (
   { topic, partition, message }: any,
   consumer: any
@@ -28,59 +31,46 @@ const handleActions = async (
   const zapRunId = parsedValue.zapRunId;
   const stage = parsedValue.stage;
 
-  if (!zapRunId) return;
-  const zapRun = await prisma.zapRun.findFirst({
-    where: {
-      id: zapRunId,
-    },
-    include: {
-      zap: {
-        include: {
-          actions: {
-            include: {
-              actionType: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  const zapRun = await fetchZapRun(zapRunId);
 
   const actions = zapRun?.zap.actions;
   const currAction = actions?.find((item) => item.sortingOrder === stage);
   const lastStage = actions?.length! - 1;
   const hooksData = zapRun?.metadata;
-  const body = currAction?.metadata;
+  const metadata = currAction?.metadata;
 
-  if (currAction?.actionType?.name === "email") {
-    const data = processContent("email", body, hooksData);
-    prepareEmail(data?.to, data?.content);
+  if(currAction?.actionType) {
+    await actionService.executeAction(currAction?.actionType?.name as ActionType, 
+      {
+        metadata: metadata,
+        hooksMetadata: hooksData
+      }
+    )
   }
+  // if (currAction?.actionType?.name === "email") {
+  //   const data = processContent("email", body, hooksData);
+  //   await sendEmail(data?.to, data?.content);
+  // }
 
-  if (currAction?.actionType?.name === "sol") {
-    const data = processContent("sol", body, hooksData);
-    sendSol(data?.address, data?.amount);
-  }
+  // if (currAction?.actionType?.name === "slack") {
+  //   const { channelId } = body as any; // while creating zap, we'll be adding channelId in actions
+  //   const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
+  //   const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
+  //   const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
+  //   await slackService.sendMessage({workspaceToken, channelId, message});
+  // }
 
-  if (currAction?.actionType?.name === "slack") {
-    const { channelId } = body as any; // while creating zap, we'll be adding channelId in actions
-    const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
-    const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
-    const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
-    await slackService.sendMessage({workspaceToken, channelId, message});
-  }
+  // if (currAction?.actionType?.name === "discord") {
+  //   const { channelId } = body as any;
+  //   const { message } = hooksData as any;
 
-  if (currAction?.actionType?.name === "discord") {
-    const { channelId } = body as any;
-    const { message } = hooksData as any;
-
-    const channel = await discordService.findChannelById(channelId);
-    await discordService.sendMessage(
-      channel?.discord.guildId!,
-      channel?.channelId!,
-      message
-    );
-  }
+  //   const channel = await discordService.findChannelById(channelId);
+  //   await discordService.sendMessage(
+  //     channel?.discord.guildId!,
+  //     channel?.channelId!,
+  //     message
+  //   );
+  // }
 
   if (lastStage !== stage) {
     await kafka.produceMessage({
@@ -100,6 +90,26 @@ const handleActions = async (
   ]);
 };
 
+const fetchZapRun = async (zapRunId: string) => {
+  if (!zapRunId) return;
+  return await prisma.zapRun.findFirst({
+    where: {
+      id: zapRunId,
+    },
+    include: {
+      zap: {
+        include: {
+          actions: {
+            include: {
+              actionType: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
 const processEvents = async () => {
   const groupId = process.env.GROUP_ID!;
   await kafkaConsumer.createConsumer({
@@ -112,3 +122,4 @@ const processEvents = async () => {
 };
 
 processEvents().catch((err) => console.log(err));
+

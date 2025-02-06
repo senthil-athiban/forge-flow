@@ -1,28 +1,14 @@
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import tokenService from "./token.service";
-import { prismaClient } from "../db";
-import { ApiError } from "../config/error";
-import { DOMAIN } from "../config/config";
-import { TokenTypes } from "../config/tokenTypes";
-dotenv.config();
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: 587,
-  auth: {
-    user: process.env.SMTP_USERNAME,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
+import { resendService, transporter } from "@repo/common";
 
-const sendEmail = async (to: string, subject: any, content: any) => {
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to,
-    subject,
-    text: content,
-  });
-};
+import { prismaClient } from "../db";
+import tokenService from "./token.service";
+
+import { ApiError } from "../config/error";
+import { DOMAIN, FROM_EMAIL } from "../config/config";
+import { TokenTypes } from "../config/tokenTypes";
+
+dotenv.config();
 
 const verifyEmail = async (token: string) => {
   const verifiedToken = await tokenService.verifyToken(
@@ -63,21 +49,22 @@ const verifyEmail = async (token: string) => {
 const sendVerificationEmail = async (to: string, token: string) => {
   const subject = "Email Verification";
   const verificationEmailUrl = `http://${process.env.DOAMIN}/verify-email?token=${token}`;
-  const text = `Dear user,
+  const from = FROM_EMAIL;
+  const body = `Dear user,  
   To verify your email, click on this link: ${verificationEmailUrl}`;
-  await sendEmail(to, subject, text);
+  await resendService.sendWorkflowEmail(from, to, subject, body)
 };
 
 const sendResetPasswordEmail = async (to: string, token: string) => {
   const subject = "Reset password";
+  const from = FROM_EMAIL;
   const verificationEmailUrl = `http://${DOMAIN}/reset-password?token=${token}`;
-  const text = `Dear user,
+  const body = `Dear user,
   To reset your password, click on this link: ${verificationEmailUrl}`;
-  await sendEmail(to, subject, text);
+  await resendService.sendWorkflowEmail(from, to, subject, body)
 }
 
 export default {
-  sendEmail,
   sendVerificationEmail,
   sendResetPasswordEmail,
   verifyEmail,
