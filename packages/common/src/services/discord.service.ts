@@ -56,7 +56,8 @@ class DiscordService {
 
   private async connect() {
     if (!this.isConnected) {
-      await this.client.login(discordConfig.botToken);
+      const res = await this.client.login(discordConfig.botToken);
+      console.log('res : ', res);
       logger.info('Discord client is connected');
       this.isConnected = true;
     }
@@ -69,7 +70,7 @@ class DiscordService {
   ) {
     try {
       await this.connect();
-
+      console.log('{ guildId, channelId, message, retries: 0 } : ', { guildId, channelId, message, retries: 0 });
       if (this.isConnected) {
         this.messageQueue.push({ guildId, channelId, message, retries: 0 });
       }
@@ -86,11 +87,12 @@ class DiscordService {
     while (this.messageQueue.length > 0) {
 
       const item = this.messageQueue[0];
-
+      console.log('item : ', item);
       try {
         const guild = await this.client?.guilds.fetch(item.guildId);
-
+        console.log('guild: ', guild);
         const channel = await guild.channels.fetch(item.channelId);
+        console.log('channel : ', channel);
         if (!channel || !channel.isTextBased()) {
           throw new ApiError(404, "Channel not found or not text-based");
         }

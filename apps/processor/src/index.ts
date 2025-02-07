@@ -7,6 +7,7 @@ import { sendSlackMessage } from "./config/slack";
 import { discordService, KafkaService, slackService } from "@repo/common";
 import { sendEmail } from "./config/email";
 import ActionService, { ActionType } from "./services/action.service";
+import { sendDiscordNotification } from "./config/discord";
 
 dotenv.config();
 
@@ -32,45 +33,49 @@ const handleActions = async (
   const stage = parsedValue.stage;
 
   const zapRun = await fetchZapRun(zapRunId);
-
   const actions = zapRun?.zap.actions;
   const currAction = actions?.find((item) => item.sortingOrder === stage);
   const lastStage = actions?.length! - 1;
   const hooksData = zapRun?.metadata;
   const metadata = currAction?.metadata;
 
-  if(currAction?.actionType) {
-    await actionService.executeAction(currAction?.actionType?.name as ActionType, 
-      {
-        metadata: metadata,
-        hooksMetadata: hooksData
-      }
-    )
+  // process the actions ( email / slack / discord )
+  // if(currAction?.actionType) {
+  //   await actionService.executeAction(currAction?.actionType?.name as ActionType, 
+  //     {
+  //       metadata: metadata,
+  //       hooksMetadata: hooksData
+  //     }
+  //   )
+  // }
+  if (currAction?.actionType?.name === "email") {
+    const data = processContent("email", metadata, hooksData);
+    await sendEmail(data?.to, data?.content);
   }
-  // if (currAction?.actionType?.name === "email") {
-  //   const data = processContent("email", body, hooksData);
-  //   await sendEmail(data?.to, data?.content);
-  // }
 
-  // if (currAction?.actionType?.name === "slack") {
-  //   const { channelId } = body as any; // while creating zap, we'll be adding channelId in actions
-  //   const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
-  //   const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
-  //   const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
-  //   await slackService.sendMessage({workspaceToken, channelId, message});
-  // }
+  if (currAction?.actionType?.name === "slack") {
+    const { channelId } = metadata as any; // while creating zap, we'll be adding channelId in actions
+    const { message } = hooksData as any; // while hitting webhooks, we r making sure to sent with message payload
+    const slackWorkspaceToken = await slackService.getSlackChannelById(channelId);
+    const workspaceToken = slackWorkspaceToken?.slack.workspaceToken as string;
+    await slackService.sendMessage({workspaceToken, channelId, message});
+  }
 
-  // if (currAction?.actionType?.name === "discord") {
-  //   const { channelId } = body as any;
-  //   const { message } = hooksData as any;
+  if (currAction?.actionType?.name === "discord") {
+    const { channelId } = metadata as any;
+    const { message } = hooksData as any;
 
-  //   const channel = await discordService.findChannelById(channelId);
-  //   await discordService.sendMessage(
-  //     channel?.discord.guildId!,
-  //     channel?.channelId!,
-  //     message
-  //   );
-  // }
+    const channel = await discordService.findChannelById(channelId);
+    console.log('channel : ', channel);
+    await sendDiscordNotification(channel?.discord.guildId!,
+      channel?.channelId!,
+      message)
+    // await discordService.sendMessage(
+    //   channel?.discord.guildId!,
+    //   channel?.channelId!,
+    //   message
+    // );
+  }
 
   if (lastStage !== stage) {
     await kafka.produceMessage({

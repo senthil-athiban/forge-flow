@@ -1,6 +1,7 @@
 // TODO: common discordclient
 import { Client, GatewayIntentBits } from "discord.js";
-
+import { config } from "dotenv";
+config();
 export const discordClient = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
@@ -11,13 +12,12 @@ export const discordConfig = {
   botToken: process.env.DISCORD_BOT_TOKEN!,
   redirectUri: process.env.DISCORD_REDIRECT_URI!,
 };
-
+console.log('discordConfig: ', discordConfig);
 export const sendDiscordNotification = async (
   guildId: string,
   channelId: string,
   message: string
 ) => {
-  console.log("message : ", message);
   try {
     await discordClient.login(discordConfig.botToken);
     const guild = await discordClient?.guilds.fetch(guildId);
