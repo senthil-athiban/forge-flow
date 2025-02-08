@@ -10,6 +10,7 @@ import {
   Home,
   LogOut,
   LucideIcon,
+  Rocket,
   Workflow,
 } from "lucide-react";
 import { getUser, logout } from "@/utils/auth";
@@ -64,6 +65,11 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
       label: "Create Workflow",
     },
     {
+      href: "/zap/execution",
+      icon: Rocket,
+      label: "Executions",
+    },
+    {
       href: "/login",
       icon: LogOut,
       label: "Logout",
@@ -82,7 +88,7 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
           )}
           <button
             onClick={() => setIsCollapsed(p => !p)}
-            className="absolute -right-6 top-3/4 -translate-y-1/2
+            className="absolute -right-4 top-3/4 -translate-y-1/2
         h-8 w-8 rounded-full border border-slate-200 bg-white
         flex items-center justify-center
         hover:border-slate-300 hover:bg-slate-50

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp, MoreHorizontal, Pencil } from "lucide-react";
 import { format } from "date-fns";
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import TooltipWrapper from "@/components/ui/tooltip-wrapper";
-import { useState } from "react";
 import ZapTest from "./ZapTest";
 
 export type Workflow = {
@@ -66,17 +66,17 @@ export const columns: ColumnDef<Workflow>[] = [
           <div className="flex flex-col">
             <Button
               variant="ghost"
-              className={`h-4 w-4 p-0 ${isSorted === "asc" ? "text-indigo-600" : "text-gray-400"}`}
+              className={`h-4 w-4 stroke-[3] p-0 ${isSorted === "asc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(false)}
             >
-              <ChevronUp className="h-3 w-3" />
+              <ChevronUp className="h-3 w-3 stroke-[3]" />
             </Button>
             <Button
               variant="ghost"
-              className={`h-4 w-4 p-0 ${isSorted === "desc" ? "text-indigo-600" : "text-gray-400"}`}
+              className={`h-4 w-4 stroke-[3] p-0 ${isSorted === "desc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(true)}
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3 w-3 stroke-[3]" />
             </Button>
           </div>
         </div>
@@ -104,14 +104,14 @@ export const columns: ColumnDef<Workflow>[] = [
               className={`h-4 w-4 p-0 ${isSorted === "asc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(false)}
             >
-              <ChevronUp className="h-3 w-3" />
+              <ChevronUp className="h-3 w-3 stroke-[3]" />
             </Button>
             <Button
               variant="ghost"
               className={`h-4 w-4 p-0 ${isSorted === "desc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(true)}
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3 w-3 stroke-[3]" />
             </Button>
           </div>
         </div>
@@ -174,14 +174,14 @@ export const columns: ColumnDef<Workflow>[] = [
               className={`h-4 w-4 p-0 ${isSorted === "asc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(false)}
             >
-              <ChevronUp className="h-3 w-3" />
+              <ChevronUp className="h-3 w-3 stroke-[3]" />
             </Button>
             <Button
               variant="ghost"
               className={`h-4 w-4 p-0 ${isSorted === "desc" ? "text-indigo-600" : "text-gray-400"}`}
               onClick={() => column.toggleSorting(true)}
             >
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3 w-3 stroke-[3]" />
             </Button>
           </div>
         </div>
