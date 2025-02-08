@@ -1,10 +1,10 @@
 import { discordConfig } from "./config/discord.config";
 import { transporter } from "./config/mail.config";
-import { slackConfig } from "./config/slack.config";
 import DiscordService from "./services/discord.service";
 import EmailService from "./services/email.service";
 import KafkaService from "./services/kafka.service";
 import SlackService from "./services/slack.service";
+import { type Action } from "./types/zap";
 
 const main = async () => {
   // Initialize Kafka service
@@ -56,4 +56,6 @@ export const slackService = SlackService.getInstance();
 export const resendService = EmailService.getInstance();
 export {discordConfig, transporter};
 
+// TODO: refactor it to packages/types
+export { type Action };
 // main();

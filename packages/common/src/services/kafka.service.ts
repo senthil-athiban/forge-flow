@@ -40,6 +40,7 @@ class KafkaService extends EventEmitter {
 
     // Setup event handlers
     this.setupEventHandlers();
+    this.start();
   }
 
   public static getInstance(): KafkaService {

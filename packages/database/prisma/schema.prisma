@@ -156,6 +156,7 @@ model Action {
   actionType   ActionTypes @relation(fields: [actionTypeId], references: [id])
   sortingOrder Int         @default(0)
   metadata     Json        @default("{}")
+  status       Status      @default(PENDING)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -175,6 +176,7 @@ model ZapRun {
   id           String        @id @default(cuid())
   zapId        String
   zap          Zap           @relation(fields: [zapId], references: [id])
+  status       Status        @default(PENDING)
   metadata     Json
   zapRunOutBox ZapRunOutBox?
   createdAt    DateTime      @default(now())
@@ -187,4 +189,15 @@ model ZapRunOutBox {
   zapRun    ZapRun   @relation(fields: [zapRunId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Status {
+  PENDING
+  TRIGGERED
+  IN_PROGRESS
+  FAILED
+  SUCCESS
+  TIMED_OUT
+  CANCELLED
+  SKIPPED
 }
