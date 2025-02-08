@@ -14,13 +14,17 @@ import {
 } from "lucide-react";
 import { getUser, logout } from "@/utils/auth";
 
-const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface SidebarProps {
+  isCollapsed: boolean;
+  setIsCollapsed: any;
+}
+const Sidebar = ({isCollapsed, setIsCollapsed}:SidebarProps) => {
+  
   return (
     <div
-      className={`${isCollapsed ? "w-16" : "w-64"} bg-slate-100 top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out`}
+      className={`${isCollapsed ? "w-16" : "w-64"} fixed bg-slate-100 top-0 left-0 z-30 h-screen transition-all duration-300 ease-in-out`}
     >
-      <div className="h-full">
+      <div className="h-full flex flex-col">
         <SidebarMenu isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       </div>
     </div>

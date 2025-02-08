@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import useTriggerAndActionTypes from "@/hooks/useTriggerAndActionTypes";
-import PrimaryButton from "@/components/Button/PrimaryButton";
-import ZapCell from "@/components/Zap/ZapCell";
-import ZapService from "@/services/zap.service";
-import ChannelSelector from "@/components/Modal/ChannelSelector";
 import { useRouter } from "next/navigation";
+import ZapService from "@/services/zap.service";
+import useTriggerAndActionTypes from "@/hooks/useTriggerAndActionTypes";
+import ZapCell from "@/components/Zap/ZapCell";
+import ChannelSelector from "@/components/Modal/ChannelSelector";
+import { Button } from "@/components/ui/button";
 
 const ZapCreatePage = () => {
   const [selectedTrigger, setSelectedTrigger] = useState<{
@@ -48,7 +48,7 @@ const ZapCreatePage = () => {
   return (
     <>
       <div className="flex w-full bg-slate-200 p-2 justify-end">
-        <PrimaryButton onClick={onSubmit}>Publish</PrimaryButton>
+        <Button variant={"primary"} onClick={onSubmit}>Publish</Button>
       </div>
       <div className="flex flex-col justify-center min-h-screen bg-slate-200">
         <div className="flex flex-col justify-center items-center w-full">
@@ -75,8 +75,9 @@ const ZapCreatePage = () => {
           ))}
         </div>
         <div className="w-full flex justify-center pt-2">
-          <PrimaryButton
-            className={"w-14 p-0"}
+          <Button
+            variant={"primary"}
+            className={"w-12 p-0 rounded-lg"}
             onClick={() =>
               setSelectedActions((prev) => [
                 ...prev,
@@ -85,7 +86,7 @@ const ZapCreatePage = () => {
             }
           >
             +
-          </PrimaryButton>
+          </Button>
         </div>
         {showModal && (
           <ChannelSelector
