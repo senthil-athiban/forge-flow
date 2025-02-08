@@ -30,7 +30,7 @@ const MenuCell = ({ row }: { row: any }) => {
   
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <button className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
@@ -143,7 +143,6 @@ export const columns: ColumnDef<Workflow>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const actions = row.original.actions;
-      console.log('actions : ', actions.map((item) => item.actionType.name));
       return (
         <div className="flex gap-x-2 items-center">
           {actions.map((action, index) => (

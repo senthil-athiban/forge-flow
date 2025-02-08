@@ -7,9 +7,9 @@ import PrimaryButton from "@/components/Button/PrimaryButton";
 import ZapCell from "@/components/Zap/ZapCell";
 import ZapService from "@/services/zap.service";
 import ChannelSelector from "@/components/Modal/ChannelSelector";
+import { useRouter } from "next/navigation";
 
 const ZapCreatePage = () => {
-  
   const [selectedTrigger, setSelectedTrigger] = useState<{
     name: string;
     id: string;
@@ -24,6 +24,7 @@ const ZapCreatePage = () => {
 
   const { actionTypes, triggerTypes } = useTriggerAndActionTypes();
 
+  const router = useRouter();
   const onSubmit = async () => {
     try {
       const payload = {
@@ -36,7 +37,10 @@ const ZapCreatePage = () => {
         }),
       };
       const response = await ZapService.createZap(payload);
-      if(response) toast.success('Workflow has been created');
+      if (response) {
+        toast.success("Workflow has been created");
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.log("[ERROR IN CREATING ZAP]:", error);
     }
