@@ -4,7 +4,14 @@ import pino from "pino";
 import { prisma } from "@repo/db";
 import { ApiError } from "../config/error";
 
-const logger = pino();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true
+    }
+  }
+ });
 
 interface SlackConfig {
   client_id: string;

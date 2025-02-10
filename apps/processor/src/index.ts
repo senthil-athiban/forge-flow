@@ -5,7 +5,14 @@ import { Action, KafkaService } from "@repo/common";
 import ActionService, { ActionType } from "./services/action.service";
 
 dotenv.config();
-const logger = pino();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true
+    }
+  }
+ });
 
 const kafkaConsumer = KafkaService.getInstance();
 const actionService = ActionService.getInstance();
@@ -146,7 +153,7 @@ const handleActions = async (
           status: "SUCCESS",
         },
       });
-      console.log("processing done");
+      logger.info("processing done");
     }
   } catch (error) {
     logger.error(

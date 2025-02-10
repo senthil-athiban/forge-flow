@@ -4,7 +4,14 @@ import pino from "pino";
 import { ApiError } from "../config/error";
 import { prisma } from "@repo/db";
 
-const logger = pino();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true
+    }
+  }
+ });
 
 class DiscordService {
   private static instance: DiscordService;

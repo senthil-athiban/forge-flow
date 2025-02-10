@@ -8,7 +8,14 @@ import pino from "pino";
 
 config();
 
-const logger = pino();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true
+    }
+  }
+ });
 
 export interface EmailProvider {
   sendMail(options: EmailOptions): Promise<void>;
