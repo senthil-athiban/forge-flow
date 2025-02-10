@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import ZapService from "@/services/zap.service";
+import { toast } from "sonner";
 
 export interface WorkflowRun {
   id: string;
@@ -58,9 +60,19 @@ const statusColors = {
 };
 
 const TestMenuCell = ({ row }: { row: any }) => {
-  const [isTestOpen, setIsTestOpen] = useState(false);
   const { id } = row.original;
   
+  const onSubmit = async () => {
+    try {
+      const res = await ZapService.testZapRun({zapRunId: id});
+      console.log('res: ', res);
+      if(res) {
+        toast.success('Zap run has been tested');
+      }
+    } catch (error) {
+      toast.error('Failed to test zapRun');
+    }
+  }
   return (
     <>
       <DropdownMenu modal={false}>
@@ -71,7 +83,7 @@ const TestMenuCell = ({ row }: { row: any }) => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsTestOpen(true)}>
+          <DropdownMenuItem onClick={onSubmit}>
             <Pencil className="w-4 h-4 mr-2" />
             Test 
           </DropdownMenuItem>

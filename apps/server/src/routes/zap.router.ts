@@ -12,4 +12,7 @@ router.get("/", authMiddleware, zapController.getUserZaps)
 // get particular zap
 router.get("/:zapId", authMiddleware, zapController.getUserZap)
 
+// test zapRun
+router.post("/zapRun/test", authMiddleware,zapController.testZapRun)
+
 export const zapRouter = router;

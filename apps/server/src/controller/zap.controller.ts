@@ -28,4 +28,11 @@ const getUserZap = asyncMiddleWare(async (req: Request, res: Response) => {
     res.status(200).send({zap});
 });
 
-export default { createZap, getUserZaps, getUserZap};
+const testZapRun = asyncMiddleWare( async (req: Request, res: Response) => {
+    const zapRunId = req.body.zapRunId as string;
+    const userId = req.userId as string;
+    const zap = await zapService.testZapRun(userId, zapRunId);
+    res.status(200).send({message: "Tested"});
+})
+
+export default { createZap, getUserZaps, getUserZap, testZapRun};

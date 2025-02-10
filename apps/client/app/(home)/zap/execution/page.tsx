@@ -1,11 +1,12 @@
-import ExecutionContent from '@/components/Execution/Execution'
-import React from 'react'
+import ExecutionTable from "@/components/Execution/ExecutionTable";
+import React from "react";
 
 const Execution = () => {
   return (
     <>
-    <ExecutionContent /></>
-  )
-}
+      <ExecutionTable />
+    </>
+  );
+};
 
-export default Execution
+export default Execution;

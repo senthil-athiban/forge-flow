@@ -4,7 +4,7 @@ import { DataTable } from '../Zap/DataTable'
 import useZaps from '@/hooks/useZaps';
 import { executionColumns, WorkflowRun } from './ExecutionColumns';
 
-const ExecutionContent = () => {
+const ExecutionTable = () => {
   const { data, isLoading } = useZaps() as any;
   const transformedData: WorkflowRun[] = isLoading || !data?.zaps
     ? []
@@ -24,4 +24,4 @@ const ExecutionContent = () => {
   )
 }
 
-export default ExecutionContent
+export default ExecutionTable

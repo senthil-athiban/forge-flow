@@ -23,6 +23,11 @@ class ZapService {
         const res = await HttpClient.get(`/api/v1/action`);
         return res.data;
     }
+
+    public static async testZapRun(payload: any) {
+        const res = await HttpClient.post(`${this.basePath}/zapRun/test`, payload);
+        return res.data;
+    }
 }
 
 export default ZapService;

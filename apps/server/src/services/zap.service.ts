@@ -118,4 +118,28 @@ const getZapById = async (userId: string, zapId: string) => {
     }
 }
 
-export default { createZap, getZapByUserId, getZapById };
+const testZapRun = async (userId: string, zapRunId: string) => {
+  try {
+    const zapRun = await prismaClient.zapRun.findFirst({
+      where: {
+        id: zapRunId,
+        zap: {
+          userId: userId
+        }
+      }
+    });
+    if(!zapRun) {
+      throw new ApiError(404, `No Zap has been found with Id ${zapRunId}`)
+    }
+    const zapRunOutbox = await prismaClient.zapRunOutBox.create({
+      data: {
+        zapRunId: zapRun.id
+      }
+    });
+  } catch (error) {
+    console.log('error: ', error);
+    throw new ApiError(500, "Failed to test the zapRun");
+  }
+}
+
+export default { createZap, getZapByUserId, getZapById, testZapRun };
