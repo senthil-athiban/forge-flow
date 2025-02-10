@@ -1,14 +1,12 @@
 import dotenv from "dotenv";
 import { prisma } from "@repo/db";
-import { KafkaService } from "@repo/common";
+import { kafkaService } from "@repo/common";
 
 dotenv.config();
-const kafka = KafkaService.getInstance();
 
 const main = async () => {
-  await kafka.start();
 
-  await kafka.createTopics([
+  await kafkaService.createTopics([
     {
       topic: process.env.TOPIC_NAME!,
       numPartitions: 1,
@@ -25,7 +23,8 @@ const main = async () => {
     if (data?.length > 0) {
       console.log(" data : ", data);
 
-      await kafka.produceMessage({
+
+      await kafkaService.produceMessage({
         topic: process.env.TOPIC_NAME!,
         message: data?.map((item) => ({
           value: { zapRunId: item.zapRunId, stage: 0 },

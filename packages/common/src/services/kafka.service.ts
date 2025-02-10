@@ -45,6 +45,7 @@ class KafkaService extends EventEmitter {
 
   public static getInstance(): KafkaService {
     if (!this.instance) {
+      console.log('creating instances');
       this.instance = new KafkaService();
     }
     return this.instance;
@@ -187,6 +188,7 @@ class KafkaService extends EventEmitter {
         topic: it.topic,
         messages: it.message.map((i) => ({value: JSON.stringify(i.value)}))
       }));
+      console.log(' Messages to push : ', messages);
       await this.producer.sendBatch({ topicMessages: messages });
       this.messageQueue = [];
     } catch (error) {

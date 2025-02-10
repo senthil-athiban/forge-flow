@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 import pino from "pino";
 import { prisma } from "@repo/db";
-import { Action, KafkaService } from "@repo/common";
+import { Action, kafkaService, KafkaService } from "@repo/common";
 import ActionService, { ActionType } from "./services/action.service";
 
 dotenv.config();
+
 const logger = pino({
   transport: {
     target: 'pino-pretty',
@@ -14,7 +15,6 @@ const logger = pino({
   }
  });
 
-const kafkaConsumer = KafkaService.getInstance();
 const actionService = ActionService.getInstance();
 
 const parseKafkaMessage = (message: any) => {
@@ -140,7 +140,8 @@ const handleActions = async (
     ]);
 
     if (lastStage !== stage) {
-        await kafkaConsumer.produceMessage({
+      logger.info(`Executing if block with current stage as ${stage}, and last stage is ${lastStage}`);
+        await kafkaService.produceMessage({
           topic: process.env.TOPIC_NAME!,
           message: [{ value: { zapRunId: zapRunId, stage: stage + 1 } }],
         });
@@ -166,13 +167,13 @@ const handleActions = async (
 
 const processEvents = async () => {
   const groupId = process.env.GROUP_ID!;
-  await kafkaConsumer.createConsumer({
+  await kafkaService.createConsumer({
     groupId: groupId,
     topics: [process.env.TOPIC_NAME!],
     fromBeginning: true,
   });
 
-  await kafkaConsumer.startConsumer(groupId, handleActions);
+  await kafkaService.startConsumer(groupId, handleActions);
 };
 
 processEvents().catch((err) => console.log(err));
