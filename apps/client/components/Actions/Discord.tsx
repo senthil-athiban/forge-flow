@@ -1,26 +1,33 @@
 "use client";
-import DiscordService from "@/services/integrations/discord.service";
-import { useEffect, useState } from "react";
-import PrimaryButton from "../Button/PrimaryButton";
 
-const DiscordSelector = ({ setMetadata }: any) => {
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useDiscordService } from "@/hooks/useDiscordService";
+
+interface DiscordSelectorProps {
+  setMetadata: (metadata: any) => void;
+  onClose: () => void;
+}
+const DiscordSelector = ({ setMetadata, onClose }: DiscordSelectorProps) => {
+  const { isLoading, channels, error } = useDiscordService();
   const [selectedChannel, setSelectedChannel] = useState<{
     channelId: string;
     name: string;
   }>({ channelId: "", name: "" });
-  const [channels, setChannels] = useState([]);
+
   const handleSubmit = () => {
     setMetadata({ channelId: selectedChannel.channelId });
+    onClose();
   };
 
-  useEffect(() => {
-    const fetchChannels = async () => {
-      const res = await DiscordService.getChannels();
-      const channels = res.channels.flatMap((c: any) => c.channels);
-      setChannels(channels);
-    };
-    fetchChannels();
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">
@@ -40,14 +47,16 @@ const DiscordSelector = ({ setMetadata }: any) => {
                 }
               >
                 <ul
-                  className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-slate-200 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-slate-200" : ""}`}
+                  className={`border p-2 my-2 w-full rounded-lg text-sm text-black hover:bg-indigo-300 hover:text-gray-800 cursor-pointer ${selectedChannel.channelId === c.channelId ? "bg-indigo-300" : ""}`}
                 >
                   {c.channelName}
                 </ul>
               </div>
             ))}
           </div>
-          <PrimaryButton onClick={handleSubmit}>Submit</PrimaryButton>
+          <Button variant={"primary"} onClick={handleSubmit}>
+            Submit
+          </Button>
         </div>
       )}
     </div>

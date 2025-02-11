@@ -12,8 +12,10 @@ import DiscordService from "@/services/integrations/discord.service";
 import EmailSelector from "../Actions/Email";
 import SolSelector from "../Actions/Sol";
 import SlackSelector from "../Actions/Slack";
-import PrimaryButton from "../Button/PrimaryButton";
 import DiscordSelector from "../Actions/Discord";
+import { Button } from "../ui/button";
+import { SlackIntegration } from "../integration/SlackIntegration";
+import { DiscordIntegration } from "../integration/DiscordIntegration";
 
 interface ChannelSelectorProps {
   isOpen: boolean;
@@ -46,10 +48,11 @@ const ChannelSelector = ({
       setUser(user);
     };
     fetchUser();
+
+    return () => setSelectedAction({ id: "", name: "" });
   }, []);
 
   if (!isOpen) return;
-  const isTrigger = selectedItemIndex === 1;
 
   const handleData = (metadata: any) => {
     onSelect({ ...selectedAction, metadata });
@@ -73,8 +76,13 @@ const ChannelSelector = ({
     }
   };
 
+  const handleClose = () => {
+    onClose();
+    setSelectedAction({ id: "", name: "" });
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -100,35 +108,27 @@ const ChannelSelector = ({
                       return showChannelSelector ? (
                         <SlackSelector
                           setMetadata={(metadata: any) => handleData(metadata)}
+                          onClose={handleClose}
                         />
                       ) : (
-                        <div className="flex flex-col gap-y-2">
-                          <PrimaryButton onClick={handleSlackIntegration}>
-                            Add slack
-                          </PrimaryButton>
-                          <PrimaryButton
-                            onClick={() => setShowChannelSelector(true)}
-                          >
-                            Select channel
-                          </PrimaryButton>
-                        </div>
+                        <SlackIntegration
+                          onAddSlack={handleSlackIntegration}
+                          onSelectChannel={() => setShowChannelSelector(true)}
+                          key={"slack"}
+                        />
                       );
                     case "discord":
                       return showDiscordChannels ? (
                         <DiscordSelector
                           setMetadata={(metadata: any) => handleData(metadata)}
+                          onClose={handleClose}
                         />
                       ) : (
-                        <div className="flex flex-col gap-y-2">
-                          <PrimaryButton onClick={handleDiscordIntegration}>
-                            Add discord
-                          </PrimaryButton>
-                          <PrimaryButton
-                            onClick={() => setShowDiscordChannels(true)}
-                          >
-                            Select channel
-                          </PrimaryButton>
-                        </div>
+                        <DiscordIntegration
+                          onAddDiscord={handleDiscordIntegration}
+                          onSelectChannel={() => setShowDiscordChannels(true)}
+                          key={"discord"}
+                        />
                       );
                     default:
                       return <div>Select an action type</div>;
@@ -141,6 +141,7 @@ const ChannelSelector = ({
                     onClick={() => {
                       if (selectedItemIndex === 1) {
                         onSelect({ id: item?.id, name: item?.name });
+                        handleClose();
                       } else {
                         onSelect({ id: item?.id, name: item?.name });
                         setSelectedAction({ id: item?.id, name: item?.name });
