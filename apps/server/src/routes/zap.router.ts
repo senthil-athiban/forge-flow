@@ -15,4 +15,10 @@ router.get("/:zapId", authMiddleware, zapController.getUserZap)
 // test zapRun
 router.post("/zapRun/test", authMiddleware,zapController.testZapRun)
 
+// delete zap
+router.delete("/zap/:zapId", authMiddleware, zapController.deleteZap)
+
+// delete zap run
+router.delete("/zapRun/:zapRunId", authMiddleware, zapController.deleteZapRun)
+
 export const zapRouter = router;

@@ -35,4 +35,22 @@ const testZapRun = asyncMiddleWare( async (req: Request, res: Response) => {
     res.status(200).send({message: "Tested"});
 })
 
-export default { createZap, getUserZaps, getUserZap, testZapRun};
+const deleteZap = asyncMiddleWare( async ( req: Request, res: Response) => {
+    const zapId = req.body.zapId as string;
+    const userId = req.userId as string;
+    const zap = await zapService.getZapById(userId, zapId);
+    if (!zap) throw new ApiError(404, 'No zap has been found');
+    await zapService.deleteZapById(userId, zap.id);
+    res.status(204);
+})
+
+const deleteZapRun = asyncMiddleWare( async ( req: Request, res: Response) => {
+    const zapRunId = req.body.zapRunId as string;
+    const userId = req.userId as string;
+    const zapRun = await zapService.getZapById(userId, zapRunId);
+    if (!zapRun) throw new ApiError(404, 'No zap run has been found');
+    await zapService.deleteZapRunById(userId, zapRun.id);
+    res.status(204);
+})
+
+export default { createZap, getUserZaps, getUserZap, testZapRun, deleteZapRun, deleteZap };
