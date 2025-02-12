@@ -1,5 +1,5 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { ChevronDown, ChevronUp, MoreHorizontal, Pencil } from "lucide-react";
 import { Badge } from "../ui/badge";
@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import ZapService from "@/services/zap.service";
 import { toast } from "sonner";
+import DeleteModal from "../Workflow/DeleteModal";
 
 export interface WorkflowRun {
   id: string;
@@ -59,20 +60,36 @@ const statusColors = {
   SKIPPED: "slate",
 };
 
-const TestMenuCell = ({ row }: { row: any }) => {
+const MenuCell = ({ row }: { row: Row<WorkflowRun> }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const { id } = row.original;
   
   const onSubmit = async () => {
     try {
       const res = await ZapService.testZapRun({zapRunId: id});
-      console.log('res: ', res);
       if(res) {
         toast.success('Zap run has been tested');
       }
     } catch (error) {
       toast.error('Failed to test zapRun');
     }
-  }
+  };
+
+  const handleDeleteWorkflow = async () => {
+    if (!id) {
+      toast.error("Failed to delete workflow execute");
+      return;
+    }
+    try {
+      const response = await ZapService.deleteZapRun(id);
+      if (response) {
+        toast.success("Workflow execute has been deleted successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to delete workflow execute");
+      console.error("Failed to delete workflow execute ", error);
+    }
+  };
   return (
     <>
       <DropdownMenu modal={false}>
@@ -88,7 +105,22 @@ const TestMenuCell = ({ row }: { row: any }) => {
             Test 
           </DropdownMenuItem>
         </DropdownMenuContent>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
       </DropdownMenu>
+      {isDeleteModalOpen && (
+        <DeleteModal
+          key={"Workflow Run"}
+          label="Workflow Run"
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteWorkflow}
+        />
+      )}
     </>
   );
 };
@@ -198,6 +230,6 @@ export const executionColumns: ColumnDef<WorkflowRun>[] = [
   {
     accessorKey: "menu",
     header: "Menu",
-    cell: TestMenuCell
+    cell: MenuCell
   },
 ];

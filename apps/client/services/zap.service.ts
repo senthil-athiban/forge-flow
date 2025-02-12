@@ -28,6 +28,16 @@ class ZapService {
         const res = await HttpClient.post(`${this.basePath}/zapRun/test`, payload);
         return res.data;
     }
+
+    public static async deleteZap(id: string) {
+        const res = await HttpClient.delete(`${this.basePath}/zap/${id}`);
+        return res.status;
+    }
+
+    public static async deleteZapRun(id: string) {
+        const res = await HttpClient.delete(`${this.basePath}/zapRun/${id}`);
+        return res.status;
+    }
 }
 
 export default ZapService;

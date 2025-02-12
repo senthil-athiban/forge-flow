@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
 import { ChevronDown, ChevronUp, MoreHorizontal, Pencil } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { Action, Trigger } from "@/types/zap";
 import {
   DropdownMenu,
@@ -14,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import TooltipWrapper from "@/components/ui/tooltip-wrapper";
 import ZapTest from "./ZapTest";
+import DeleteModal from "../Workflow/DeleteModal";
+import ZapService from "@/services/zap.service";
+
 
 export type Workflow = {
   id: string;
@@ -24,10 +28,26 @@ export type Workflow = {
   owner: string;
 };
 
-const MenuCell = ({ row }: { row: any }) => {
+const MenuCell = ({ row }: { row: Row<Workflow> }) => {
   const [isTestOpen, setIsTestOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const { id } = row.original;
-  
+
+  const handleDeleteWorkflow = async () => {
+    if (!id) {
+      toast.error("Failed to delete workflow");
+      return;
+    }
+    try {
+      const response = await ZapService.deleteZap(id);
+      if (response) {
+        toast.success("Workflow has been deleted successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to delete workflow");
+      console.error("Failed to delete workflow", error);
+    }
+  };
   return (
     <>
       <DropdownMenu modal={false}>
@@ -43,12 +63,27 @@ const MenuCell = ({ row }: { row: any }) => {
             Test
           </DropdownMenuItem>
         </DropdownMenuContent>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
       </DropdownMenu>
       {isTestOpen && (
         <ZapTest
-          isOpen={isTestOpen} 
+          isOpen={isTestOpen}
           onClose={() => setIsTestOpen(false)}
           zapId={id}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <DeleteModal
+          key={"Workflow"}
+          label="Workflow"
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteWorkflow}
         />
       )}
     </>
@@ -148,13 +183,13 @@ export const columns: ColumnDef<Workflow>[] = [
           {actions.map((action, index) => (
             <div key={index}>
               <TooltipWrapper content={action.actionType.name}>
-              <img
-                key={index}
-                src={action.actionType.image}
-                alt=""
-                className="h-8 w-8 rounded-full border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 shadow-md"
-              />
-            </TooltipWrapper>
+                <img
+                  key={index}
+                  src={action.actionType.image}
+                  alt=""
+                  className="h-8 w-8 rounded-full border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 shadow-md"
+                />
+              </TooltipWrapper>
             </div>
           ))}
         </div>
@@ -204,6 +239,6 @@ export const columns: ColumnDef<Workflow>[] = [
   {
     accessorKey: "menu",
     header: "Menu",
-    cell: MenuCell
+    cell: MenuCell,
   },
 ];
