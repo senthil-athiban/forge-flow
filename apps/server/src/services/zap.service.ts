@@ -32,7 +32,7 @@ const createZap = async (body: ZapType, userId: string) => {
 
 const getZapByUserId = async (userId: string) => {
   try {
-    const [zaps, runMetrics, latestZap, latestZapRun] =
+    const [zaps, runMetrics, latestZap, latestZapRun, successZapRun, failedZapRun] =
       await prismaClient.$transaction([
         prismaClient.zap.findMany({
           where: {
@@ -87,8 +87,28 @@ const getZapByUserId = async (userId: string) => {
             updatedAt: "desc",
           },
         }),
+
+        prismaClient.zapRun.aggregate({
+          where: {
+            zap: {
+              userId: userId
+            },
+            status: "SUCCESS"
+          },
+          _count: true
+        }),
+
+        prismaClient.zapRun.aggregate({
+          where: {
+            zap: {
+              userId: userId
+            },
+            status: "FAILED"
+          },
+          _count: true
+        })
       ]);
-    return { zaps, zapRunMetrics: runMetrics._count, latestZap, latestZapRun };
+    return { zaps, zapRunMetrics: runMetrics._count, latestZap, latestZapRun, successZapRun: successZapRun._count, failedZapRun: failedZapRun._count };
   } catch (error) {
     throw new ApiError(401, "Unauthorized access");
   }
