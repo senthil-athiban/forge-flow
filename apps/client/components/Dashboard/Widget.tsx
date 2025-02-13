@@ -6,6 +6,7 @@ import React from "react";
 import Card from "./Card";
 
 const Widget = ({ zapData }: { zapData: any }) => {
+  console.log('zapData : ', zapData)
   const latestZap = zapData.latestZap?.updatedAt;
   const latestZapRun = zapData.latestZapRun?.updatedAt;
   
@@ -13,6 +14,17 @@ const Widget = ({ zapData }: { zapData: any }) => {
     if (!date) return 'No activity';
     return formatDistanceToNow(new Date(date), { addSuffix: true });
   };
+  
+  const calculateRate = (success: number, total: number) => {
+    if(!total) return 0;
+    return Math.round((success/total) * 100) || 0
+  }
+  
+  const successRuns = zapData?.successZapRun || 0;
+  const failedRuns = zapData?.failedZapRun || 0;
+  const totalRuns = zapData?.zapRunMetrics || 0;
+  const successRate = calculateRate(successRuns, totalRuns);
+  const failureRate = calculateRate(failedRuns, totalRuns);
   
   const statictics = [
     {
@@ -25,7 +37,7 @@ const Widget = ({ zapData }: { zapData: any }) => {
     },
     {
       title: "Total Executions",
-      metric: zapData?.zapRunMetrics,
+      metric: totalRuns,
       subMetric: "Last 24 hours",
       icon: <History className="text-yellow-400" />,
       change: `Last created ${getTimeDistance(latestZapRun)}`,
@@ -33,19 +45,19 @@ const Widget = ({ zapData }: { zapData: any }) => {
     },
     {
       title: "Run Statitics",
-      metric: 11,
+      metric: zapData?.successZapRun,
       subMetric: "98% Success Rate",
       icon: <Activity className="text-green-600" />,
-      change: "↑ 5% improvement",
-      trend: "up",
+      change: totalRuns ? `${successRuns} of ${totalRuns} runs` : "No runs yet",
+      trend: successRate >= totalRuns/2 ? "up" : "down",
     },
     {
       title: "Failed Runs",
-      metric: 0,
+      metric: zapData?.failedZapRun,
       subMetric: "This week",
       icon: <AlertTriangle className="text-red-600" />,
-      change: "-5% vs last week",
-      trend: "down",
+      change: totalRuns ? `${failedRuns} of ${totalRuns} runs` : "No runs yet",
+      trend: failureRate <= totalRuns/2 ? "up" : "down",
     },
   ];
 
