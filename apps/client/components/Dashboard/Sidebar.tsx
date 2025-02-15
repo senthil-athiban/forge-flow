@@ -40,6 +40,7 @@ interface SideBarMenuProps {
 }
 const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -75,6 +76,13 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
       label: "Logout",
     },
   ];
+
+  const handleNavigateProfile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    console.log('--reached 1----')
+    e.preventDefault();
+    console.log('--reached 2----')
+    router.push("/profile");
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -116,7 +124,7 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
         </div>
       </div>
       <div className="p-4 border-t border-slate-100">
-        <button className="w-full flex items-center gap-x-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+        <button className="w-full flex items-center gap-x-3 p-2 rounded-lg hover:bg-slate-50 transition-colors" onClick={(e) => handleNavigateProfile(e)}>
           <div className="p-1.5 rounded-full bg-indigo-50">
             <CircleUser size={20} className="text-indigo-600" />
           </div>
