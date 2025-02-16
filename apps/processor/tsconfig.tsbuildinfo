@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/config/algo.ts","./src/config/discord.ts","./src/config/email.ts","./src/config/slack.ts","./src/config/web3.ts"],"version":"5.7.2"}
+{"root":["./src/index.ts","./src/config/algo.ts","./src/config/discord.ts","./src/config/email.ts","./src/config/slack.ts","./src/config/web3.ts","./src/services/action.service.ts"],"version":"5.7.2"}

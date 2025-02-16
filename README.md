@@ -6,6 +6,10 @@ This project is designed to automate your tasks using a custom workflow similar 
 
 ![Architecture Diagram](https://github.com/senthil-athiban/zapier/raw/master/apps/client/public/architecture.png)
 
+## Demo
+
+![Demo](https://github.com/senthil-athiban/zapier/raw/master/apps/client/public/zapier_demo.mov)
+
 ## Getting Started
 First, Install the dependencies
 

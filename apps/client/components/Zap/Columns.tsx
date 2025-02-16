@@ -63,12 +63,12 @@ const MenuCell = ({ row }: { row: Row<Workflow> }) => {
             Test
           </DropdownMenuItem>
         </DropdownMenuContent>
-        <DropdownMenuContent align="end">
+        {/* <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
             <Pencil className="w-4 h-4 mr-2" />
             Delete
           </DropdownMenuItem>
-        </DropdownMenuContent>
+        </DropdownMenuContent> */}
       </DropdownMenu>
       {isTestOpen && (
         <ZapTest
