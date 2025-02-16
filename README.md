@@ -1,4 +1,6 @@
-# Zapier Workflow
+# Forge flow
+
+![Forge flow](https://github.com/senthil-athiban/zapier/raw/master/apps/client/public/dash.png)
 
 This project is designed to automate your tasks using a custom workflow similar to Zapier. It leverages modern web technologies to provide a seamless experience for creating and managing automated workflows.
 
@@ -8,7 +10,7 @@ This project is designed to automate your tasks using a custom workflow similar 
 
 ## Demo
 
-![Demo](https://github.com/senthil-athiban/zapier/raw/master/apps/client/public/zapier_demo.mov)
+[Watch Demo Video](https://drive.google.com/file/d/1tKFF3rOvpaRXOhbXXlMmB8WPwDpQR6J3/view?usp=sharing)
 
 ## Getting Started
 First, Install the dependencies
