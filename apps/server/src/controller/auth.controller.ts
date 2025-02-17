@@ -19,7 +19,7 @@ const register = asyncMiddleWare(async (req: Request, res: Response) => {
   }
   const user = await userService.createUser(parsedData.data);
   tokenService.generateEmailVerificationToken(user);
-  res.status(200).send("Verification email has been sent");
+  res.status(200).send({message: "Verification email has been sent"});
 });
 
 const login = asyncMiddleWare(async (req: Request, res: Response) => {

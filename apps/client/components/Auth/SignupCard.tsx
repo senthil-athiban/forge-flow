@@ -6,12 +6,30 @@ import Google from "../Provider/Google";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const SignupCard = () => {
   const [name, setname] = useState("");
   const [passowrd, setpassowrd] = useState("");
   const [email, setEmail] = useState("");
   const router = useRouter();
+
+  const handleSubmit = async () => {
+    try {
+        const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
+          email: email,
+          password: passowrd,
+          name: name
+        });
+        if(res?.data) {
+          toast.success(res.data?.message);
+          router.push("/login");
+        }
+    } catch (error) {
+      console.error('Failed to signup', error);
+      toast.error('Failed to signup');
+    }
+  }
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md max-w-md rouned-lg">
       <ProviderButton className='bg-blue-500' icon={<Google />}>Sign with Google</ProviderButton>
@@ -51,14 +69,7 @@ const SignupCard = () => {
         </div> */}
       </div>
       <div className="flex justify-center">
-        <PrimaryButton onClick={ async () => {
-          const res = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
-            email: email,
-            password: passowrd,
-            name: name
-          });
-          router.push("/login");
-        }} size="lg">
+        <PrimaryButton onClick={handleSubmit} size="lg">
           Get Started Free
         </PrimaryButton>
       </div>

@@ -25,6 +25,7 @@ const getUser = async (params: UserQueryParams) => {
       where: params.where,
       select: params.select,
     });
+    
   } catch (error) {
     throw new Error("Error in fetching user");
   }

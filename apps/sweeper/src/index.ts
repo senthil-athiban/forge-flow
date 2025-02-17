@@ -14,7 +14,12 @@ const main = async () => {
     },
   ]);
 
-  while (true) {
+  const stream = await prisma.zapRunOutBox.subscribe();
+
+  for await (const event of stream) {
+    console.log('New event:', event)
+  }
+  
     const data = await prisma.zapRunOutBox.findMany({
       where: {},
       take: 10,
@@ -38,7 +43,7 @@ const main = async () => {
           },
         },
       });
-    }
+    
   }
 };
 main().catch(console.error);

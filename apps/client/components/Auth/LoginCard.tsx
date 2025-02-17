@@ -36,6 +36,7 @@ const LoginCard = () => {
         email: email,
         password: password,
       });
+      console.log('res: ', res)
       const accessToken = res.accesstoken;
       saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
       router.push("/dashboard");
@@ -52,13 +53,6 @@ const LoginCard = () => {
         onClick={handleGoogleAuth}
       >
         Continue with google
-      </ProviderButton>
-      <ProviderButton
-        className="bg-blue-600"
-        icon={<Facebook />}
-        onClick={() => {}}
-      >
-        Continue with facebook
       </ProviderButton>
       <ProviderButton
         className="bg-slate-900"

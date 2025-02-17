@@ -99,7 +99,6 @@ class HttpClient {
       headers: {
         "Content-Type": "application/json",
       },
-      timeout: 1000,
     });
 
     http.interceptors.request.use(
