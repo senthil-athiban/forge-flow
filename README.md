@@ -25,12 +25,73 @@ yarn dev
 ```
 
 # Tech Stack
-- Next.js: For the client-side application.
-- Node.js + Express.js: For the server-side application.
-- Kafka: For event streaming.
-- Webhooks: For real-time notifications and integrations.
-- Prisma ORM: For database management and queries.
-- PostgreSQL: As the relational database.
+
+## Frontend
+- Next.js 14: React framework for client-side application
+- TailwindCSS: For styling and UI components
+- ShadcnUI: For pre-built accessible components
+
+## Backend
+- Node.js + Express.js: For server-side application
+- Prisma ORM: For database management and queries
+- PostgreSQL: As the relational database
+
+## Event-Driven Architecture
+- Apache Kafka
+  - Message broker for async communication
+  - Event streaming between microservices
+  - Reliable message delivery with topic partitioning
+
+## Authentication & Authorization
+- JWT: Token-based authentication (Access + Refresh tokens)
+- Passport.js: OAuth integration
+  - Google OAuth2.0
+  - GitHub OAuth
+
+## Sweeper Service
+- Implements Transactional Outbox pattern
+- Monitors outbox table for new events
+- Ensures reliable message delivery
+- Responsibilities:
+  - Extract events from outbox table
+  - Publish to Kafka topics
+  - Handle failed publications
+  - Maintain delivery ordering
+  - Prevent dual-write problems
+
+## Processor Service
+- Processes workflow executions
+- Handles different notification types
+- Manages integration endpoints
+- Responsibilities:
+  - Consume Kafka events
+  - Execute workflow actions
+    - Slack notifications
+    - Discord messages
+    - Email sending
+  - Handle execution failures
+  - Maintain execution logs
+
+## Integrations
+- Slack: Workspace and channel management
+- Discord: Server and channel integration
+- Webhook: Custom HTTP endpoints
+
+## Development Tools
+- TypeScript: For type safety
+- ESLint: Code linting
+- Prettier: Code formatting
+- Turborepo: Monorepo management
+
+## Event Flow
+```mermaid
+    A[Webhook Event] --> B[Webhook Service]
+    B --> C[(Database)]
+    C --> D[Sweeper Service]
+    D --> E[Kafka]
+    E --> F[Processor Service]
+    F --> G[External Services]
+```
 
 # Ports
 - Client: http://localhost:3000
@@ -44,8 +105,6 @@ yarn dev
 This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
 - `client`: another [Next.js](http://localhost:3000.org/) app
 - `server`: a [Node.js](http://localhost:8000.org/) app
 - `hooks`: another [Node.js](http://localhost:8080.org/) app
