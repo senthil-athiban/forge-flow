@@ -1,5 +1,5 @@
-import discordController from "@/controller/discord.controller";
-import { authMiddleware } from "@/middlware";
+import discordController from "../controller/discord.controller";
+import { authMiddleware } from "../middlware";
 import { Router } from "express";
 
 const router = Router();

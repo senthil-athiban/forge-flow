@@ -738,7 +738,8 @@
   version "0.0.0"
   resolved "file:packages/database"
   dependencies:
-    "@prisma/client" "^5.6.0"
+    "@prisma/client" "^6.3.1"
+    "@prisma/extension-pulse" "^1.2.2"
     ts-node "^10.9.2"
 
 "@repo/eslint-config@*", "@repo/eslint-config@file:/Users/senthilathiban/Coding/practise/web2/zapier/my-workflow/packages/eslint-config":
@@ -6774,12 +6775,7 @@ undefsafe@^2.0.5:
   resolved "https://registry.npmjs.org/undefsafe/-/undefsafe-2.0.5.tgz"
   integrity sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==
 
-undici-types@~6.19.2:
-  version "6.19.8"
-  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.19.8.tgz"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
-
-undici-types@~6.20.0:
+undici-types@~6.19.2, undici-types@~6.20.0:
   version "6.20.0"
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.20.0.tgz"
   integrity sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==

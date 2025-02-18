@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
+import { slackService } from "@repo/common";
 import { asyncMiddleWare } from "../config/asyncMiddleware";
 import { ApiError } from "../config/error";
 
 import userService from "../services/user.service";
-import { CLIENT_URL } from "@/config/config";
-import { slackService } from "@repo/common";
+import { CLIENT_URL } from "../config/config";
 
 const storeSlackMetadata = asyncMiddleWare(async (req:Request, res: Response) => {
     const code = req.query.code as string;

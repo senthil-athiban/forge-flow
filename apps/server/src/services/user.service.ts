@@ -1,8 +1,8 @@
+import bcyprtjs from "bcryptjs";
+import { prisma, type User } from "@repo/db";
 import { ApiError } from "../config/error";
 import { SignUpType } from "../schema/index";
-import { prisma, type User } from "@repo/db";
 import tokenService from "./token.service";
-import bcyprtjs from "bcryptjs";
 
 interface UserQueryParams {
   where: {
