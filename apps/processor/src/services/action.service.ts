@@ -37,6 +37,7 @@ class DiscordHandler implements ActionHandler {
     const { message } = hooksMetadata as any;
 
     const channel = await discordService.findChannelById(channelId);
+    // TODO: Failing to send message, not caught in the error block.
     await discordService.sendMessage(
       channel?.discord.guildId!,
       channel?.channelId!,

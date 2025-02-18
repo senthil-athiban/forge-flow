@@ -15,35 +15,25 @@ const main = async () => {
   ]);
 
   const stream = await prisma.zapRunOutBox.subscribe();
-
-  for await (const event of stream) {
-    console.log('New event:', event)
-  }
   
-    const data = await prisma.zapRunOutBox.findMany({
-      where: {},
-      take: 10,
-    });
+  for await (const event of stream) {
 
-    if (data?.length > 0) {
-      console.log(" data : ", data);
-
+    if (event?.action === 'create') {
+      const item = event?.created;
 
       await kafkaService.produceMessage({
         topic: process.env.TOPIC_NAME!,
-        message: data?.map((item) => ({
+        message: [{
           value: { zapRunId: item.zapRunId, stage: 0 },
-        })),
+        }],
       });
       
-      await prisma.zapRunOutBox.deleteMany({
+      await prisma.zapRunOutBox.delete({
         where: {
-          id: {
-            in: data?.map((item) => item.id),
-          },
+          id: item.id
         },
       });
-    
+    }
   }
 };
 main().catch(console.error);

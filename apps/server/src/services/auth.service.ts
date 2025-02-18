@@ -21,7 +21,6 @@ const loginUsingEmailPassword = async (body: SignIntype) => {
       emailVerified: true,
     },
   });
-  console.log('user : ', user);
   if (!user) {
     throw new ApiError(404, "No Account Exists");
   }
