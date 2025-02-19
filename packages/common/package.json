@@ -14,6 +14,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
+    "@repo/db": "*",
     "@slack/web-api": "^7.8.0",
     "@types/pino": "^7.0.5",
     "discord.js": "^14.17.3",
