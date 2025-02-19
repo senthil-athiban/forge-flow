@@ -6,7 +6,6 @@ import React from "react";
 import Card from "./Card";
 
 const Widget = ({ zapData }: { zapData: any }) => {
-  console.log('zapData : ', zapData)
   const latestZap = zapData.latestZap?.updatedAt;
   const latestZapRun = zapData.latestZapRun?.updatedAt;
   

@@ -78,9 +78,7 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
   ];
 
   const handleNavigateProfile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.log('--reached 1----')
     e.preventDefault();
-    console.log('--reached 2----')
     router.push("/profile");
   }
 

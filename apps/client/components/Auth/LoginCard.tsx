@@ -36,7 +36,6 @@ const LoginCard = () => {
         email: email,
         password: password,
       });
-      console.log('res: ', res)
       const accessToken = res.accesstoken;
       saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
       router.push("/dashboard");
