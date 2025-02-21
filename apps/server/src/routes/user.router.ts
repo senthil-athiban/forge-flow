@@ -5,6 +5,6 @@ import userController from "../controller/user.controller";
 const router = Router();
 
 //@ts-ignore
-router.get("/verify", authMiddleware, userController.verifyUser);
+router.get("/user/me", authMiddleware, userController.getUser);
 
 export const userRouter = router;

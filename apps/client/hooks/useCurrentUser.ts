@@ -16,7 +16,7 @@ export const useCurrentUser = (): UseCurrentUserReturn => {
   const fetchUser = async () => {
     try {
       setIsLoading(true);
-      const res = await UserService.verifyUser();
+      const res = await UserService.getProfile();
       setUser(res.user);
       setError(null);
     } catch (err) {

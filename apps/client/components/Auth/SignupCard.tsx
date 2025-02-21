@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import ProviderButton from "../Button/ProviderButton";
 import PrimaryButton from "../Button/PrimaryButton";
 import Google from "../Provider/Google";
-import axios from "axios";
-import { BACKEND_URL } from "@/app/config";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import AuthService from "@/services/auth.service";
 
 const SignupCard = () => {
   const [name, setname] = useState("");
@@ -16,7 +15,7 @@ const SignupCard = () => {
 
   const handleSubmit = async () => {
     try {
-        const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
+        const res = await AuthService.register({
           email: email,
           password: passowrd,
           name: name
@@ -25,9 +24,9 @@ const SignupCard = () => {
           toast.success(res.data?.message);
           router.push("/login");
         }
-    } catch (error) {
+    } catch (error:any) {
       console.error('Failed to signup', error);
-      toast.error('Failed to signup');
+      toast.error(error.message);
     }
   }
   return (
@@ -60,13 +59,6 @@ const SignupCard = () => {
           </label>
           <input type="text" className="p-2 border bg-orange-50 rounded-lg" onChange={(e) => setpassowrd(e.target.value)} />
         </div>
-        {/* <div>
-          <label htmlFor="lName" className="text-sm">
-            <span className="absolut left-0 top-0 mr-1">*</span> Last Name
-            (required)
-          </label>
-          <input type="text" className="p-2 border bg-orange-50 rounded-lg" />
-        </div> */}
       </div>
       <div className="flex justify-center">
         <PrimaryButton onClick={handleSubmit} size="lg">

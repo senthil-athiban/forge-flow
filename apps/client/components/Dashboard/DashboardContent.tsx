@@ -14,7 +14,7 @@ const DashboardContent = () => {
   const router = useRouter();
   const handleVerify = async () => {
     try {
-      const res = await UserService.verifyUser();
+      const res = await UserService.getProfile();
     } catch (error) {
       console.log("error in verifying user:", error);
     }
@@ -56,7 +56,7 @@ const DashboardContent = () => {
       </div>
 
       <div className="mt-4 bg-white rounded-lg">
-        <ZapTable />
+        <ZapTable isLoading={isLoading} zapData={data} />
       </div>
     </div>
   );

@@ -24,8 +24,7 @@ const register = asyncMiddleWare(async (req: Request, res: Response) => {
 
 const login = asyncMiddleWare(async (req: Request, res: Response) => {
   const user = await authService.loginUsingEmailPassword(req.body);
-  const { accesstoken, refreshToken } =
-    await tokenService.generateAuthTokens(user);
+  const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(user);
   res.cookie("jwt", refreshToken, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
@@ -62,18 +61,18 @@ const refreshToken = asyncMiddleWare(async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(401).json({ message: "No user found" });
+    throw new ApiError(404, "No user found");
   }
   const { accesstoken, refreshToken } =
     await tokenService.generateAuthTokens(user);
-
+    
   res.cookie("jwt", refreshToken, {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: true,
     sameSite: "none",
   });
-  return res.status(201).json({
+  res.status(201).send({
     message: {
       accesstoken: accesstoken,
     },
@@ -116,10 +115,14 @@ const googleAuthCallback = passport.authenticate("google", {
 });
 
 const googleAuthSuccess = async (req: Request, res: Response) => {
+  //@ts-ignore
+  const userId = req.user?.id;
   if (!req.user) {
     throw new ApiError(401, "Unauthorized access")
   }
-  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify`);
+  const encodedUserId = Buffer.from(userId).toString("base64");
+  const encodedQueryParams = `id=${encodedUserId}&provider=google`;
+  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
 };
 
 const googleAuthFailure = async (req: Request, res: Response) => {
@@ -138,7 +141,7 @@ const githubAuthSuccess = async (req: Request, res: Response) => {
     throw new ApiError(401, "Unauthorized access");
   }
 
-  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify`);
+  return res.redirect(`${process.env.CLIENT_URL}`);
 };
 
 const githubAuthFailure = async (req: Request, res: Response) => {
@@ -146,9 +149,23 @@ const githubAuthFailure = async (req: Request, res: Response) => {
 };
 
 const verify = async (req: Request, res: Response) => {
-  const {userId, provider} = req.body;
+  const id = req.query.id as string;
+  const provider = req.query.provider as string;
+  if(!id || !provider){
+    throw new ApiError(400, "Bad request");
+  }
+  const userId = Buffer.from(id, 'base64').toString('utf-8');
+  if(!userId || !provider) {
+    throw new ApiError(400, "Bad request");
+  }
   const user = await userService.getUserToken(userId, provider);
-  res.send(200).send({user});
+  res.cookie("jwt", user.refreshToken, {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  res.status(200).send({"accessToken": user.accessToken});
 }
 
 export default {

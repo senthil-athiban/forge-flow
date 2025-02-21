@@ -1,5 +1,7 @@
+import { prisma } from "@repo/db";
 import { prismaClient } from "../db";
 import { OAuthProfile } from "../types/auth";
+import tokenService from "./token.service";
 
 const getEmailFromProfile = (profile: OAuthProfile) => {
   return profile.email || `${profile.username}@${profile.provider}.com`;
@@ -9,21 +11,22 @@ const handleOAuthLogin = async (
   tokens: { accessToken: string; refreshToken: string }
 ) => {
   try {
+    const email = getEmailFromProfile(profile);
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: {
+        image: profile.photos[0].value,
+      },
+      create: {
+        name: profile.displayName!,
+        email: email,
+        image: profile.photos[0].value,
+        emailVerified: profile.emailVerified,
+      },
+    });
+    
     return prismaClient.$transaction(async (tx:any) => {
-      const email = getEmailFromProfile(profile);
-      const user = await tx.user.upsert({
-        where: { email },
-        update: {
-          image: profile.photos[0].value,
-        },
-        create: {
-          name: profile.displayName!,
-          email: email,
-          image: profile.photos[0].value,
-          emailVerified: profile.emailVerified,
-        },
-      });
-
+      const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(user);
       await tx.oAuthAccount.upsert({
         where: {
           provider_providerUserId: {
@@ -32,12 +35,12 @@ const handleOAuthLogin = async (
           },
         },
         update: {
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
+          accessToken: accesstoken,
+          refreshToken: refreshToken,
         },
         create: {
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
+          accessToken: accesstoken,
+          refreshToken: refreshToken,
           provider: profile.provider,
           providerUserId: profile.id,
           userId: user.id,

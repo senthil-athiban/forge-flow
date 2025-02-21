@@ -1,16 +1,20 @@
 "use client";
 
-import useZaps from "@/hooks/useZaps"
 import { columns, Workflow } from "./Columns"
 import { DataTable } from "./DataTable"
 import { Zap } from "@/types/zap";
 import { Loader2 } from "lucide-react";
 
-export default function ZapTable() {
-  const { data, isLoading } = useZaps() as any;
-  const transformedData: Workflow[] = isLoading || !data?.zaps
+interface ZapTableProps {
+  isLoading: boolean;
+  zapData: any;
+}
+
+export default function ZapTable ({ isLoading, zapData } : ZapTableProps) {
+  
+  const transformedData: Workflow[] = isLoading || !zapData?.zaps
     ? []
-    : data.zaps.map((item: Zap) => ({
+    : zapData.zaps.map((item: Zap) => ({
         id: item.id,
         name: 'My zap',
         actions: item.actions,

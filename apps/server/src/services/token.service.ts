@@ -12,21 +12,45 @@ const saveToken = async (
   tokenType: TokenType,
   token: string
 ) => {
-  return await prismaClient.$transaction(async (tx:any) => {
-    await tx.token.deleteMany({
-      where: {
-        userId,
-        type: tokenType
+  try {
+    return await prismaClient.$transaction(async (tx:any) => {
+      await tx.token.deleteMany({
+        where: {
+          userId,
+          type: tokenType
+        }
+      });
+      return await prismaClient.token.upsert({
+        where: {
+          userId,
+          token,
+          type: tokenType
+        },
+        update: {
+          token: token
+        },
+        create: {
+          userId: userId,
+          token,
+          type: tokenType,
+        },
+      });
+    })
+  } catch (error:any) {
+    if (error.code) {
+      switch (error.code) {
+        case 'P2002':
+          throw new ApiError(409, "Token already exists");
+        case 'P2003':
+          throw new ApiError(400, "Invalid user reference");
+        case 'P2025':
+          throw new ApiError(404, "Record not found");
+        case 'P2000':
+          throw new ApiError(400, "Input data validation failed");
       }
-    });
-    return await tx.token.create({
-      data: {
-        userId: userId,
-        token,
-        type: tokenType,
-      },
-    });
-  })
+    }
+    throw new ApiError(500, "Failed to save token");
+  }
 };
 
 const generateToken = (
@@ -45,6 +69,9 @@ const generateToken = (
 };
 
 const generateAuthTokens = async (user: any) => {
+  if(!user) {
+    throw new ApiError(400, "Bad request");
+  }
   const accessTokenExpires = moment().add(1, "day");
   const accesstoken = generateToken(
     user.id,
@@ -54,14 +81,13 @@ const generateAuthTokens = async (user: any) => {
   );
 
   // edge case to solve while creating new refresh token, make sure to delete the existing token from db
-  const refreshTokenExpires = moment().add(2, "days");
+  const refreshTokenExpires = moment().add(7, "days");
   const refreshToken = generateToken(
     user.id,
     refreshTokenExpires,
     TokenTypes.REFRESH,
     JWT_REFRESH_SECRET
   );
-
   await saveToken(user.id, TokenTypes.REFRESH , refreshToken);
 
   return {

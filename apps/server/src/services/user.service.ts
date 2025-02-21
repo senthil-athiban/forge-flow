@@ -79,12 +79,12 @@ const createUser = async (userData: SignUpType) => {
         await tokenService.generateEmailVerificationToken(existingUser);
         throw new ApiError(
           400,
-          "You have already registered, but your email is not verified. A new verification email has been sent."
+          "Email is already registered but not yet verified. We've sent a new verification link to your email address."
         );
       }
       throw new ApiError(
-        401,
-        "The email address you have entered is already associated with another verified account."
+        409,
+        "Email address is already in use. Please log in or use a different email."
       );
     }
 
@@ -99,4 +99,27 @@ const createUser = async (userData: SignUpType) => {
     });
     return user as User;
 };
-export default { getUser, updateUserById, verifyUser, createUser };
+
+const getUserToken = async (userId: string, provider: string) => {
+  // todo change to unique
+  try {
+    const user = await prisma.oAuthAccount.findFirst({
+      where: {
+        userId: userId,
+        provider: provider
+      },
+      select: {
+        accessToken: true,
+        refreshToken: true
+      }
+    });
+    if(!user) {
+      throw new ApiError(404, "No user was found");
+    }
+    return user;
+  } catch (error) {
+    throw new ApiError(400, "Bad request");
+    // throw new ApiError(500, "Internal Server error");
+  }
+}
+export default { getUser, updateUserById, verifyUser, createUser, getUserToken };

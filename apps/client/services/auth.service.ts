@@ -24,10 +24,13 @@ class AuthService {
       password: credentials.password,
       name: credentials.name,
     });
-
     return res.data;
   }
 
+  public static async verifyOAuth(params: string) {
+    const res = await HttpClient.post(`${this.basePath}/oauth/verify?${params}`);
+    return res.data;
+  }
 }
 
 export default AuthService;

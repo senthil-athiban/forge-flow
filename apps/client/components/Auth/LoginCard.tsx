@@ -1,34 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import ProviderButton from "../Button/ProviderButton";
 import Google from "../Provider/Google";
-import Facebook from "../Provider/Facebook";
 import Github from "../Provider/Github";
 import PrimaryButton from "../Button/PrimaryButton";
 
 import { BACKEND_URL } from "@/app/config";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthService from "@/services/auth.service";
 import { saveToLocalStorage } from "@/utils/storage";
 import { STORAGE_KEYS } from "@/constants/storage-keys.constant";
-import ApiError, { ErrorResponse } from "@/lib/api/error";
+import { Button } from "../ui/button";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleGoogleAuth = async () => {
-    const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
-    //@ts-ignore
-    if (response) router.push("/dashboard");
+    window.location.href = `${BACKEND_URL}/api/v1/auth/google`;
   };
+
   const handleGithubAuth = async () => {
-    const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
+    window.location.href = `${BACKEND_URL}/api/v1/auth/github`;
   };
+
+  // const handleGoogleAuth = async () => {
+  //   const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
+  //   if (response) router.push("/dashboard");
+  // };
+  // const handleGithubAuth = async () => {
+  //   const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
+  // };
 
   const onSubmit = async () => {
     try {
@@ -40,9 +48,34 @@ const LoginCard = () => {
       saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
       router.push("/dashboard");
     } catch (error: any) {
-      toast.warning(error.message);
+      toast.error(error.message);
     }
   };
+
+  const handleLoginStatus = useCallback(() => {
+    const verified = searchParams.get("verified");
+    const expired = searchParams.get("expired");
+    const invalid = searchParams.get("invalid");
+    if (verified === "true") {
+      toast.success("Email verified successfully. You can now log in.");
+    }
+
+    if (expired === "true") {
+      toast.error(
+        "Email verification token has expired. Please signup again."
+      );
+    }
+
+    if (invalid === "true") {
+      toast.error(
+        "Invalid email verification token. Please try again or request a new verification email."
+      );
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    handleLoginStatus();
+  }, [searchParams, handleLoginStatus]);
 
   return (
     <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">

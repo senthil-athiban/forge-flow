@@ -5,10 +5,6 @@ import { ApiError } from "./config/error";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Check OAuth Session
-        if (req.isAuthenticated()) {
-            return next();
-        }
 
         // Check JWT Token
         const token = req.headers.authorization;
@@ -17,16 +13,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         }
 
         // Verify JWT
-        const payload = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;;
+        const payload = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;
         req.userId = payload.sub!;
         next();
     } catch (error) {
         let err = new ApiError(401, "Un authorized");
     
         // OAuth session expired/invalid
-        if (!req.isAuthenticated()) {
-            err = new ApiError(403, "OAuth session expired");
-        }
+        // if (!req.isAuthenticated()) {
+        //     err = new ApiError(403, "OAuth session expired");
+        // }
         if (error instanceof jwt.JsonWebTokenError) {
             err = new ApiError(401, "Invalid token");
         }

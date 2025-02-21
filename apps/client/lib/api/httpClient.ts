@@ -65,7 +65,7 @@ class HttpClient {
         code: 'FORBIDDEN'
       };
     }
-  
+    
     // Validation Errors (400, 422)
     if (status === 400 || status === 422) {
       return {
@@ -120,11 +120,9 @@ class HttpClient {
       (response) => response,
       async (error: AxiosError) => {
         const formattedError = this.formatErrorMessage(error);
-        
         const prevRequest = error?.config as AxiosRequestConfig & {
           sent?: boolean;
         };
-        
         //@ts-ignore
         if (error.response?.status === 401 && !prevRequest.sent && !error.response.data.message.includes("Invalid credentials")) {
           prevRequest.sent = true;
@@ -157,7 +155,7 @@ class HttpClient {
           }
         }
         retryCount = 0;
-        return Promise.reject(error);
+        return Promise.reject(formattedError);
       }
     );
 
