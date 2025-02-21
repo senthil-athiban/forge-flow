@@ -13,6 +13,6 @@ export const getUser = async () => {
     const res = await UserService.getProfile();
     return res.user;
   } catch (error) {
-    console.warn("Error in fetching user : ", error);
+    // console.warn("Error in fetching user : ", error);
   }
 };

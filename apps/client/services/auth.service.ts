@@ -5,7 +5,8 @@ class AuthService {
   static basePath = "/api/v1/auth";
 
   public static async getRefreshToken() {
-    const res = await HttpClient.get(`${this.basePath}/refresh-token`);
+    const abortController = new AbortController();
+    const res = await HttpClient.get(`${this.basePath}/refresh-token`, {signal: abortController.signal});
     return res.data;
   }
 

@@ -6,8 +6,8 @@ import React from "react";
 import Card from "./Card";
 
 const Widget = ({ zapData }: { zapData: any }) => {
-  const latestZap = zapData.latestZap?.updatedAt;
-  const latestZapRun = zapData.latestZapRun?.updatedAt;
+  const latestZap = zapData?.latestZap?.updatedAt;
+  const latestZapRun = zapData?.latestZapRun?.updatedAt;
   
   const getTimeDistance = (date: Date | null) => {
     if (!date) return 'No activity';

@@ -18,6 +18,7 @@ class HttpClient {
   private static instance: HttpClient;
   private static client: AxiosInstance;
   private baseUrl: string;
+  private abortControllers: Map<string, AbortController> = new Map();
 
   private constructor() {
     this.baseUrl = BACKEND_URL || "";
@@ -91,6 +92,24 @@ class HttpClient {
       code: 'UNKNOWN_ERROR'
     };
   };
+  
+  private getRequestKey(config: AxiosRequestConfig): string {
+    return `${config.method}-${config.url}-${JSON.stringify(config.params || {})}-${JSON.stringify(config.data || {})}`;
+  }
+
+  private abortPreviousRequest(config: AxiosRequestConfig): void {
+    const key = this.getRequestKey(config);
+    const controller = this.abortControllers.get(key);
+    if (controller) {
+      try {
+        controller.abort();
+      } catch (error) {
+        console.error('Error aborting previous request:', error);
+      } finally {
+        this.abortControllers.delete(key);
+      }
+    }
+  }
 
   private initClient(): AxiosInstance {
     const http = axios.create({
@@ -104,6 +123,14 @@ class HttpClient {
     http.interceptors.request.use(
       (config) => {
         try {
+          // abort previous requests
+          this.abortPreviousRequest(config);
+
+          const controller = new AbortController();
+          const key = this.getRequestKey(config);
+          this.abortControllers.set(key, controller);
+          config.signal = controller.signal;
+
           const accessToken = getFromLocalStorage(STORAGE_KEYS.ACCESS_TOKEN);
           if (accessToken) {
             config.headers.Authorization = accessToken;
@@ -117,24 +144,47 @@ class HttpClient {
     );
 
     http.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        const key = this.getRequestKey(response.config);
+        this.abortControllers.delete(key);
+        return response;
+      },
       async (error: AxiosError) => {
+        if (error.config) {
+          const key = this.getRequestKey(error.config);
+          this.abortControllers.delete(key);
+        }
+
+        if (axios.isCancel(error)) {
+          return Promise.reject(error);
+        }
+
         const formattedError = this.formatErrorMessage(error);
+        
+        //@ts-ignore
         const prevRequest = error?.config as AxiosRequestConfig & {
           sent?: boolean;
         };
+        
         //@ts-ignore
         if (error.response?.status === 401 && !prevRequest.sent && !error.response.data.message.includes("Invalid credentials")) {
           prevRequest.sent = true;
           try {
             const response = await AuthService.getRefreshToken();
-            saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN,response?.message?.accesstoken ?? "")
+            const newToken = response?.message?.accesstoken;
+            saveToLocalStorage(STORAGE_KEYS.ACCESS_TOKEN,newToken ?? "");
+            
             if (prevRequest.headers) {
-              prevRequest.headers.Authorization = response?.accesstoken;
+              prevRequest.headers.Authorization = newToken;
             }
-            return http(prevRequest);
+            http(prevRequest);
+            
+            return newToken;
           } catch (error) {
-            logout();
+            if(!axios.isCancel(error)) {
+            logout();  
+            }
+            
           }
         }
 
@@ -144,8 +194,8 @@ class HttpClient {
           return Promise.reject(formattedError);
         }
         if (
-          (error.response && error.response.status >= 500) ||
-          error.message.includes("Network error")
+          //@ts-ignore
+          (error.response && error.response.status >= 500) || error.message.includes("Network error")
         ) {
           if (retryCount < MAX_RETRIES) {
             retryCount++;
@@ -194,6 +244,11 @@ class HttpClient {
     config?: AxiosRequestConfig<D>
   ): Promise<R> {
     return this.getClient().put(url, data, config);
+  }
+  static cleanup(): void {
+    const instance = this.getInstance();
+    instance.abortControllers.forEach(controller => controller.abort());
+    instance.abortControllers.clear();
   }
 }
 export default HttpClient;
