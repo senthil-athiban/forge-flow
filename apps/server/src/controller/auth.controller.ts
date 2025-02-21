@@ -37,8 +37,16 @@ const login = asyncMiddleWare(async (req: Request, res: Response) => {
 
 const verifyEmail = asyncMiddleWare(async (req: Request, res: Response) => {
   const token = req.query.token as string;
-  await emailService.verifyEmail(token);
-  res.status(201).send({ message: "You are verified" });
+  try {
+    await emailService.verifyEmail(token);
+    res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);  
+  } catch (error : any) {
+    if (error.message === "Token expired") {
+      return res.redirect(`${process.env.CLIENT_URL}/login?expired=true`);
+    }
+    return res.redirect(`${process.env.CLIENT_URL}/login?invalid=true`);
+  }
+  
 });
 
 const refreshToken = asyncMiddleWare(async (req: Request, res: Response) => {
@@ -111,7 +119,7 @@ const googleAuthSuccess = async (req: Request, res: Response) => {
   if (!req.user) {
     throw new ApiError(401, "Unauthorized access")
   }
-  return res.redirect(`${process.env.CLIENT_URL}/dashboard`);
+  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify`);
 };
 
 const googleAuthFailure = async (req: Request, res: Response) => {
@@ -130,12 +138,18 @@ const githubAuthSuccess = async (req: Request, res: Response) => {
     throw new ApiError(401, "Unauthorized access");
   }
 
-  return res.redirect(`${process.env.CLIENT_URL}/dashboard`);
+  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify`);
 };
 
 const githubAuthFailure = async (req: Request, res: Response) => {
   return res.redirect(`${process.env.CLIENT_URL}/login`);
 };
+
+const verify = async (req: Request, res: Response) => {
+  const {userId, provider} = req.body;
+  const user = await userService.getUserToken(userId, provider);
+  res.send(200).send({user});
+}
 
 export default {
   register,
@@ -152,4 +166,5 @@ export default {
   googleAuthSuccess,
   githubAuthSuccess,
   githubAuthFailure,
+  verify
 };

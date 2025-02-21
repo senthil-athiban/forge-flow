@@ -7,7 +7,7 @@ const router = Router();
 // email and password auth
 router.post("/signup", authController.register);
 router.post("/signin", authController.login);
-router.post("/verify-email", authController.verifyEmail);
+router.get("/verify-email", authController.verifyEmail);
 router.get("/refresh-token", authController.refreshToken);
 router.post("/forgot-password", authController.forgotPassword);
 router.get("/reset-password", authController.resetPassword);
@@ -23,5 +23,6 @@ router.get("/github", authController.githubAuth);
 router.get("/github/callback", authController.githubAuthCallback);
 router.get("/github/success", authController.githubAuthSuccess);
 router.get("/github/failure", authController.githubAuthFailure);
+router.post("/oauth/verify", authController.verify)
 
 export const authRouter = router;

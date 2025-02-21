@@ -101,7 +101,7 @@ const generateEmailVerificationToken = async (user: User) => {
   const expires = moment().add(1, "minute");
   const token = generateToken(user.id, expires, TokenTypes.VERIFY_EMAIL);
   await prismaClient.$transaction(async (tx:any) => {
-    // delete the previous tokens
+    // delete the previous tokens, if exists
     await tx.token.deleteMany({
       where: {
         userId: user.id,
