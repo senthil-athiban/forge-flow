@@ -137,11 +137,14 @@ const githubAuthCallback = passport.authenticate("github", {
 });
 
 const githubAuthSuccess = async (req: Request, res: Response) => {
+  //@ts-ignore
+  const userId = req.user?.id;
   if (!req.user) {
-    throw new ApiError(401, "Unauthorized access");
+    throw new ApiError(401, "Unauthorized access")
   }
-
-  return res.redirect(`${process.env.CLIENT_URL}`);
+  const encodedUserId = Buffer.from(userId).toString("base64");
+  const encodedQueryParams = `id=${encodedUserId}&provider=github`;
+  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
 };
 
 const githubAuthFailure = async (req: Request, res: Response) => {

@@ -48,7 +48,7 @@ const SidebarMenu = ({ isCollapsed , setIsCollapsed}: SideBarMenuProps) => {
         const res = await getUser();
         setUser(res);
       } catch (error) {
-        // console.log('Error in fetching user : ', error);
+        console.log('Error in fetching user : ', error);
       }
     }
     fetchUser();
