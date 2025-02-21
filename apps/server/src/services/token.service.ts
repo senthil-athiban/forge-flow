@@ -72,7 +72,7 @@ const generateAuthTokens = async (user: any) => {
   if(!user) {
     throw new ApiError(400, "Bad request");
   }
-  const accessTokenExpires = moment().add(1, "minute");
+  const accessTokenExpires = moment().add(1, "day");
   const accesstoken = generateToken(
     user.id,
     accessTokenExpires,
@@ -81,7 +81,7 @@ const generateAuthTokens = async (user: any) => {
   );
 
   // edge case to solve while creating new refresh token, make sure to delete the existing token from db
-  const refreshTokenExpires = moment().add(3, "minutes");
+  const refreshTokenExpires = moment().add(3, "days");
   const refreshToken = generateToken(
     user.id,
     refreshTokenExpires,
