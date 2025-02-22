@@ -19,9 +19,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-[#fffdf9]`}>
+      <body className={`${inter.className} min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-100`}>
         <Toaster />
-        <Navbar />
         <PublicRoute>
           {children}
         </PublicRoute>
