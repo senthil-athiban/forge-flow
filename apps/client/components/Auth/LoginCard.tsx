@@ -3,17 +3,23 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import ProviderButton from "../Button/ProviderButton";
-import Google from "../Provider/Google";
-import Github from "../Provider/Github";
-import PrimaryButton from "../Button/PrimaryButton";
-
 import { BACKEND_URL } from "@/app/config";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthService from "@/services/auth.service";
 import { saveToLocalStorage } from "@/utils/storage";
 import { STORAGE_KEYS } from "@/constants/storage-keys.constant";
 import { Button } from "../ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { FloatingLabelInput } from "../Profile/ProfileCard";
+import { Github } from "lucide-react";
+import Google from "../Provider/Google";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
@@ -29,14 +35,6 @@ const LoginCard = () => {
   const handleGithubAuth = async () => {
     window.location.href = `${BACKEND_URL}/api/v1/auth/github`;
   };
-
-  // const handleGoogleAuth = async () => {
-  //   const response = window.open(`${BACKEND_URL}/api/v1/auth/google`, "_self");
-  //   if (response) router.push("/dashboard");
-  // };
-  // const handleGithubAuth = async () => {
-  //   const res = window.open(`${BACKEND_URL}/api/v1/auth/github`, "_self");
-  // };
 
   const onSubmit = async () => {
     try {
@@ -61,9 +59,7 @@ const LoginCard = () => {
     }
 
     if (expired === "true") {
-      toast.error(
-        "Email verification token has expired. Please signup again."
-      );
+      toast.error("Email verification token has expired. Please signup again.");
     }
 
     if (invalid === "true") {
@@ -78,63 +74,90 @@ const LoginCard = () => {
   }, [searchParams, handleLoginStatus]);
 
   return (
-    <div className="border grid flex-col gap-y-4 p-10 shadow-md rouned-lg">
-      <ProviderButton
-        className="bg-sky-600"
-        icon={<Google />}
-        onClick={handleGoogleAuth}
-      >
-        Continue with google
-      </ProviderButton>
-      <ProviderButton
-        className="bg-slate-900"
-        icon={<Github />}
-        onClick={handleGithubAuth}
-      >
-        Continue with github
-      </ProviderButton>
-      <div className="flex justify-center items-center my-4">
-        <div className="border-t border-gray-300 flex-grow mr-3"></div>
-        <span className="flex-shrink">OR</span>
-        <div className="border-t border-gray-300 flex-grow ml-3"></div>
-      </div>
-      <form className="flex flex-col gap-y-2">
-        <label htmlFor="email" className="text-sm">
-          <span className="absolut left-0 top-0 mr-1">*</span>Email (required)
-        </label>
-        <input
-          type="text"
-          className="p-2 border bg-orange-50 rounded-lg"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <label htmlFor="password" className="text-sm">
-          <span className="absolut left-0 top-0 mr-1">*</span>password
-          (required)
-        </label>
-        <input
-          type="text"
-          className="p-2 border bg-orange-50 rounded-lg"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </form>
-      <div className="flex justify-center">
-        <PrimaryButton
-          onClick={onSubmit}
-          size="lg"
-          // disabled={true}
-        >
-          Continue
-        </PrimaryButton>
-      </div>
-      <div>
-        <p className="font-normal text-xs">
-          Don{"'"}t have a Zapier account yet?
-          <Link href={"/signup"} className="text-blue-500 underline">
+    <Card className="w-[440px] p-2 shadow-lg bg-white/70 background-blur-sm border border-indigo-100">
+      <CardHeader className="space-y-2 text-center">
+        <CardTitle className="text-2xl tracking-wide text-indigo-600 font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent">
+          Forge flow
+        </CardTitle>
+        <CardDescription className="text-base text-muted-foreground">
+          Welcome back!
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="grid gap-3">
+          <Button
+            variant="outline"
+            className="w-full h-11 font-medium border-2 hover:bg-indigo-300 hover:text-white"
+            onClick={handleGoogleAuth}
+          >
+            <Google />
+            Continue with Google
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full h-11 font-medium border-2 hover:bg-indigo-300 hover:text-white"
+            onClick={handleGithubAuth}
+          >
+            <Github className="mr-2 h-4 w-4" />
+            Continue with GitHub
+          </Button>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-muted-foreground">
+              OR
+            </span>
+          </div>
+        </div>
+        <form className="flex flex-col gap-y-4" onSubmit={(e) => {e.preventDefault(); onSubmit();}}>
+          <FloatingLabelInput
+            id="email"
+            label="Email*"
+            onChange={(e: any) => setEmail(e.target.value)}
+            value={email}
+            key={"email"}
+            type="text"
+          />
+          <FloatingLabelInput
+            id="password"
+            label="Password*"
+            onChange={(e: any) => setPassword(e.target.value)}
+            value={password}
+            key={"password"}
+            type="password"
+          />
+          <Link
+            href={"/signup"}
+            className="text-indigo-600 hover:text-indigo-700 font-normal text-xs underline"
+          >
+            forgot password?
+          </Link>
+          <Button
+            type="submit"
+            variant={"primary"}
+            size={"lg"}
+            className="w-full h-11"
+          >
+            Login
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter className="text-center">
+        <div className="text-xs text-muted-foreground">
+          Don{"'"}t have an account yet?{" "}
+          <Link
+            href={"/signup"}
+            className="text-indigo-600 hover:text-indigo-700 font-medium underline"
+          >
             Sign up
           </Link>
-        </p>
-      </div>
-    </div>
+        </div>
+      </CardFooter>
+    </Card>
   );
 };
 

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 interface FormInput {
   name: string;
@@ -13,7 +14,7 @@ interface FormInput {
   newPassword: string;
 }
 
-const FloatingLabelInput = ({ 
+export const FloatingLabelInput = ({ 
   id, 
   label, 
   type = "text",
@@ -27,12 +28,14 @@ const FloatingLabelInput = ({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const togglePassword = () => setShowPassword(prev => !prev);
   return (
     <div className="relative">
       <input
         id={id}
-        type={type}
+        type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
         value={value}
         onChange={onChange}
         onFocus={() => setIsFocused(true)}
@@ -57,6 +60,22 @@ const FloatingLabelInput = ({
       >
         {label}
       </label>
+      {type === 'password' && (
+        <button
+          type="button"
+          onClick={togglePassword}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-indigo-600 focus:outline-none"
+        >
+          {showPassword ? (
+            <EyeOffIcon className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <EyeIcon className="h-5 w-5" aria-hidden="true" />
+          )}
+          <span className="sr-only">
+            {showPassword ? 'Hide password' : 'Show password'}
+          </span>
+        </button>
+      )}
     </div>
   );
 };
