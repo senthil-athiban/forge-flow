@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import { Toaster } from "sonner";
+import { usePathname } from "next/navigation";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import Sidebar from "@/components/Dashboard/Sidebar";
+import { NO_SIDEBAR_ROUTES } from "../config";
 import "../globals.css";
 
 export default function RootLayout({
@@ -11,12 +13,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
+  const pathname = usePathname();
+  const shouldHideSidebar = NO_SIDEBAR_ROUTES.includes(pathname);
   return (
     <ProtectedRoute>
       <Toaster />
       <div className="flex bg-slate-100 h-screen overflow-hidden">
-        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+        {!shouldHideSidebar && <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />}
         <main
           className={`flex-1 overflow-y-auto min-h-screen transition-all duration-300 border bg-indigo-50 rounded-lg mt-2 ${isCollapsed ? "ml-16" : "ml-64"}`}
         >
