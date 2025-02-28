@@ -72,12 +72,6 @@ jobs:
             echo "Current directory contents:"
             ls -la
 
-            # Check if forge-flow directory exists
-            if [ ! -d "forge-flow" ]; then
-              echo "Error: forge-flow directory not found!"
-              exit 1
-            fi
-
             # Navigate to docker directory
             cd forge-flow/docker || {
               echo "Error: Could not navigate to forge-flow/docker directory!"
