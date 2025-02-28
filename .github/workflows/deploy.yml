@@ -1,0 +1,74 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: docker.io
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push client
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/client.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:buildcache,mode=max
+
+      - name: Build and push server
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/server.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:latest
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:buildcache,mode=max
+
+      - name: Build and push webhooks
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/hooks.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:latest
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:buildcache,mode=max
+
+      - name: Build and push processor
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/processor.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:latest
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:buildcache,mode=max
+
+      - name: Build and push sweeper
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/sweeper.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:latest
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:buildcache,mode=max
+
+      
