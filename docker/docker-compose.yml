@@ -25,6 +25,7 @@ services:
     image: apache/kafka-native
     ports:
       - "9092:9092"
+    restart: always
     environment:
       KAFKA_LISTENERS: CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:9093
@@ -73,11 +74,10 @@ services:
 
   client: 
     container_name: client
-    build: 
-      context: ..
-      dockerfile: docker/client.Dockerfile
+    image: ${DOCKERHUB_USERNAME}/forgeflow-client:latest
     ports:
       - "3000:3000"
+    restart: always
     env_file:
       - path: ../apps/client/.env
         required: true
@@ -88,9 +88,7 @@ services:
 
   server: 
     container_name: server
-    build: 
-      context: ..
-      dockerfile: docker/server.Dockerfile
+    image: ${DOCKERHUB_USERNAME}/forgeflow-server:latest
     ports:
       - "8000:8000"
     restart: always
@@ -108,11 +106,10 @@ services:
 
   webhooks:
     container_name: webhooks
-    build: 
-      context: ..
-      dockerfile: docker/hooks.Dockerfile
+    image: ${DOCKERHUB_USERNAME}/forgeflow-webhooks:latest
     ports:
       - "8080:8080"
+    restart: always
     env_file:
       - path: ../apps/hooks/.env
         required: true
@@ -124,12 +121,11 @@ services:
     
   processor:
     container_name: processor
-    build: 
-      context: ..
-      dockerfile: docker/processor.Dockerfile
+    image: ${DOCKERHUB_USERNAME}/forgeflow-processor:latest
     depends_on:
       - kafka
       - postgres
+    restart: always
     env_file:
       - path: ../apps/processor/.env
         required: true
@@ -139,12 +135,11 @@ services:
 
   sweeper:
     container_name: sweeper
-    build: 
-      context: ..
-      dockerfile: docker/sweeper.Dockerfile
+    image: ${DOCKERHUB_USERNAME}/forgeflow-sweeper:latest
     depends_on:
       - kafka
       - postgres
+    restart: always
     env_file:
       - path: ../apps/sweeper/.env
         required: true
