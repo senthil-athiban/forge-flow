@@ -73,10 +73,7 @@ jobs:
             ls -la
 
             # Navigate to docker directory
-            cd forge-flow/docker || {
-              echo "Error: Could not navigate to forge-flow/docker directory!"
-              exit 1
-            }
+            cd forge-flow/docker
 
             # Verify docker-compose.yml exists
             if [ ! -f "docker-compose.yml" ]; then
@@ -85,20 +82,13 @@ jobs:
             }
 
             echo "Pulling latest images..."
-            sudo docker-compose pull || {
-              echo "Error: Failed to pull Docker images!"
-              exit 1
-            }
+            sudo docker-compose pull
 
             echo "Stopping existing containers..."
             sudo docker-compose down --remove-orphans
 
             echo "Starting new containers..."
-            sudo docker-compose up -d || {
-              echo "Error: Failed to start containers!"
-              docker-compose logs
-              exit 1
-            }
+            sudo docker-compose up -d
 
             # Verify all containers are running
             echo "Verifying container status..."
