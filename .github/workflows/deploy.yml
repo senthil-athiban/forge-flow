@@ -75,12 +75,6 @@ jobs:
             # Navigate to docker directory
             cd forge-flow/docker
 
-            # Verify docker-compose.yml exists
-            if [ ! -f "docker-compose.yml" ]; then
-              echo "Error: docker-compose.yml not found in $(pwd)!"
-              exit 1
-            }
-
             echo "Pulling latest images..."
             sudo docker-compose pull
 
