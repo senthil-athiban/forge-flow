@@ -68,14 +68,56 @@ jobs:
           username: ${{ secrets.AZURE_VM_USERNAME }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-            ls
-            cd /opt/forge-flow/docker
+            # List current directory contents
+            echo "Current directory contents:"
+            ls -la
+
+            # Check if forge-flow directory exists
+            if [ ! -d "forge-flow" ]; then
+              echo "Error: forge-flow directory not found!"
+              exit 1
+            fi
+
+            # Navigate to docker directory
+            cd forge-flow/docker || {
+              echo "Error: Could not navigate to forge-flow/docker directory!"
+              exit 1
+            }
+
+            # Verify docker-compose.yml exists
+            if [ ! -f "docker-compose.yml" ]; then
+              echo "Error: docker-compose.yml not found in $(pwd)!"
+              exit 1
+            }
+
             echo "Pulling latest images..."
-            sudo docker-compose pull
+            sudo docker-compose pull || {
+              echo "Error: Failed to pull Docker images!"
+              exit 1
+            }
+
             echo "Stopping existing containers..."
             sudo docker-compose down --remove-orphans
+
             echo "Starting new containers..."
-            sudo docker-compose up -d
+            sudo docker-compose up -d || {
+              echo "Error: Failed to start containers!"
+              docker-compose logs
+              exit 1
+            }
+
+            # Verify all containers are running
+            echo "Verifying container status..."
+            sleep 10  # Wait for containers to initialize
+            if ! sudo docker-compose ps | grep -q "Up"; then
+              echo "Error: Not all containers are running!"
+              sudo docker-compose ps
+              sudo docker-compose logs
+              exit 1
+            fi
+
             echo "Cleaning up old images..."
             sudo docker image prune -f
-            echo "Deployment complete!"
+
+            echo "Deployment complete! Container status:"
+            sudo docker-compose ps
