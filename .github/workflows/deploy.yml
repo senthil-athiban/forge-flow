@@ -28,8 +28,6 @@ jobs:
           file: docker/client.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:buildcache,mode=max
 
       - name: Build and push server
         uses: docker/build-push-action@v5
@@ -38,8 +36,6 @@ jobs:
           file: docker/server.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:latest
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:buildcache,mode=max
 
       - name: Build and push webhooks
         uses: docker/build-push-action@v5
@@ -48,8 +44,6 @@ jobs:
           file: docker/hooks.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:latest
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:buildcache,mode=max
 
       - name: Build and push processor
         uses: docker/build-push-action@v5
@@ -58,8 +52,6 @@ jobs:
           file: docker/processor.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:latest
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:buildcache,mode=max
 
       - name: Build and push sweeper
         uses: docker/build-push-action@v5
@@ -68,7 +60,5 @@ jobs:
           file: docker/sweeper.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:latest
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:buildcache
-          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:buildcache,mode=max
 
       
