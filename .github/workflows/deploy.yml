@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.AZURE_VM_USERNAME }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-            cd /forgeflow/docker
+            cd /opt/forgeflow/docker
             echo "Pulling latest images..."
             docker-compose pull
             echo "Stopping existing containers..."
