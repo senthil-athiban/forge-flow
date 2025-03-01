@@ -4,7 +4,7 @@ class UserService {
     static basePath = '/api/v1/user'
 
     public static async getProfile(): Promise<any> {
-        const res = await HttpClient.get(`${this.basePath}/user/me`);
+        const res = await HttpClient.get(`${this.basePath}/me`);
         return res.data;
     }
 

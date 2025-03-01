@@ -27,7 +27,8 @@ const getUser = async (params: UserQueryParams) => {
     });
     
   } catch (error) {
-    throw new Error("Error in fetching user");
+    console.log('[ERROR]', error);
+    throw new ApiError(400, "failed to fetch user data");
   }
 };
 
@@ -43,7 +44,7 @@ const updateUserById = async (
       data: contentToUpdate,
     });
   } catch (error) {
-    throw new Error("Error in updating user");
+    throw new ApiError(400, "failed to update user data");
   }
 };
 

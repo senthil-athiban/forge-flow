@@ -47,6 +47,9 @@ const handleOAuthLogin = async (
         },
       });
       return user;
+    }, {
+      timeout: 10000, 
+      maxWait: 15000,
     });
   } catch (error) {
     console.error("OAuth Login Error:", error);

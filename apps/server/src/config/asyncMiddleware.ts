@@ -12,7 +12,9 @@ export const asyncMiddleWare = (fn: AsyncRequestHandler) => (req: Request, res: 
 }
 
 export const errorHandler = (err:ApiError, req: Request, res: Response, next: NextFunction) => {
-  let { statusCode, message } = err;
+  console.log('[API ERROR]:', err);
+  const statusCode = (err as ApiError).statusCode || 500;
+  const message = err.message || 'Internal Server Error';
 
   res.locals.errorMessage = err.message;
 
