@@ -28,6 +28,9 @@ jobs:
           file: docker/client.Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
+          build-args: |
+            NEXT_PUBLIC_BACKEND_DOMAIN=https://api.grindby.me
+            NEXT_PUBLIC_HOOKS_DOMAIN=https://webhooks.grindby.me
 
       # - name: Build and push server
       #   uses: docker/build-push-action@v5
@@ -76,13 +79,13 @@ jobs:
             cd forge-flow/docker
 
             echo "Pulling latest images..."
-            sudo docker-compose -f docker-compose.dev.yml pull
+            sudo docker-compose -f docker-compose.prod.yml pull
 
             echo "Stopping existing containers..."
-            sudo docker-compose -f docker-compose.dev.yml down --remove-orphans
+            sudo docker-compose -f docker-compose.prod.yml down --remove-orphans
 
             echo "Starting new containers..."
-            sudo docker-compose -f docker-compose.dev.yml up -d --build
+            sudo docker-compose -f docker-compose.prod.yml up -d --build
 
             # Verify all containers are running
             echo "Verifying container status..."
