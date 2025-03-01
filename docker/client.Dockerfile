@@ -9,11 +9,21 @@ RUN yarn install --frozen-lockfile
 # Stage 2: Builder
 FROM node:20-alpine3.20 AS builder
 WORKDIR /app
+
+# Defining build args
+ARG NEXT_PUBLIC_BACKEND_DOMAIN
+ARG NEXT_PUBLIC_HOOKS_DOMAIN
+ARG NEXT_PUBLIC_SLACK_CLIENT_ID 
+
+# Set next.js to output standalone
+ENV NEXT_PUBLIC_BACKEND_DOMAIN=${NEXT_PUBLIC_BACKEND_DOMAIN}
+ENV NEXT_PUBLIC_HOOKS_DOMAIN=${NEXT_PUBLIC_HOOKS_DOMAIN}
+ENV NEXT_PUBLIC_SLACK_CLIENT_ID=${NEXT_PUBLIC_SLACK_CLIENT_ID}
+ENV NEXT_TELEMETRY_DISABLED 1
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set next.js to output standalone
-ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn turbo build --filter=client...
 
 # Stage 3: Runner
@@ -39,9 +49,6 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-ENV NEXT_PUBLIC_BACKEND_DOMAIN=https://api.grindby.me
-ENV NEXT_PUBLIC_HOOKS_DOMAIN=https://webhooks.grindby.me
-ENV NEXT_PUBLIC_SLACK_CLIENT_ID=8209065264739.8221208121687
 ENV NODE_ENV=production
 
 CMD ["node", "./apps/client/server.js"]

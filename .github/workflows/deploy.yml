@@ -31,6 +31,7 @@ jobs:
           build-args: |
             NEXT_PUBLIC_BACKEND_DOMAIN=https://api.grindby.me
             NEXT_PUBLIC_HOOKS_DOMAIN=https://webhooks.grindby.me
+            NEXT_PUBLIC_SLACK_CLIENT_ID=8209065264739.8221208121687
 
       # - name: Build and push server
       #   uses: docker/build-push-action@v5
