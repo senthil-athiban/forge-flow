@@ -4,6 +4,6 @@ import userController from "../controller/user.controller";
 
 const router = Router();
 
-router.get("/user/me", authMiddleware, userController.getUser);
+router.get("/me", authMiddleware, userController.getUser);
 
 export const userRouter = router;

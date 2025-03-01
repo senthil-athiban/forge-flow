@@ -1,6 +1,6 @@
 const isDevelopment = process.env.NEXT_PUBLIC_VERCEL_ENV === "development";
-const isLoggerEnabled = process.env.NEXT_PUBLIC_ENABLE_LOGGER === "true";
-const loggerFilter = process.env.NEXT_PUBLIC_LOGGER_FILTER || "";
+const isLoggerEnabled = true;
+const loggerFilter = "Zap, Auth, User, Slack, Discord";
 
 type LoggerFunction = (...args: Array<unknown>) => void;
 

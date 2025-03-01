@@ -29,9 +29,9 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
           build-args: |
-            NEXT_PUBLIC_BACKEND_DOMAIN=https://api.grindby.me
-            NEXT_PUBLIC_HOOKS_DOMAIN=https://webhooks.grindby.me
-            NEXT_PUBLIC_SLACK_CLIENT_ID=8209065264739.8221208121687
+            NEXT_PUBLIC_BACKEND_DOMAIN=${{ secrets.NEXT_PUBLIC_BACKEND_DOMAIN }}
+            NEXT_PUBLIC_HOOKS_DOMAIN=${{ secrets.NEXT_PUBLIC_HOOKS_DOMAIN }}
+            NEXT_PUBLIC_SLACK_CLIENT_ID=${{ secrets.NEXT_PUBLIC_SLACK_CLIENT_ID }}
 
       # - name: Build and push server
       #   uses: docker/build-push-action@v5
@@ -91,10 +91,10 @@ jobs:
             # Verify all containers are running
             echo "Verifying container status..."
             sleep 10  # Wait for containers to initialize
-            if ! sudo docker-compose ps | grep -q "Up"; then
+            if ! sudo docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
               echo "Error: Not all containers are running!"
-              sudo docker-compose ps
-              sudo docker-compose logs
+              sudo docker-compose -f docker-compose.prod.yml ps
+              sudo docker-compose -f docker-compose.prod.yml logs
               exit 1
             fi
 

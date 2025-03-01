@@ -7,8 +7,6 @@ export const NO_SIDEBAR_ROUTES = [
 ];
 
 console.log('process.env.NEXT_PUBLIC_BACKEND_DOMAIN:', process.env.NEXT_PUBLIC_BACKEND_DOMAIN);
-console.log('process.env.SLACK_CLIENT_ID:', process.env.SLACK_CLIENT_ID);
+console.log('process.env.SLACK_CLIENT_ID:', process.env.NEXT_PUBLIC_SLACK_CLIENT_ID);
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_DOMAIN!;
-export const SLACK_CLIENT_ID = process.env.SLACK_CLIENT_ID!;
-export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
-export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI!;
+export const SLACK_CLIENT_ID = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID!;
