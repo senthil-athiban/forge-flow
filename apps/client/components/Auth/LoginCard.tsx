@@ -27,7 +27,7 @@ const LoginCard = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  console.log('BACKEND_URL:', BACKEND_URL);
   const handleGoogleAuth = async () => {
     window.location.href = `${BACKEND_URL}/api/v1/auth/google`;
   };

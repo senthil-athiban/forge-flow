@@ -76,13 +76,13 @@ jobs:
             cd forge-flow/docker
 
             echo "Pulling latest images..."
-            sudo docker-compose pull
+            sudo docker-compose -f docker-compose.dev.yml pull
 
             echo "Stopping existing containers..."
-            sudo docker-compose down --remove-orphans
+            sudo docker-compose -f docker-compose.dev.yml down --remove-orphans
 
             echo "Starting new containers..."
-            sudo docker-compose up -d
+            sudo docker-compose -f docker-compose.dev.yml up -d --build
 
             # Verify all containers are running
             echo "Verifying container status..."
