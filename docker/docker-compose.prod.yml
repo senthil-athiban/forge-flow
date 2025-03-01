@@ -78,9 +78,14 @@ services:
     ports:
       - "3000:3000"
     restart: always
-    env_file:
-      - path: ../apps/client/.env
-        required: true
+    environment:
+      - NEXT_PUBLIC_BACKEND_DOMAIN=https://api.grindby.me
+      - NEXT_PUBLIC_HOOKS_DOMAIN=https://webhooks.grindby.me
+      - NEXT_PUBLIC_SLACK_CLIENT_ID=8209065264739.8221208121687
+      - NODE_ENV=production
+    # env_file:
+    #   - path: ../apps/client/.env
+    #     required: true
     networks:
       - frontend-net
     depends_on:
