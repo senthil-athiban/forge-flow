@@ -6,7 +6,7 @@ import emailService from "../services/email.service";
 import userService from "../services/user.service";
 import authService from "../services/auth.service";
 import { forgotPasswordSchema, SignUpSchema } from "../schema";
-import { JWT_REFRESH_SECRET } from "../config/config";
+import { CLIENT_URL, JWT_REFRESH_SECRET } from "../config/config";
 import { ApiError } from "../config/error";
 import { asyncMiddleWare } from "../config/asyncMiddleware";
 import "../config/passport";
@@ -38,12 +38,12 @@ const verifyEmail = asyncMiddleWare(async (req: Request, res: Response) => {
   const token = req.query.token as string;
   try {
     await emailService.verifyEmail(token);
-    res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);  
+    res.redirect(`${CLIENT_URL}/login?verified=true`);  
   } catch (error : any) {
     if (error.message === "Token expired") {
-      return res.redirect(`${process.env.CLIENT_URL}/login?expired=true`);
+      return res.redirect(`${CLIENT_URL}/login?expired=true`);
     }
-    return res.redirect(`${process.env.CLIENT_URL}/login?invalid=true`);
+    return res.redirect(`${CLIENT_URL}/login?invalid=true`);
   }
   
 });
@@ -120,13 +120,14 @@ const googleAuthSuccess = async (req: Request, res: Response) => {
   if (!req.user) {
     throw new ApiError(401, "Unauthorized access")
   }
+  console.log('google CLIENT_URL:', CLIENT_URL);
   const encodedUserId = Buffer.from(userId).toString("base64");
   const encodedQueryParams = `id=${encodedUserId}&provider=google`;
-  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
+  return res.redirect(`${CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
 };
 
 const googleAuthFailure = async (req: Request, res: Response) => {
-  return res.redirect(`${process.env.CLIENT_URL}/login`);
+  return res.redirect(`${CLIENT_URL}/login`);
 };
 
 const githubAuth = passport.authenticate("github", { scope: ["user:email"] });
@@ -140,16 +141,17 @@ const githubAuthSuccess = async (req: Request, res: Response) => {
   //@ts-ignore
   const userId = req.user?.id;
   console.log('githubAuthSuccess');
+  console.log('github CLIENT_URL:', CLIENT_URL);
   if (!req.user) {
     throw new ApiError(401, "Unauthorized access")
   }
   const encodedUserId = Buffer.from(userId).toString("base64");
   const encodedQueryParams = `id=${encodedUserId}&provider=github`;
-  return res.redirect(`${process.env.CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
+  return res.redirect(`${CLIENT_URL}/oauth/verify?${encodedQueryParams}`);
 };
 
 const githubAuthFailure = async (req: Request, res: Response) => {
-  return res.redirect(`${process.env.CLIENT_URL}/login`);
+  return res.redirect(`${CLIENT_URL}/login`);
 };
 
 const verify = async (req: Request, res: Response) => {
