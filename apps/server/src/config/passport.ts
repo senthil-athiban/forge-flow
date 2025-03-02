@@ -33,8 +33,10 @@ const createOAuthStrategy = (
       profile: any,
       done: any
     ) {
+      console.log('profile : ', profile);
       const adapterProfile = profileAdapter(profile);
       const user = await oauthService.handleOAuthLogin(adapterProfile, {accessToken, refreshToken});
+      console.log('done');
       return done(null, user?.id);
     }
   );
