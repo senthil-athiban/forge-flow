@@ -139,6 +139,7 @@ const githubAuthCallback = passport.authenticate("github", {
 const githubAuthSuccess = async (req: Request, res: Response) => {
   //@ts-ignore
   const userId = req.user?.id;
+  console.log('githubAuthSuccess');
   if (!req.user) {
     throw new ApiError(401, "Unauthorized access")
   }

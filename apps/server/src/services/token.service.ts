@@ -35,8 +35,12 @@ const saveToken = async (
           type: tokenType,
         },
       });
+    }, {
+      timeout: 10000, 
+      maxWait: 15000,
     })
   } catch (error:any) {
+    console.log('error:', error)
     if (error.code) {
       switch (error.code) {
         case 'P2002':
@@ -49,7 +53,7 @@ const saveToken = async (
           throw new ApiError(400, "Input data validation failed");
       }
     }
-    throw new ApiError(500, "Failed to save token");
+    throw new ApiError(400, "Failed to save token");
   }
 };
 
@@ -143,6 +147,9 @@ const generateEmailVerificationToken = async (user: User) => {
         type: TokenTypes.VERIFY_EMAIL,
       },
     });
+  }, {
+    timeout: 10000, 
+    maxWait: 15000,
   });
 
   emailService.sendVerificationEmail(user.email, token);
@@ -169,6 +176,9 @@ const generateResetPasswordToken = async (user: any) => {
         type: TokenTypes.RESET,
       },
     });
+  }, {
+    timeout: 10000, 
+    maxWait: 15000,
   });
   emailService.sendResetPasswordEmail(user.email, token);
 };

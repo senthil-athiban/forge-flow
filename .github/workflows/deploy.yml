@@ -80,21 +80,21 @@ jobs:
             cd forge-flow/docker
 
             echo "Pulling latest images..."
-            sudo docker-compose -f docker-compose.prod.yml pull
+            sudo docker compose -f docker-compose.prod.yml pull
 
             echo "Stopping existing containers..."
-            sudo docker-compose -f docker-compose.prod.yml down --remove-orphans
+            sudo docker compose -f docker-compose.prod.yml down --remove-orphans
 
             echo "Starting new containers..."
-            sudo docker-compose -f docker-compose.prod.yml up -d --build
+            sudo docker compose -f docker-compose.prod.yml up -d --build
 
             # Verify all containers are running
             echo "Verifying container status..."
             sleep 10  # Wait for containers to initialize
-            if ! sudo docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
+            if ! sudo docker compose -f docker-compose.prod.yml ps | grep -q "Up"; then
               echo "Error: Not all containers are running!"
-              sudo docker-compose -f docker-compose.prod.yml ps
-              sudo docker-compose -f docker-compose.prod.yml logs
+              sudo docker compose -f docker-compose.prod.yml ps
+              sudo docker compose -f docker-compose.prod.yml logs
               exit 1
             fi
 
@@ -102,4 +102,4 @@ jobs:
             sudo docker image prune -f
 
             echo "Deployment complete! Container status:"
-            sudo docker-compose -f docker-compose.prod.yml ps
+            sudo docker compose -f docker-compose.prod.yml ps

@@ -162,7 +162,6 @@ const handleActions = async (
       `Failed to produce zap run ${zapRunId} while performing stage ${stage + 1}`
     );
   }
-
 }
 
 const processEvents = async () => {

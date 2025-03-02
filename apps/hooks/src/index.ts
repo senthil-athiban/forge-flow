@@ -40,7 +40,10 @@ app.post("/hooks/catch/:userId/:zapId", async (req: Request, res: Response) => {
         });
 
         return zapRunOutBox
-    });
+    }, {
+        timeout: 10000, 
+        maxWait: 15000,
+      });
     res.status(201).send({"message": response});
 })
 
