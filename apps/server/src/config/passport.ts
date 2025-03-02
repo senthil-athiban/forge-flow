@@ -19,6 +19,7 @@ const createOAuthStrategy = (
   config: any,
   profileAdapter: (profile: any) => any
 ) => {
+  console.log({ clientID: config.clientID, clientSecret: config.clientSecret, callbackURL: config.callbackURL})
   return new Strategy(
     {
       clientID: config.clientID,
