@@ -5,6 +5,7 @@ const GitHubStrategy = require("passport-github2").Strategy;
 import oAuthAdapters from "../adapters/oauth.adapters";
 import oauthService from "../services/oauth.service";
 import {
+  DOMAIN,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
   GOOGLE_CLIENT_ID,
@@ -49,7 +50,7 @@ passport.use(
     {
       clientID: GITHUB_CLIENT_ID,
       clientSecret: GITHUB_CLIENT_SECRET,
-      callbackURL: "/api/v1/auth/github/callback",
+      callbackURL: `${DOMAIN}/api/v1/auth/github/callback`,
     },
     oAuthAdapters.github
   )
@@ -61,7 +62,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/v1/auth/google/callback",
+      callbackURL: `${DOMAIN}/api/v1/auth/google/callback`,
     },
     oAuthAdapters.google
   )
