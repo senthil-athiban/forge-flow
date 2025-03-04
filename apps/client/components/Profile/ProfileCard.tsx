@@ -109,7 +109,7 @@ const ProfileCard = () => {
           <div className="flex-shrink-0">
             <div className="relative">
               <img
-                src="https://layer5.io/static/05401e480138a9692fbe6768541d44bc/e3656/senthil-athiban.webp"
+                src=""
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
               />
