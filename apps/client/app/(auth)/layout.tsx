@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "ForgeFlow",
     images: [
       {
-        url: "/og-image.png",
+        url: "@/public/forge-flow.png",
         width: 1200,
         height: 630,
         alt: "ForgeFlow - No-Code Automation Platform"
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     description: "Connect and automate your apps without code. Build powerful workflows in minutes.",
     site: "@forgeflow",
     creator: "@forgeflow",
-    images: ["/og-image.png"]
+    images: ["@/public/forge-flow.png"]
   },
   alternates: {
     canonical: "https://forge-flow.live"

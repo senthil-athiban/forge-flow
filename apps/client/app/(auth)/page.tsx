@@ -1,13 +1,15 @@
-import Hero from "@/components/Hero";
-import HeroVideo from "@/components/HeroVideo";
-import Navbar from "@/components/Navbar";
+import Hero from "@/components/Home/Hero";
+import Features from "@/components/Home/Features";
+import Navbar from "@/components/Home/Navbar";
+import Footer from "@/components/Home/Footer";
 
 export default function Home() {
   return (
-    <main className="flex flex-col max-w-7xl m-auto p-4">
+    <main className="flex flex-col">
       <Navbar />
       <Hero />
-      <HeroVideo />
+      <Features />
+      <Footer />
     </main>
   );
 }
