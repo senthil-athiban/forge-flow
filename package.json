@@ -5,6 +5,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "build:client": "cd apps/client && next build",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "prisma": {

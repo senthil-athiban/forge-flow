@@ -57,7 +57,7 @@ const Hero = () => {
 
           {/* Subheadline */}
           <p className="mt-6 text-xl text-indigo-100 max-w-2xl mx-auto">
-            Transform your workflow with ForgeFlow's AI-powered automation platform. 
+            Transform your workflow with ForgeFlow AI-powered automation platform. 
             Connect apps, automate tasks, and boost productivity in minutes.
           </p>
 

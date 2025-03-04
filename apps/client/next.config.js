@@ -4,6 +4,9 @@ const nextConfig = {
   trailingSlash: true, // Recommended for static exports
   images: {
     unoptimized: true // Important for static export
+  },
+  experimental: {
+    outputFileTracingRoot: __dirname
   }
 }
 
