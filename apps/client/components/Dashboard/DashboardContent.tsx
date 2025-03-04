@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import useZaps from "@/hooks/useZaps";
-import { Loader2, Plus, RefreshCcw } from "lucide-react";
+import useZaps from "@/hooks/useZap";
+import { Plus, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import UserService from "@/services/user.service";
 import ZapTable from "../Zap/ZapTable";
 import { Button } from "../ui/button";
 import Widget from "./Widget";
+import Loader from "../ui/loader";
 
 const DashboardContent = () => {
   const { isLoading, data } = useZaps();
@@ -21,11 +22,7 @@ const DashboardContent = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-      </div>
-    );
+    return <Loader />
   }
 
   return (

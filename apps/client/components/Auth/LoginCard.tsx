@@ -20,14 +20,15 @@ import {
 import { FloatingLabelInput } from "../Profile/ProfileCard";
 import { Github } from "lucide-react";
 import Google from "../Provider/Google";
+import Loader from "../ui/loader";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  console.log('BACKEND_URL:', BACKEND_URL);
   const handleGoogleAuth = async () => {
     window.location.href = `${BACKEND_URL}/api/v1/auth/google`;
   };
@@ -38,6 +39,7 @@ const LoginCard = () => {
 
   const onSubmit = async () => {
     try {
+      setIsLoading(true);
       const res = await AuthService.login({
         email: email,
         password: password,
@@ -47,6 +49,8 @@ const LoginCard = () => {
       router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,6 +76,10 @@ const LoginCard = () => {
   useEffect(() => {
     handleLoginStatus();
   }, [searchParams, handleLoginStatus]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <Card className="w-[440px] p-2 shadow-lg bg-white/70 background-blur-sm border border-indigo-100">

@@ -20,7 +20,6 @@ const createOAuthStrategy = (
   config: any,
   profileAdapter: (profile: any) => any
 ) => {
-  console.log({ clientID: config.clientID, clientSecret: config.clientSecret, callbackURL: config.callbackURL})
   return new Strategy(
     {
       clientID: config.clientID,
@@ -35,10 +34,8 @@ const createOAuthStrategy = (
       profile: any,
       done: any
     ) {
-      console.log('profile : ', profile);
       const adapterProfile = profileAdapter(profile);
       const user = await oauthService.handleOAuthLogin(adapterProfile, {accessToken, refreshToken});
-      console.log('done');
       return done(null, user?.id);
     }
   );

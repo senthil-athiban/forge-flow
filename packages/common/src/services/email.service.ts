@@ -1,9 +1,8 @@
 import { config } from "dotenv";
 import { Resend } from "resend";
 
-import { transporter } from "../config/mail.config";
+import { sgMail, transporter } from "../config/mail.config";
 import { ApiError } from "../config/error";
-
 import pino from "pino";
 
 config();
@@ -66,10 +65,21 @@ class ResendProvider implements EmailProvider {
   }
 }
 
+class SendGrid implements EmailProvider {
+  async sendMail(options: EmailOptions): Promise<void> {
+    await sgMail.send({
+      from: options.from || process.env.EMAIL_FROM!,
+      to: options.to,
+      subject: options.subject,
+      text: options.content,
+    });
+  }
+}
+
 class EmailService {
   private static instance: EmailService;
   private provider: EmailProvider;
-  constructor(provider: "nodemailer" | "resend") {
+  constructor(provider: "nodemailer" | "resend" | "sendGrid") {
     this.provider = this.getProvider(provider);
   }
 
@@ -80,12 +90,14 @@ class EmailService {
       default:
       case "resend":
         return new ResendProvider();
+      case "sendGrid":
+        return new SendGrid();
     }
   }
 
   public static getInstance(): EmailService {
     if (!this.instance) {
-      this.instance = new EmailService("resend");
+      this.instance = new EmailService("sendGrid");
     }
     return this.instance;
   }

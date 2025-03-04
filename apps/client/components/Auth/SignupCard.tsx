@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import ProviderButton from "../Button/ProviderButton";
-import PrimaryButton from "../Button/PrimaryButton";
-import Google from "../Provider/Google";
-import { useRouter } from "next/navigation";
+import { Github } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Google from "../Provider/Google";
 import AuthService from "@/services/auth.service";
 import {
   Card,
@@ -15,32 +15,40 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import { Github } from "lucide-react";
 import { FloatingLabelInput } from "../Profile/ProfileCard";
-import Link from "next/link";
+import Loader from "../ui/loader";
 
 const SignupCard = () => {
-  const [name, setname] = useState("");
-  const [passowrd, setpassowrd] = useState("");
-  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [passowrd, setpassowrd] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const router = useRouter();
 
   const onSubmit = async () => {
     try {
+      setIsLoading(true);
       const res = await AuthService.register({
         email: email,
         password: passowrd,
         name: name,
       });
-      if (res?.data) {
-        toast.success(res.data?.message);
+      if (res) {
+        toast.success(res?.message);
         router.push("/login");
       }
     } catch (error: any) {
       console.error("Failed to signup", error);
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <Card className="w-[440px] p-2 shadow-lg bg-white/70 background-blur-sm border border-indigo-200">
       <CardHeader className="space-y-2 text-center">
@@ -89,7 +97,7 @@ const SignupCard = () => {
           <FloatingLabelInput
             id="name"
             label="Name"
-            onChange={(e: any) => setname(e.target.value)}
+            onChange={(e: any) => setName(e.target.value)}
             value={name}
             key={"name"}
             type="text"

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react'
 import { DataTable } from '../Zap/DataTable'
-import useZaps from '@/hooks/useZaps';
+import useZaps from '@/hooks/useZap';
 import { executionColumns, WorkflowRun } from './ExecutionColumns';
 
 const ExecutionTable = () => {

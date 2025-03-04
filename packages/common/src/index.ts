@@ -53,9 +53,6 @@ export {default as KafkaService } from "./services/kafka.service";
 export const kafkaService = KafkaService.getInstance();
 export const discordService = DiscordService.getInstance();
 export const slackService = SlackService.getInstance();
-export const resendService = EmailService.getInstance();
+export const sendGridService = EmailService.getInstance();
 export {discordConfig, transporter};
-
-// TODO: refactor it to packages/types
 export { type Action };
-// main();

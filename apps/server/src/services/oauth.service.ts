@@ -12,7 +12,6 @@ const handleOAuthLogin = async (
 ) => {
   try {
     const email = getEmailFromProfile(profile);
-    console.log('email:', email);
     const user = await prisma.user.upsert({
       where: { email },
       update: {
@@ -28,7 +27,6 @@ const handleOAuthLogin = async (
     
     return prismaClient.$transaction(async (tx:any) => {
       const { accesstoken, refreshToken } = await tokenService.generateAuthTokens(user);
-      console.log({ accesstoken, refreshToken });
       await tx.oAuthAccount.upsert({
         where: {
           provider_providerUserId: {
