@@ -36,7 +36,6 @@ const Hero = () => {
           transition={{ duration: 0.5 }}
           className="text-center max-w-4xl mx-auto"
         >
-          {/* Gradient Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -48,7 +47,6 @@ const Hero = () => {
             </span>
           </motion.div>
 
-          {/* Main Headline */}
           <h1 className="text-5xl sm:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-200 leading-tight mb-6">
             Automation at the
             <br />
