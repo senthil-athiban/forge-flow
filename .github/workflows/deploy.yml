@@ -21,17 +21,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Build and push client
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: docker/client.Dockerfile
-      #     push: true
-      #     tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
-      #     build-args: |
-      #       NEXT_PUBLIC_BACKEND_DOMAIN=${{ secrets.NEXT_PUBLIC_BACKEND_DOMAIN }}
-      #       NEXT_PUBLIC_HOOKS_DOMAIN=${{ secrets.NEXT_PUBLIC_HOOKS_DOMAIN }}
-      #       NEXT_PUBLIC_SLACK_CLIENT_ID=${{ secrets.NEXT_PUBLIC_SLACK_CLIENT_ID }}
+      - name: Build and push client
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/client.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-client:latest
+          build-args: |
+            NEXT_PUBLIC_BACKEND_DOMAIN=${{ secrets.NEXT_PUBLIC_BACKEND_DOMAIN }}
+            NEXT_PUBLIC_HOOKS_DOMAIN=${{ secrets.NEXT_PUBLIC_HOOKS_DOMAIN }}
+            NEXT_PUBLIC_SLACK_CLIENT_ID=${{ secrets.NEXT_PUBLIC_SLACK_CLIENT_ID }}
 
       - name: Build and push server
         uses: docker/build-push-action@v5
@@ -41,29 +41,29 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-server:latest
 
-      # - name: Build and push webhooks
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: docker/hooks.Dockerfile
-      #     push: true
-      #     tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:latest
+      - name: Build and push webhooks
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/hooks.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-webhooks:latest
 
-      # - name: Build and push processor
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: docker/processor.Dockerfile
-      #     push: true
-      #     tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:latest
+      - name: Build and push processor
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/processor.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-processor:latest
 
-      # - name: Build and push sweeper
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: docker/sweeper.Dockerfile
-      #     push: true
-      #     tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:latest
+      - name: Build and push sweeper
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/sweeper.Dockerfile
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/forgeflow-sweeper:latest
 
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@v1.0.0
