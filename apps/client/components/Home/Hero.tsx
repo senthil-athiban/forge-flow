@@ -50,9 +50,7 @@ const Hero = () => {
 
           {/* Main Headline */}
           <h1 className="text-5xl sm:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-200 leading-tight mb-6">
-            Automation at the
-            <br />
-            Speed of Thought
+            Automation the workflow
           </h1>
 
           {/* Subheadline */}
