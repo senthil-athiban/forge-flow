@@ -16,6 +16,8 @@ import { CLIENT_URL, SESSION_SECRET } from "./config/config";
 import { errorHandler } from './config/asyncMiddleware';
 import { slackRouter } from './routes/slack.router';
 import { discordRouter } from './routes/discord.router';
+import multer from 'multer';
+
 require('https').globalAgent.options.rejectUnauthorized = false;
 
 dotenv.config();

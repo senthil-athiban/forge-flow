@@ -18,3 +18,8 @@ export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
 export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI!;
 
 export const FROM_EMAIL = process.env.EMAIL_FROM!;
+
+export const S3_BUCKET = process.env.S3_BUCKET!;
+export const ACCESS_KEY = process.env.ACCESS_KEY!;
+export const SECRET_KEY = process.env.SECRET_KEY!;
+export const REGION = process.env.REGION!;
