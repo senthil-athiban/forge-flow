@@ -18,6 +18,46 @@ const getUser = asyncMiddleWare(async (req: Request, res: Response) => {
   res.status(200).send({ user });
 });
 
+const getAvatar = asyncMiddleWare(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  const user = await userService.verifyUser(userId);
+  if(!user) {
+    throw new ApiError(401, "Un authorized");
+  }
+
+  const client = new S3Client({
+    credentials: {
+      accessKeyId: ACCESS_KEY,
+      secretAccessKey: SECRET_KEY,
+    },
+    region: REGION,
+  });
+  try {
+    const params = {Bucket: S3_BUCKET, Key: `/profile/${user.id}`}; // Remove leading slash
+    const command = new GetObjectCommand(params);
+    const response = await client.send(command);
+    
+    // Set the content type header
+    res.set('Content-Type', response.ContentType || 'image/jpeg');
+    
+    // Stream the file data directly to the client
+    if (response.Body) {
+      const bodyContents = await response.Body.transformToByteArray();
+      console.log('bodyContents:', bodyContents)
+      res.send(Buffer.from(bodyContents));
+    } else {
+      throw new ApiError(404, "Image not found");
+    }
+  } catch (error) {
+    console.error('Error fetching avatar:', error);
+    // Check if the error is because the file doesn't exist
+    if ((error as any).name === 'NoSuchKey') {
+      throw new ApiError(404, "No avatar found for this user");
+    }
+    throw new ApiError(500, "Failed to retrieve avatar");
+  }
+})
+
 const editUser = asyncMiddleWare(async (req: Request, res: Response) => {
   const file = req.file;
   const userId = req.userId as string;
@@ -34,7 +74,7 @@ const editUser = asyncMiddleWare(async (req: Request, res: Response) => {
     },
     region: REGION,
   });
-  const path = `/profile/${file?.originalname}`;
+  const path = `/profile/${user.id}`;
   const command = new PutObjectCommand({
     Bucket: S3_BUCKET,
     Key: path,
@@ -66,4 +106,4 @@ or the multipart upload API (5TB max).`
   }
 });
 
-export default { getUser, editUser };
+export default { getUser, editUser, getAvatar };
