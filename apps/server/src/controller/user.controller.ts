@@ -11,6 +11,7 @@ import userService from "../services/user.service";
 import { config } from "dotenv";
 import { ACCESS_KEY, REGION, S3_BUCKET, SECRET_KEY } from "@/config/config";
 import { readFile } from "node:fs/promises";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const getUser = asyncMiddleWare(async (req: Request, res: Response) => {
   const userId = req.userId as string;
@@ -33,24 +34,14 @@ const getAvatar = asyncMiddleWare(async (req: Request, res: Response) => {
     region: REGION,
   });
   try {
-    const params = {Bucket: S3_BUCKET, Key: `/profile/${user.id}`}; // Remove leading slash
+    const params = {Bucket: S3_BUCKET, Key: `profile/${user.id}`}; // Remove leading slash
     const command = new GetObjectCommand(params);
-    const response = await client.send(command);
-    
-    // Set the content type header
-    res.set('Content-Type', response.ContentType || 'image/jpeg');
-    
-    // Stream the file data directly to the client
-    if (response.Body) {
-      const bodyContents = await response.Body.transformToByteArray();
-      console.log('bodyContents:', bodyContents)
-      res.send(Buffer.from(bodyContents));
-    } else {
-      throw new ApiError(404, "Image not found");
-    }
+    const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+    res.status(200).send({ 
+      imageUrl: signedUrl 
+    });
   } catch (error) {
     console.error('Error fetching avatar:', error);
-    // Check if the error is because the file doesn't exist
     if ((error as any).name === 'NoSuchKey') {
       throw new ApiError(404, "No avatar found for this user");
     }
@@ -74,14 +65,13 @@ const editUser = asyncMiddleWare(async (req: Request, res: Response) => {
     },
     region: REGION,
   });
-  const path = `/profile/${user.id}`;
+  const path = `profile/${user.id}`;
   const command = new PutObjectCommand({
     Bucket: S3_BUCKET,
     Key: path,
     Body: await readFile(file?.path!),
   });
   
-  // save response
   try {
     const response = await client.send(command);
     console.log(response);
