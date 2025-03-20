@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -90,7 +90,7 @@ const ProfileCard = () => {
     newPassword: "",
   });
   const [image, setImage] = useState<File>();
-
+  const [imgUrl, setImgUrl] = useState('');
   const handleChange =
     (field: keyof FormInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({
@@ -100,16 +100,26 @@ const ProfileCard = () => {
     };
 
   const handleSubmit = async () => {
-    console.log("image:", image);
     const form = new FormData();
     if (!image) return;
     form.set("file", image);
     form.set("filename", image.name);
-    // Log as Object
-    console.log("Form data keys:", Array.from(form.keys()));
 
     const res = await UserService.updateProfile(form);
+    await fetchAvatar()
   };
+
+  const fetchAvatar = async () => {
+    try {
+      const res = await UserService.getAvatar();
+      setImgUrl(res.imageUrl);
+    } catch (error) {
+      
+    }
+  }
+  useEffect(() => {
+      fetchAvatar();
+  },[]);
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -124,7 +134,7 @@ const ProfileCard = () => {
             <div className="flex-shrink-0">
               <div className="relative">
                 <img
-                  src=""
+                  src={imgUrl}
                   alt="Profile"
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                 />

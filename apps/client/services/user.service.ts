@@ -8,6 +8,11 @@ class UserService {
         return res.data;
     }
 
+    public static async getAvatar(): Promise<any> {
+        const res = await HttpClient.get(`${this.basePath}/me/avatar`);
+        return res.data;
+    }
+
     public static async verifyOAuth(): Promise<any> {
         const res = await HttpClient.get(`${this.basePath}/oauth/verify`);
         return res.data;
